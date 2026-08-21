@@ -28,7 +28,6 @@ x86/
 *.aab
 *.ipa
 *.app
-android/
 *.androidproj.user
 
 # OS files
