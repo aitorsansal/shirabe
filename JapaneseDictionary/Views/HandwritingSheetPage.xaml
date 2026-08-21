@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="JapaneseDictionary.Views.HandwritingSheetPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:controls="clr-namespace:JapaneseDictionary.Controls"
+    x:DataType="vm:HandwritingViewModel"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="{AppThemeBinding Light={StaticResource ModalBackdropLight}, Dark={StaticResource ModalBackdropDark}}">
+
+    <Grid VerticalOptions="End">
+        <VerticalStackLayout BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}" Spacing="0" Padding="0,0,0,24">
+
+            <Grid ColumnDefinitions="*,Auto" Padding="16,14,16,12">
+                <VerticalStackLayout Grid.Column="0" Spacing="3">
+                    <Label Text="HANDWRITING" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.4" TextColor="{AppThemeBinding Light={StaticResource KickerAccentLight}, Dark={StaticResource KickerAccentDark}}" />
+                    <Label Text="Draw the character" FontFamily="ArchivoExtraBold" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="DONE" Clicked="OnDoneClicked" Style="{StaticResource SheetChromeButtonStyle}" VerticalOptions="Center" />
+            </Grid>
+
+            <VerticalStackLayout Padding="16,0">
+                <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="0">
+                    <Grid HeightRequest="230">
+                        <BoxView WidthRequest="1" Color="{AppThemeBinding Light={StaticResource CanvasGuideDashLight}, Dark={StaticResource CanvasGuideDashDark}}" HorizontalOptions="Center" VerticalOptions="Fill" />
+                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource CanvasGuideDashLight}, Dark={StaticResource CanvasGuideDashDark}}" HorizontalOptions="Fill" VerticalOptions="Center" />
+                        <controls:KanjiDrawPad x:Name="DrawPad" StrokeThickness="9" StrokeCompleted="OnStrokeCompleted"
+                                                InkColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                        <Label Text="Draw here — stroke by stroke" IsVisible="{Binding CanvasEmpty}" FontFamily="ArchivoRegular" FontSize="13" HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True"
+                               TextColor="{AppThemeBinding Light={StaticResource CanvasPlaceholderLight}, Dark={StaticResource CanvasPlaceholderDark}}" />
+                    </Grid>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8" Margin="0,10,0,0">
+                    <Button Grid.Column="0" Text="↶ Undo" Clicked="OnUndoClicked" Style="{StaticResource SheetChromeButtonStyle}" HorizontalOptions="Fill" />
+                    <Button Grid.Column="1" Text="✕ Clear" Clicked="OnClearClicked" Style="{StaticResource SheetChromeButtonStyle}" HorizontalOptions="Fill" />
+                    <Border Grid.Column="2" StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Padding="12,0" VerticalOptions="Fill">
+                        <VerticalStackLayout VerticalOptions="Center">
+                            <Label Text="STROKES" FontFamily="ArchivoExtraBold" FontSize="9" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                            <Label Text="{Binding StrokeCount}" FontFamily="ArchivoExtraBold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+
+            <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Margin="0,14,0,0" />
+
+            <VerticalStackLayout Padding="16,12,16,0">
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                    <Label Grid.Column="0" Text="CLOSEST MATCHES" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.4" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                    <Label Grid.Column="1" Text="{Binding CandidateNote}" FontFamily="ArchivoSemiBold" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
+                </Grid>
+
+                <!--  Fixed height regardless of candidate count (0 before the first stroke,
+                      up to 10 after) — without this, the sheet's total height changes as
+                      recognition results come in, and since the sheet is bottom-anchored
+                      that shifts the canvas above it, making it hard to draw a second stroke.  -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" HeightRequest="104">
+                    <HorizontalStackLayout Spacing="6" BindableLayout.ItemsSource="{Binding Candidates}" Padding="0,0,0,14">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CandidateTile">
+                                <Border WidthRequest="64" StrokeThickness="1" Padding="0,8,0,6"
+                                        Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HandwritingViewModel}}, Path=PickCandidateCommand}" CommandParameter="{Binding Character}" />
+                                    </Border.GestureRecognizers>
+                                    <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                                        <Label Text="{Binding Character}" FontFamily="NotoSerifJPSemiBold" LineHeight="0.8" FontSize="30" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                        <Label FontFamily="ArchivoSemiBold" FontSize="9" CharacterSpacing="0.6" HorizontalOptions="Center" TextTransform="Uppercase"
+                                               TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding StrokeCount}" />
+                                                    <Span Text=" str" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </HorizontalStackLayout>
+                </ScrollView>
+
+                <Label Text="Ranked by the on-device ONNX handwriting model (DaKanji), most confident first." FontFamily="ArchivoRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" LineBreakMode="WordWrap" Margin="0,0,0,4" />
+                <!--  IsVisible (not just IsRunning) left unbound on purpose — IsVisible="False"
+                      collapses the element to zero height, and this row toggling in/out on every
+                      recognition start/stop is exactly the kind of layout shift the fixed-height
+                      candidates ScrollView above already had to work around.  -->
+                <ActivityIndicator IsRunning="{Binding IsRecognizing}" HeightRequest="24" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

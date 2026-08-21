@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="JapaneseDictionary.Views.WordDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:search="clr-namespace:JapaneseDictionary.Core.Search;assembly=JapaneseDictionary.Core"
+    x:DataType="vm:WordDetailViewModel"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!--  Header  -->
+        <VerticalStackLayout Grid.Row="0" Padding="16,50,16,0" Spacing="0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
+            <Button
+                Text="‹  RESULTS"
+                Command="{Binding GoBackCommand}"
+                BackgroundColor="Transparent"
+                TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}"
+                FontFamily="ArchivoExtraBold"
+                FontSize="11"
+                CharacterSpacing="1"
+                HorizontalOptions="Start"
+                Padding="0,6"
+                MinimumHeightRequest="36" />
+            <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
+        </VerticalStackLayout>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="0">
+
+                <VerticalStackLayout Padding="16,18,16,14" Spacing="4">
+                    <Label Text="{Binding EntryReading}" FontFamily="ArchivoRegular" FontSize="14" CharacterSpacing="0.4" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                    <!--  Noto Serif JP's large baked-in ascent shows up as visible "phantom"
+                          space above the glyph whenever it follows another element — pulled
+                          up to compensate rather than relying on Spacing/Margin alone.  -->
+                    <Label Text="{Binding EntryWord}" FontFamily="NotoSerifJPSemiBold" FontSize="46" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <!--  Single flat FlexLayout — a FlexLayout nested inside another one
+                          doesn't report its own wrapped height back to the outer one, so a
+                          second wrapped row silently gets clipped by whatever follows (the
+                          tab bar, here). The "common" badge is just another item in Badges
+                          (IsCommon flag), not a separate static child, for the same reason.  -->
+                    <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Badges}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:EntryBadge">
+                                <Border StrokeThickness="1" Margin="0,0,5,5" Padding="6,5" FlexLayout.Shrink="0">
+                                    <Border.Stroke>
+                                        <MultiBinding Converter="{StaticResource HueBorderConverter}">
+                                            <Binding Path="IsCommon" />
+                                            <Binding Path="HueIndex" />
+                                            <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                                        </MultiBinding>
+                                    </Border.Stroke>
+                                    <Border.Background>
+                                        <MultiBinding Converter="{StaticResource HueFillConverter}">
+                                            <Binding Path="IsCommon" />
+                                            <Binding Path="HueIndex" />
+                                            <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                                        </MultiBinding>
+                                    </Border.Background>
+                                    <Label Text="{Binding Label}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextTransform="Uppercase">
+                                        <Label.TextColor>
+                                            <MultiBinding Converter="{StaticResource HueTextConverter}">
+                                                <Binding Path="IsCommon" />
+                                                <Binding Path="HueIndex" />
+                                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                                            </MultiBinding>
+                                        </Label.TextColor>
+                                    </Label>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+                <!--  Tabs  -->
+                <Grid ColumnDefinitions="*,*,*,*" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
+                    <Button Grid.Column="0" Text="意味 Meaning" Command="{Binding SelectTabCommand}" CommandParameter="Meaning"
+                            Style="{StaticResource TabButtonStyle}"
+                            BackgroundColor="{Binding IsMeaningTab, Converter={StaticResource TabActiveBgConverter}}">
+                        <Button.TextColor>
+                            <MultiBinding Converter="{StaticResource TabActiveFgConverter}">
+                                <Binding Path="IsMeaningTab" />
+                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                            </MultiBinding>
+                        </Button.TextColor>
+                    </Button>
+                    <Button Grid.Column="1" Text="例文 Sentences" Command="{Binding SelectTabCommand}" CommandParameter="Sentences"
+                            Style="{StaticResource TabButtonStyle}"
+                            BackgroundColor="{Binding IsSentencesTab, Converter={StaticResource TabActiveBgConverter}}">
+                        <Button.TextColor>
+                            <MultiBinding Converter="{StaticResource TabActiveFgConverter}">
+                                <Binding Path="IsSentencesTab" />
+                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                            </MultiBinding>
+                        </Button.TextColor>
+                    </Button>
+                    <Button Grid.Column="2" Text="漢字 Kanji" Command="{Binding SelectTabCommand}" CommandParameter="Kanji"
+                            Style="{StaticResource TabButtonStyle}"
+                            BackgroundColor="{Binding IsKanjiTab, Converter={StaticResource TabActiveBgConverter}}">
+                        <Button.TextColor>
+                            <MultiBinding Converter="{StaticResource TabActiveFgConverter}">
+                                <Binding Path="IsKanjiTab" />
+                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                            </MultiBinding>
+                        </Button.TextColor>
+                    </Button>
+                    <Button Grid.Column="3" Text="活用 Conj." Command="{Binding SelectTabCommand}" CommandParameter="Conjugation"
+                            IsVisible="{Binding ShowConjugationTab}"
+                            Style="{StaticResource TabButtonStyle}"
+                            BackgroundColor="{Binding IsConjugationTab, Converter={StaticResource TabActiveBgConverter}}">
+                        <Button.TextColor>
+                            <MultiBinding Converter="{StaticResource TabActiveFgConverter}">
+                                <Binding Path="IsConjugationTab" />
+                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                            </MultiBinding>
+                        </Button.TextColor>
+                    </Button>
+                </Grid>
+                <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
+
+                <!--  Meaning tab  -->
+                <VerticalStackLayout IsVisible="{Binding IsMeaningTab}" Spacing="0">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding SenseGroups}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SenseGroup">
+                                <VerticalStackLayout Padding="16" Spacing="9">
+                                    <Label Text="{Binding PartOfSpeech}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.2" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="9">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:SenseItem">
+                                                <Grid ColumnDefinitions="16,*" ColumnSpacing="10">
+                                                    <Label Grid.Column="0" Text="{Binding Number}" FontFamily="ArchivoExtraBold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
+                                                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                                        <Label Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" LineBreakMode="WordWrap" />
+                                                        <Label Text="{Binding Note}" IsVisible="{Binding Note, Converter={StaticResource StringNotEmptyConverter}}" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="0.6" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" TextTransform="Uppercase" />
+                                                    </VerticalStackLayout>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Margin="0,7,0,-16" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout IsVisible="{Binding HasOtherForms}" Padding="16" Spacing="10">
+                        <Label Text="OTHER FORMS" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.2" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                        <FlexLayout BindableLayout.ItemsSource="{Binding OtherForms}" Wrap="Wrap">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:FormChip">
+                                    <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleBorderLight}, Dark={StaticResource RuleBorderDark}}" Margin="0,0,8,8" Padding="10,8" FlexLayout.Shrink="0">
+                                        <VerticalStackLayout Spacing="3">
+                                            <Label Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" LineHeight="0.85" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                            <Label Text="{Binding Note}" FontFamily="ArchivoRegular" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Margin="0,2,0,0" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Padding="16,16,16,40" Spacing="0">
+                        <Label Text="RELATED &amp; COMPOUNDS" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.2" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" Margin="0,0,0,6" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Compounds}" Spacing="0">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:CompoundRow">
+                                    <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="0,12" MinimumHeightRequest="44">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WordDetailViewModel}}, Path=OpenCompoundCommand}" CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
+                                            <Label Grid.Column="0" Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="{Binding Reading}" FontFamily="ArchivoRegular" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" VerticalOptions="Center" />
+                                            <Label Grid.Column="2" Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" HorizontalTextAlignment="End" HorizontalOptions="End" VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!--  Sentences tab  -->
+                <VerticalStackLayout IsVisible="{Binding IsSentencesTab}" Spacing="0">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Examples}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ExampleCard">
+                                <VerticalStackLayout Padding="16" Spacing="8">
+                                    <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="0,0,0,8">
+                                        <VerticalStackLayout Spacing="8">
+                                            <Label FontFamily="NotoSerifJPRegular" LineHeight="1.1" FontSize="19" LineBreakMode="WordWrap">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding Pre}" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                                        <Span Text="{Binding Hit}" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                                        <Span Text="{Binding Post}" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Label Text="{Binding English}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" LineBreakMode="WordWrap" />
+                                            <Label FontFamily="ArchivoSemiBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" TextTransform="Uppercase">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="Tatoeba #" />
+                                                        <Span Text="{Binding Id}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label Padding="16,16,16,40" Text="Sentences come from the linked Tatoeba indices — only pairs tagged to this entry are shown." FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+
+                <!--  Kanji tab  -->
+                <VerticalStackLayout IsVisible="{Binding IsKanjiTab}" Spacing="0" Padding="0,0,0,40">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding KanjiCards}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:KanjiCard">
+                                <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="16">
+                                    <VerticalStackLayout Spacing="14">
+                                        <Grid ColumnDefinitions="88,*" ColumnSpacing="14">
+                                            <Border Grid.Column="0" WidthRequest="88" HeightRequest="88" VerticalOptions="Start" StrokeThickness="1"
+                                                    Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}"
+                                                    Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="0">
+                                                <Label Text="{Binding Character}" FontFamily="NotoSerifJPSemiBold" FontSize="54" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalOptions="Center" VerticalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="7">
+                                                <Label Text="{Binding Meanings}" FontFamily="ArchivoSemiBold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" LineBreakMode="WordWrap" />
+                                                <HorizontalStackLayout Spacing="8">
+                                                    <Label Text="ON" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" WidthRequest="26" />
+                                                    <Label Text="{Binding OnReadings}" FontFamily="NotoSerifJPRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" LineBreakMode="WordWrap" />
+                                                </HorizontalStackLayout>
+                                                <HorizontalStackLayout Spacing="8">
+                                                    <Label Text="KUN" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" WidthRequest="26" />
+                                                    <Label Text="{Binding KunReadings}" FontFamily="NotoSerifJPRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" LineBreakMode="WordWrap" />
+                                                </HorizontalStackLayout>
+                                                <FlexLayout Wrap="Wrap">
+                                                    <Border StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0"
+                                                            Stroke="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueBorderConverter}, ConverterParameter=0}"
+                                                            Background="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueFillConverter}, ConverterParameter=0}">
+                                                        <Label Text="{Binding StrokeLabel}" FontFamily="ArchivoSemiBold" FontSize="10" TextTransform="Uppercase"
+                                                               TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=0}" />
+                                                    </Border>
+                                                    <Border StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0"
+                                                            Stroke="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueBorderConverter}, ConverterParameter=1}"
+                                                            Background="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueFillConverter}, ConverterParameter=1}">
+                                                        <Label Text="{Binding GradeLabel}" FontFamily="ArchivoSemiBold" FontSize="10" TextTransform="Uppercase"
+                                                               TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=1}" />
+                                                    </Border>
+                                                    <Border StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0"
+                                                            Stroke="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueBorderConverter}, ConverterParameter=2}"
+                                                            Background="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueFillConverter}, ConverterParameter=2}">
+                                                        <Label Text="{Binding FreqLabel}" FontFamily="ArchivoSemiBold" FontSize="10" TextTransform="Uppercase"
+                                                               TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=2}" />
+                                                    </Border>
+                                                </FlexLayout>
+                                            </VerticalStackLayout>
+                                        </Grid>
+
+                                        <!--  Stroke order  -->
+                                        <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleBorderLight}, Dark={StaticResource RuleBorderDark}}" Padding="0">
+                                            <Grid ColumnDefinitions="52,*">
+                                                <Button Grid.Column="0"
+                                                        Text="▶"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WordDetailViewModel}}, Path=StepStrokeCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        MinimumHeightRequest="56"
+                                                        CornerRadius="0" />
+                                                <Grid Grid.Column="1" WidthRequest="120" HeightRequest="120" Padding="10" HorizontalOptions="Center">
+                                                    <Label Text="{Binding Character}" FontFamily="NotoSerifJPRegular" FontSize="100" TextColor="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.5" />
+                                                    <!--  KanjiVG's viewBox is 109x109; scaled down to roughly fit the 100x100 box.  -->
+                                                    <Grid WidthRequest="109" HeightRequest="109" Scale="0.92" HorizontalOptions="Center" VerticalOptions="Center"
+                                                          BindableLayout.ItemsSource="{Binding VisiblePaths}">
+                                                        <BindableLayout.ItemTemplate>
+                                                            <DataTemplate x:DataType="x:String">
+                                                                <Path Data="{Binding ., Converter={StaticResource SvgPathToGeometryConverter}}" StrokeThickness="3.4" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent"
+                                                                      Stroke="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                                            </DataTemplate>
+                                                        </BindableLayout.ItemTemplate>
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                        <ProgressBar Progress="{Binding ProgressFraction}" ProgressColor="{StaticResource StrokeProgress}"
+                                                     BackgroundColor="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" HeightRequest="4" />
+                                        <Label Text="{Binding StepLabel}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.2" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" HorizontalOptions="Center" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!--  Conjugation tab  -->
+                <VerticalStackLayout IsVisible="{Binding IsConjugationTab}" Spacing="0" Padding="0,0,0,40">
+                    <Label Text="{Binding ConjugationNote}" Padding="16,16,16,8" FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" LineBreakMode="WordWrap" />
+                    <Grid ColumnDefinitions="1.1*,1*,1*" Padding="16,0,16,8">
+                        <Label Grid.Column="0" Text="FORM" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                        <Label Grid.Column="1" Text="PLAIN" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                        <Label Grid.Column="2" Text="POLITE" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                    </Grid>
+                    <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Margin="16,0" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding ConjugationRows}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="search:Deinflector+ConjugationRow">
+                                <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="16,11">
+                                    <Grid ColumnDefinitions="1.1*,1*,1*">
+                                        <Label Grid.Column="0" Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="0.6" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding Plain}" FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" VerticalOptions="Center" />
+                                        <Label Grid.Column="2" Text="{Binding Polite}" FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

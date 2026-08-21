@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="JapaneseDictionary.Views.SearchPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    x:DataType="vm:SearchViewModel"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!--  Header  -->
+        <VerticalStackLayout Grid.Row="0" Padding="16,54,16,0" Spacing="0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
+            <Grid ColumnDefinitions="*,Auto">
+                <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                    <Label Text="辞書" FontFamily="NotoSerifJPBold" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <Label Text="JISHO" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                    <Label Text="OFFLINE · JMDICT" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" VerticalOptions="Center" />
+                    <Button Text="{Binding Source={StaticResource ThemeService}, Path=ThemeIcon}"
+                            Command="{Binding Source={StaticResource ThemeService}, Path=ToggleThemeCommand}"
+                            Style="{StaticResource IconGlyphButtonStyle}"
+                            FontSize="17" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <BoxView HeightRequest="2" Margin="0,12,0,14" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
+
+            <!--  Search bar  -->
+            <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="0">
+                <Grid ColumnDefinitions="40,*,Auto,46" HeightRequest="46">
+                    <Label Grid.Column="0" Text="🔍" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" FontSize="15" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Entry
+                        Grid.Column="1"
+                        Text="{Binding Query}"
+                        Placeholder="{Binding Placeholder}"
+                        FontFamily="ArchivoRegular"
+                        FontSize="17"
+                        BackgroundColor="Transparent"
+                        VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="2"
+                        Text="✕"
+                        IsVisible="{Binding HasQuery}"
+                        Command="{Binding ClearQueryCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}"
+                        FontSize="15"
+                        WidthRequest="40"
+                        Padding="0" />
+                    <Button
+                        Grid.Column="3"
+                        Text="&#x270F;"
+                        Command="{Binding OpenDrawCommand}"
+                        BackgroundColor="{StaticResource DrawButtonFill}"
+                        TextColor="White"
+                        FontSize="17"
+                        Padding="0" />
+                </Grid>
+            </Border>
+
+            <!--  Mode toggle  -->
+            <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Margin="0,10,0,0" Padding="0">
+                <Grid ColumnDefinitions="*,*">
+                    <Button
+                        Grid.Column="0"
+                        Text="日本語 · かな · rōmaji"
+                        Command="{Binding SetJapaneseModeCommand}"
+                        FontFamily="ArchivoExtraBold"
+                        FontSize="11"
+                        CornerRadius="0">
+                        <Button.BackgroundColor>
+                            <MultiBinding Converter="{StaticResource JapaneseModeToBgConverter}">
+                                <Binding Path="IsJapaneseMode" />
+                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                            </MultiBinding>
+                        </Button.BackgroundColor>
+                        <Button.TextColor>
+                            <MultiBinding Converter="{StaticResource JapaneseModeToFgConverter}">
+                                <Binding Path="IsJapaneseMode" />
+                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                            </MultiBinding>
+                        </Button.TextColor>
+                    </Button>
+                    <Button
+                        Grid.Column="1"
+                        Text="English"
+                        Command="{Binding SetEnglishModeCommand}"
+                        FontFamily="ArchivoExtraBold"
+                        FontSize="11"
+                        CornerRadius="0">
+                        <Button.BackgroundColor>
+                            <MultiBinding Converter="{StaticResource EnglishModeToBgConverter}">
+                                <Binding Path="IsJapaneseMode" />
+                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                            </MultiBinding>
+                        </Button.BackgroundColor>
+                        <Button.TextColor>
+                            <MultiBinding Converter="{StaticResource EnglishModeToFgConverter}">
+                                <Binding Path="IsJapaneseMode" />
+                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                            </MultiBinding>
+                        </Button.TextColor>
+                    </Button>
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
+
+        <!--  Content  -->
+        <ScrollView Grid.Row="1" Margin="0,14,0,0">
+            <VerticalStackLayout Spacing="0" Padding="0,0,0,56">
+
+                <!--  Recents  -->
+                <VerticalStackLayout IsVisible="{Binding ShowRecents}" Padding="16,0,16,4" Spacing="0">
+                    <Label Text="RECENT" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" Margin="0,0,0,10" />
+                    <FlexLayout BindableLayout.ItemsSource="{Binding Recents}" Wrap="Wrap" Direction="Row" JustifyContent="Start">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:RecentWordChip">
+                                <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Margin="0,0,6,6" Padding="11,7" FlexLayout.Shrink="0">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=OpenRecentCommand}" CommandParameter="{Binding EntryId}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" LineHeight="0.85" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+
+                    <BoxView HeightRequest="1" Margin="0,18,0,14" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
+                    <Label Text="TRY" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" Margin="0,0,0,8" />
+                    <Label FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" LineBreakMode="WordWrap">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Type " />
+                                <Span Text="taberu" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                <Span Text=" for rōmaji, " />
+                                <Span Text="食べた" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                <Span Text=" to test de-inflection, or draw a kanji you can't type." />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+
+                <!--  Result count header  -->
+                <Grid IsVisible="{Binding HasQuery}" ColumnDefinitions="*,Auto" Padding="16,0,16,8">
+                    <Label Grid.Column="0" Text="{Binding ResultLabel}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                    <Label Grid.Column="1" Text="{Binding ResultCountText}" FontFamily="ArchivoSemiBold" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
+                </Grid>
+
+                <!--  Result rows  -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Results}" Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SearchResultRow">
+                            <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="16,14" BackgroundColor="Transparent">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=OpenResultCommand}" CommandParameter="{Binding EntryId}" />
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                        <Label Text="{Binding Reading}" FontFamily="ArchivoRegular" FontSize="12" CharacterSpacing="0.3" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" LineHeight="0.85" FontSize="27" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                            <Border IsVisible="{Binding IsCommon}" StrokeThickness="0" Padding="5,4" VerticalOptions="Center"
+                                                    Background="{AppThemeBinding Light={StaticResource CommonBadgeFillLight}, Dark={StaticResource CommonBadgeFillDark}}">
+                                                <Label Text="COMMON" FontFamily="ArchivoExtraBold" FontSize="9" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                            </Border>
+                                        </HorizontalStackLayout>
+                                        <FlexLayout BindableLayout.ItemsSource="{Binding Tags}" Wrap="Wrap">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:TagChip">
+                                                    <Border StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0">
+                                                        <Border.Stroke>
+                                                            <MultiBinding Converter="{StaticResource HueBorderConverter}">
+                                                                <Binding Path="HueIndex" />
+                                                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                                                            </MultiBinding>
+                                                        </Border.Stroke>
+                                                        <Border.Background>
+                                                            <MultiBinding Converter="{StaticResource HueFillConverter}">
+                                                                <Binding Path="HueIndex" />
+                                                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                                                            </MultiBinding>
+                                                        </Border.Background>
+                                                        <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="10" CharacterSpacing="0.6" TextTransform="Uppercase">
+                                                            <Label.TextColor>
+                                                                <MultiBinding Converter="{StaticResource HueTextConverter}">
+                                                                    <Binding Path="HueIndex" />
+                                                                    <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                                                                </MultiBinding>
+                                                            </Label.TextColor>
+                                                        </Label>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </FlexLayout>
+                                        <Label Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" LineBreakMode="WordWrap" />
+                                        <Label Text="{Binding ViaNote}" IsVisible="{Binding ViaNote, Converter={StaticResource StringNotEmptyConverter}}" FontFamily="ArchivoSemiBold" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="›" FontFamily="ArchivoBold" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" VerticalOptions="Start" Margin="0,18,0,0" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!--  Empty state  -->
+                <VerticalStackLayout IsVisible="{Binding IsEmpty}" Padding="16,24" Spacing="12">
+                    <Label Text="No matches" FontFamily="ArchivoExtraBold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <Label FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" LineBreakMode="WordWrap">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Nothing in JMdict for &#8220;" />
+                                <Span Text="{Binding Query}" />
+                                <Span Text="&#8221;. If you copied it from a page, try drawing it instead." />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Button
+                        Text="✎  Draw the kanji"
+                        Command="{Binding OpenDrawCommand}"
+                        BackgroundColor="{StaticResource DrawButtonFill}"
+                        TextColor="White"
+                        FontFamily="ArchivoExtraBold"
+                        FontSize="13"
+                        HorizontalOptions="Start"
+                        CornerRadius="0" />
+                </VerticalStackLayout>
+
+                <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Margin="0,20,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
