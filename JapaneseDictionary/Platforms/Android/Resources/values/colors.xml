@@ -3,4 +3,15 @@
     <color name="colorPrimary">#512BD4</color>
     <color name="colorPrimaryDark">#2B0B98</color>
     <color name="colorAccent">#2B0B98</color>
+
+    <!-- Look Up popup (ProcessTextLookupActivity) — mirrors the light-mode
+         tokens in Resources/Styles/Colors.xaml. This is a plain Android view,
+         outside MAUI's resource system, so the tokens are duplicated here
+         rather than shared; see docs/process-text-lookup-plan.md §7 (view
+         technology). Dark values live in values-night/colors.xml. -->
+    <color name="lookupSurface">#ffffff</color>
+    <color name="lookupInkPrimary">#201e1d</color>
+    <color name="lookupGlossBody">#444141</color>
+    <color name="lookupReadingAccent">#6b3aa8</color>
+    <color name="lookupBorder">#4d201e1d</color>
 </resources>

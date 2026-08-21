@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ProcessTextLookupActivity's theme: a floating, outside-touch-dismissable
+         window with a transparent system background so only our own rounded
+         card (lookup_popup_background.xml) is visible, instead of double
+         nesting our card inside AppCompat's default dialog chrome. -->
+    <style name="LookupDialogTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+</resources>

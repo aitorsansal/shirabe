@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark-mode counterparts of values/colors.xml's lookup* tokens, mirroring
+         Resources/Styles/Colors.xaml's *Dark values. Follows the system's
+         day/night setting (not the in-app ThemeService toggle, which this
+         plain-Android popup doesn't have access to) — see
+         docs/process-text-lookup-plan.md §7, open question #3. -->
+    <color name="lookupSurface">#232527</color>
+    <color name="lookupInkPrimary">#f0eeec</color>
+    <color name="lookupGlossBody">#d8d5d3</color>
+    <color name="lookupReadingAccent">#c9a8f0</color>
+    <color name="lookupBorder">#40ffffff</color>
+</resources>
