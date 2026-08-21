@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-0c2b6f76-7fe6-478e-bfc9-4be3e2825c27/styles.css">
+<script src="_ds/modernist-0c2b6f76-7fe6-478e-bfc9-4be3e2825c27/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#e4e2e0;font-family:"Archivo",system-ui,sans-serif}
+a{color:#ec3013}a:hover{color:#dd2b0f}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.jd-scroll::-webkit-scrollbar{width:0}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:28px;padding:48px 24px 64px;box-sizing:border-box">
+
+<div style="width:402px;display:flex;flex-direction:column;gap:6px">
+<div style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ec3013">Interactive prototype</div>
+<div style="font:800 26px/1.1 'Archivo',sans-serif;letter-spacing:-.02em;color:#201e1d">Japanese Dictionary — phone</div>
+<div style="font:400 13px/1.5 'Archivo',sans-serif;color:#605d5d">Search by kanji, kana, rōmaji or English · draw sheet for handwriting lookup · full word page. Data shapes follow <span style="font-weight:600">DictionaryEntry</span>, <span style="font-weight:600">KanjiInfo</span> and <span style="font-weight:600">ExampleSentence</span> in Core.</div>
+<div style="height:2px;background:rgba(32,30,29,.4);margin-top:8px"></div>
+</div>
+
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" width="{{ 402 }}" height="{{ 874 }}" hint-size="402px,874px">
+<div style="position:relative;height:100%;background:#f3f2f2;overflow:hidden;font-family:'Archivo',system-ui,sans-serif;color:#201e1d">
+
+<sc-if value="{{ isSearch }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+  <div style="padding:62px 16px 0;background:#f3f2f2">
+    <div style="display:flex;align-items:baseline;justify-content:space-between">
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font:700 22px/1 'Noto Serif JP',serif">辞書</span>
+        <span style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#605d5d">Jisho</span>
+      </div>
+      <span style="font:600 11px/1 'Archivo',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#9b9797">Offline · JMdict</span>
+    </div>
+    <div style="height:2px;background:rgba(32,30,29,.4);margin:12px 0 14px"></div>
+    <div style="display:flex;align-items:stretch;border:1px solid rgba(32,30,29,.4);background:#fff">
+      <div style="display:flex;align-items:center;padding-left:12px;color:#605d5d">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4.5-4.5"></path></svg>
+      </div>
+      <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="{{ placeholder }}" style="flex:1;min-width:0;border:0;outline:none;background:transparent;font:400 17px/1 'Archivo',sans-serif;color:#201e1d;padding:14px 8px 14px 10px" />
+      <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ clearQuery }}" style="width:40px;border:0;background:transparent;color:#605d5d;cursor:pointer;display:flex;align-items:center;justify-content:center">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 5l14 14M19 5L5 19"></path></svg>
+      </button>
+      </sc-if>
+      <button onClick="{{ openDraw }}" title="Draw a kanji" style="width:46px;border:0;border-left:1px solid rgba(32,30,29,.4);background:#201e1d;color:#f3f2f2;cursor:pointer;display:flex;align-items:center;justify-content:center">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M15.5 3.5l5 5L8 21H3v-5L15.5 3.5z"></path><path d="M13 6l5 5"></path></svg>
+      </button>
+    </div>
+    <div style="display:flex;margin-top:10px;border:1px solid rgba(32,30,29,.4)">
+      <button onClick="{{ setJp }}" style="{{ jpTabStyle }}">日本語 · かな · rōmaji</button>
+      <button onClick="{{ setEn }}" style="{{ enTabStyle }}">English</button>
+    </div>
+  </div>
+
+  <div class="jd-scroll" style="flex:1;overflow-y:auto;margin-top:14px">
+    <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 16px 8px">
+      <span style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#605d5d">{{ resultLabel }}</span>
+      <span style="font:600 11px/1 'Archivo',sans-serif;color:#9b9797">{{ resultCount }}</span>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ showRecents }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:0 16px 4px">
+      <div style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#605d5d;padding-bottom:10px">Recent</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <sc-for list="{{ recents }}" as="r" hint-placeholder-count="5">
+        <button onClick="{{ r.pick }}" style="border:1px solid rgba(32,30,29,.4);background:transparent;padding:7px 11px;font:600 15px/1 'Noto Serif JP',serif;color:#201e1d;cursor:pointer">{{ r.word }}</button>
+        </sc-for>
+      </div>
+      <div style="height:1px;background:rgba(32,30,29,.18);margin:18px 0 14px"></div>
+      <div style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#605d5d;padding-bottom:8px">Try</div>
+      <div style="font:400 13px/1.6 'Archivo',sans-serif;color:#605d5d">Type <span style="font-weight:600;color:#201e1d">taberu</span> for rōmaji, <span style="font-weight:600;color:#201e1d">食べた</span> to test de-inflection, or draw a kanji you can’t type.</div>
+    </div>
+    </sc-if>
+
+    <sc-for list="{{ results }}" as="row" hint-placeholder-count="4">
+    <button onClick="{{ row.open }}" style="display:flex;width:100%;box-sizing:border-box;gap:12px;align-items:flex-start;text-align:left;padding:14px 16px;background:transparent;border:0;border-bottom:1px solid rgba(32,30,29,.18);cursor:pointer" style-hover="background:#eae9e9">
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+        <div style="font:400 12px/1 'Archivo',sans-serif;letter-spacing:.04em;color:#ae1800">{{ row.reading }}</div>
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <span style="font:600 27px/1.05 'Noto Serif JP',serif;letter-spacing:.01em">{{ row.word }}</span>
+          <sc-if value="{{ row.isCommon }}" hint-placeholder-val="{{ true }}">
+          <span style="font:800 9px/1 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#f3f2f2;background:#ec3013;padding:4px 5px">common</span>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <sc-for list="{{ row.tags }}" as="t" hint-placeholder-count="2">
+          <span style="font:600 10px/1 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#605d5d;border:1px solid rgba(32,30,29,.3);padding:3px 5px">{{ t.label }}</span>
+          </sc-for>
+        </div>
+        <div style="font:400 14px/1.45 'Archivo',sans-serif;color:#444141;text-wrap:pretty">{{ row.gloss }}</div>
+        <sc-if value="{{ row.viaNote }}" hint-placeholder-val="{{ false }}">
+        <div style="font:600 11px/1.3 'Archivo',sans-serif;color:#ae1800">{{ row.viaNote }}</div>
+        </sc-if>
+      </div>
+      <div style="padding-top:22px;color:#9b9797">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 5l7 7-7 7"></path></svg>
+      </div>
+    </button>
+    </sc-for>
+
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+      <div style="font:800 19px/1.2 'Archivo',sans-serif">No matches</div>
+      <div style="font:400 14px/1.5 'Archivo',sans-serif;color:#605d5d">Nothing in JMdict for “{{ query }}”. If you copied it from a page, try drawing it instead.</div>
+      <button onClick="{{ openDraw }}" style="background:#ec3013;color:#f3f2f2;border:0;padding:12px 14px;font:800 13px/1 'Archivo',sans-serif;letter-spacing:.02em;cursor:pointer;text-align:left;min-height:44px;display:flex;align-items:center;gap:8px" style-hover="background:#dd2b0f">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.5 3.5l5 5L8 21H3v-5L15.5 3.5z"></path></svg>Draw the kanji
+      </button>
+    </div>
+    </sc-if>
+    <div style="height:56px"></div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;animation:fadeIn .18s ease">
+  <div style="padding:58px 16px 0;background:#f3f2f2">
+    <button onClick="{{ back }}" style="display:flex;align-items:center;gap:6px;background:transparent;border:0;padding:6px 0;font:800 11px/1 'Archivo',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#605d5d;cursor:pointer;min-height:36px" style-hover="color:#ec3013">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 5l-7 7 7 7"></path></svg>Results
+    </button>
+    <div style="height:2px;background:rgba(32,30,29,.4);margin:6px 0 0"></div>
+  </div>
+  <div class="jd-scroll" style="flex:1;overflow-y:auto">
+    <div style="padding:18px 16px 14px;display:flex;flex-direction:column;gap:10px">
+      <div style="font:400 14px/1 'Archivo',sans-serif;letter-spacing:.06em;color:#ae1800">{{ entryReading }}</div>
+      <div style="font:600 46px/1 'Noto Serif JP',serif;letter-spacing:.01em">{{ entryWord }}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;padding-top:2px">
+        <sc-for list="{{ entryBadges }}" as="b" hint-placeholder-count="3">
+        <span style="font:800 10px/1 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#605d5d;border:1px solid rgba(32,30,29,.3);padding:5px 6px">{{ b.label }}</span>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;border-top:2px solid rgba(32,30,29,.4);border-bottom:1px solid rgba(32,30,29,.18);position:sticky;top:0;background:#f3f2f2;z-index:5">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+      <button onClick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</button>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ tabMeaning }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:4px 0 0">
+      <sc-for list="{{ senseGroups }}" as="g" hint-placeholder-count="2">
+      <div style="padding:16px;border-bottom:1px solid rgba(32,30,29,.18)">
+        <div style="font:800 11px/1.3 'Archivo',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#ae1800;padding-bottom:10px">{{ g.pos }}</div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ g.items }}" as="s" hint-placeholder-count="2">
+          <div style="display:flex;gap:10px;align-items:baseline">
+            <span style="font:800 12px/1.5 'Archivo',sans-serif;color:#9b9797;min-width:14px">{{ s.n }}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font:400 16px/1.45 'Archivo',sans-serif;text-wrap:pretty">{{ s.gloss }}</div>
+              <sc-if value="{{ s.note }}" hint-placeholder-val="{{ false }}">
+              <div style="font:600 11px/1.4 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#7d7979;padding-top:4px">{{ s.note }}</div>
+              </sc-if>
+            </div>
+          </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-for>
+      <sc-if value="{{ hasForms }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:16px;border-bottom:1px solid rgba(32,30,29,.18)">
+        <div style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#605d5d;padding-bottom:10px">Other forms</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ entryForms }}" as="f" hint-placeholder-count="2">
+          <div style="border:1px solid rgba(32,30,29,.3);padding:8px 10px;display:flex;flex-direction:column;gap:3px">
+            <span style="font:600 18px/1 'Noto Serif JP',serif">{{ f.word }}</span>
+            <span style="font:400 11px/1 'Archivo',sans-serif;color:#7d7979">{{ f.note }}</span>
+          </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+      <div style="padding:16px 16px 40px">
+        <div style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#605d5d;padding-bottom:6px">Related & compounds</div>
+        <sc-for list="{{ compounds }}" as="c" hint-placeholder-count="3">
+        <button onClick="{{ c.open }}" style="display:flex;width:100%;box-sizing:border-box;align-items:baseline;gap:10px;text-align:left;background:transparent;border:0;border-bottom:1px solid rgba(32,30,29,.18);padding:12px 0;cursor:pointer;min-height:44px" style-hover="background:#eae9e9">
+          <span style="font:600 20px/1 'Noto Serif JP',serif">{{ c.word }}</span>
+          <span style="font:400 11px/1 'Archivo',sans-serif;color:#ae1800">{{ c.reading }}</span>
+          <span style="flex:1;font:400 13px/1.35 'Archivo',sans-serif;color:#444141;text-align:right">{{ c.gloss }}</span>
+        </button>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ tabSentences }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <sc-for list="{{ examples }}" as="e" hint-placeholder-count="3">
+      <div style="padding:16px;border-bottom:1px solid rgba(32,30,29,.18);display:flex;flex-direction:column;gap:8px">
+        <div style="font:400 19px/1.6 'Noto Serif JP',serif">{{ e.pre }}<span style="color:#ec3013;border-bottom:2px solid #ec3013">{{ e.hit }}</span>{{ e.post }}</div>
+        <div style="font:400 14px/1.45 'Archivo',sans-serif;color:#444141;text-wrap:pretty">{{ e.en }}</div>
+        <div style="font:600 10px/1 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#9b9797">Tatoeba #{{ e.id }}</div>
+      </div>
+      </sc-for>
+      <div style="padding:16px 16px 40px;font:400 13px/1.5 'Archivo',sans-serif;color:#7d7979">Sentences come from the linked Tatoeba indices — only pairs tagged to this entry are shown.</div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ tabKanji }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <sc-for list="{{ kanjiCards }}" as="k" hint-placeholder-count="2">
+      <div style="border-bottom:1px solid rgba(32,30,29,.18);padding:16px">
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="width:88px;height:88px;flex:none;border:1px solid rgba(32,30,29,.4);background:#fff;display:flex;align-items:center;justify-content:center;font:600 58px/1 'Noto Serif JP',serif">{{ k.char }}</div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px">
+            <div style="font:600 15px/1.35 'Archivo',sans-serif">{{ k.meanings }}</div>
+            <div style="display:flex;gap:8px;align-items:baseline">
+              <span style="font:800 10px/1 'Archivo',sans-serif;letter-spacing:.1em;color:#ae1800;min-width:26px">ON</span>
+              <span style="font:400 14px/1.35 'Noto Serif JP',serif">{{ k.on }}</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:baseline">
+              <span style="font:800 10px/1 'Archivo',sans-serif;letter-spacing:.1em;color:#ae1800;min-width:26px">KUN</span>
+              <span style="font:400 14px/1.35 'Noto Serif JP',serif">{{ k.kun }}</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;padding-top:2px">
+              <span style="font:600 10px/1 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#605d5d;border:1px solid rgba(32,30,29,.3);padding:3px 5px">{{ k.strokeLabel }}</span>
+              <span style="font:600 10px/1 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#605d5d;border:1px solid rgba(32,30,29,.3);padding:3px 5px">{{ k.gradeLabel }}</span>
+              <span style="font:600 10px/1 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#605d5d;border:1px solid rgba(32,30,29,.3);padding:3px 5px">{{ k.freqLabel }}</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px;border:1px solid rgba(32,30,29,.3);display:flex;align-items:stretch">
+          <button onClick="{{ k.step }}" style="width:52px;flex:none;border:0;border-right:1px solid rgba(32,30,29,.3);background:#201e1d;color:#f3f2f2;cursor:pointer;display:flex;align-items:center;justify-content:center;min-height:56px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"></path></svg>
+          </button>
+          <div style="flex:1;min-width:0;padding:10px 12px;background:repeating-linear-gradient(135deg,#eae9e9 0 6px,#f3f2f2 6px 12px);display:flex;flex-direction:column;gap:6px;justify-content:center">
+            <div style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#605d5d">Stroke order · {{ k.stepLabel }}</div>
+            <div style="height:4px;background:rgba(32,30,29,.18)"><div style="{{ k.barStyle }}"></div></div>
+            <div style="font:400 11px/1.35 'Archivo',sans-serif;color:#7d7979">Renders from the KanjiVG paths in <span style="font-weight:600">kanji_strokes</span> — placeholder here.</div>
+          </div>
+        </div>
+      </div>
+      </sc-for>
+      <div style="height:40px"></div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ tabConj }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="padding:16px 16px 8px;font:400 13px/1.5 'Archivo',sans-serif;color:#605d5d">{{ conjNote }}</div>
+      <div style="display:flex;padding:0 16px 8px;border-bottom:2px solid rgba(32,30,29,.4);margin:0 0 0">
+        <span style="flex:1.1;font:800 10px/1 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#605d5d">Form</span>
+        <span style="flex:1;font:800 10px/1 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#605d5d">Plain</span>
+        <span style="flex:1;font:800 10px/1 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#605d5d">Polite</span>
+      </div>
+      <sc-for list="{{ conjRows }}" as="c" hint-placeholder-count="6">
+      <div style="display:flex;align-items:baseline;padding:11px 16px;border-bottom:1px solid rgba(32,30,29,.18)">
+        <span style="flex:1.1;font:600 11px/1.3 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#605d5d">{{ c.label }}</span>
+        <span style="flex:1;font:400 17px/1.3 'Noto Serif JP',serif">{{ c.plain }}</span>
+        <span style="flex:1;font:400 17px/1.3 'Noto Serif JP',serif;color:#444141">{{ c.polite }}</span>
+      </div>
+      </sc-for>
+      <div style="height:40px"></div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ drawOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:40;background:rgba(32,30,29,.45);animation:fadeIn .16s ease;display:flex;flex-direction:column;justify-content:flex-end">
+  <div onClick="{{ closeDraw }}" style="flex:1"></div>
+  <div style="background:#f3f2f2;border-top:2px solid #201e1d;animation:sheetUp .22s cubic-bezier(.2,.8,.2,1);padding:0 0 34px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px">
+      <div style="display:flex;flex-direction:column;gap:3px">
+        <span style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ec3013">Handwriting</span>
+        <span style="font:800 17px/1 'Archivo',sans-serif">Draw the character</span>
+      </div>
+      <button onClick="{{ closeDraw }}" style="border:1px solid rgba(32,30,29,.4);background:transparent;padding:9px 12px;font:800 12px/1 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;min-height:44px" style-hover="background:#eae9e9">Done</button>
+    </div>
+    <div style="padding:0 16px">
+      <div style="position:relative;border:1px solid rgba(32,30,29,.4);background:#fff;touch-action:none">
+        <svg viewBox="0 0 300 300" onPointerDown="{{ onDown }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" onPointerLeave="{{ onUp }}" style="display:block;width:100%;height:230px;cursor:crosshair">
+          <line x1="150" y1="0" x2="150" y2="300" stroke="#d7d3d3" stroke-width="1" stroke-dasharray="6 6"></line>
+          <line x1="0" y1="150" x2="300" y2="150" stroke="#d7d3d3" stroke-width="1" stroke-dasharray="6 6"></line>
+          <sc-for list="{{ strokePaths }}" as="p" hint-placeholder-count="0">
+          <path d="{{ p.d }}" fill="none" stroke="#201e1d" stroke-width="{{ penWidth }}" stroke-linecap="round" stroke-linejoin="round"></path>
+          </sc-for>
+        </svg>
+        <sc-if value="{{ canvasEmpty }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font:400 13px/1 'Archivo',sans-serif;color:#bab6b6">Draw here — stroke by stroke</div>
+        </sc-if>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button onClick="{{ undo }}" style="flex:1;border:1px solid rgba(32,30,29,.4);background:transparent;padding:12px;font:800 12px/1 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:7px;min-height:44px" style-hover="background:#eae9e9">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"></path><path d="M4 9h10a6 6 0 010 12H8"></path></svg>Undo
+        </button>
+        <button onClick="{{ clearDraw }}" style="flex:1;border:1px solid rgba(32,30,29,.4);background:transparent;padding:12px;font:800 12px/1 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:7px;min-height:44px" style-hover="background:#eae9e9">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5l14 14M19 5L5 19"></path></svg>Clear
+        </button>
+        <div style="flex:1;border:1px solid rgba(32,30,29,.4);display:flex;flex-direction:column;justify-content:center;padding:0 12px">
+          <span style="font:800 9px/1 'Archivo',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#605d5d">Strokes</span>
+          <span style="font:800 15px/1.2 'Archivo',sans-serif">{{ strokeCount }}</span>
+        </div>
+      </div>
+    </div>
+    <div style="height:2px;background:rgba(32,30,29,.4);margin:14px 0 0"></div>
+    <div style="padding:12px 16px 0">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px">
+        <span style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#605d5d">Closest matches</span>
+        <span style="font:600 11px/1 'Archivo',sans-serif;color:#9b9797">{{ candidateNote }}</span>
+      </div>
+      <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:14px">
+        <sc-for list="{{ candidates }}" as="c" hint-placeholder-count="6">
+        <button onClick="{{ c.pick }}" style="flex:none;width:64px;border:1px solid rgba(32,30,29,.4);background:#fff;padding:8px 0 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px" style-hover="border-color:#ec3013">
+          <span style="font:600 30px/1 'Noto Serif JP',serif">{{ c.char }}</span>
+          <span style="font:600 9px/1 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#7d7979">{{ c.strokes }} str</span>
+        </button>
+        </sc-for>
+      </div>
+      <div style="font:400 12px/1.45 'Archivo',sans-serif;color:#7d7979;padding-bottom:4px">Ranked by stroke count and drawing extent — the shipped matcher compares your strokes against KanjiVG paths.</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-import>
+
+<div style="width:402px;display:flex;flex-direction:column;gap:8px;padding-top:4px">
+<div style="height:2px;background:rgba(32,30,29,.4)"></div>
+<div style="font:800 11px/1 'Archivo',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#605d5d">Next steps</div>
+<div style="font:400 13px/1.6 'Archivo',sans-serif;color:#605d5d">Real stroke-order playback needs the KanjiVG paths wired from <span style="font-weight:600">GetKanjiStrokes</span>; the handwriting matcher needs a stroke-similarity scorer in Core. Say the word and I’ll add a study-list screen or a dark variant.</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;penWidth&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:9,&quot;min&quot;:4,&quot;max&quot;:16,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Handwriting&quot;}}">
+const KANJI = {
+  '食':{on:['ショク','ジキ'],kun:['く.う','た.べる'],meanings:['eat','food'],strokes:9,grade:2,freq:328},
+  '高':{on:['コウ'],kun:['たか.い','たか'],meanings:['tall','high','expensive'],strokes:10,grade:2,freq:65},
+  '本':{on:['ホン'],kun:['もと'],meanings:['book','origin','main'],strokes:5,grade:1,freq:10},
+  '日':{on:['ニチ','ジツ'],kun:['ひ','-び','-か'],meanings:['day','sun','Japan'],strokes:4,grade:1,freq:1},
+  '語':{on:['ゴ'],kun:['かた.る','かた.らう'],meanings:['language','word','speech'],strokes:14,grade:2,freq:301},
+  '話':{on:['ワ'],kun:['はな.す','はなし'],meanings:['tale','talk','speak'],strokes:13,grade:2,freq:203},
+  '見':{on:['ケン'],kun:['み.る','み.える'],meanings:['see','look','opinion'],strokes:7,grade:1,freq:22},
+  '待':{on:['タイ'],kun:['ま.つ'],meanings:['wait','depend on'],strokes:9,grade:3,freq:397},
+  '学':{on:['ガク'],kun:['まな.ぶ'],meanings:['study','learning','science'],strokes:8,grade:1,freq:63},
+  '校':{on:['コウ'],kun:[],meanings:['school','printing','proof'],strokes:10,grade:1,freq:150},
+  '事':{on:['ジ','ズ'],kun:['こと','つか.う'],meanings:['matter','thing','affair'],strokes:8,grade:3,freq:8},
+  '物':{on:['ブツ','モツ'],kun:['もの'],meanings:['thing','object','matter'],strokes:8,grade:3,freq:39},
+};
+
+const ENTRIES = [
+  { id: 1358280, word:'食べる', reading:'たべる', romaji:'taberu', common:true, jlpt:'N5', cls:'ichidan',
+    senses:[{pos:'Ichidan verb · transitive', glosses:['to eat']},
+            {pos:'Ichidan verb · transitive', glosses:['to live on (e.g. a salary)','to live off','to subsist on'], note:'usu. as 食べていく'}],
+    tags:['ichidan verb','transitive'],
+    forms:[{word:'喰べる', note:'rare kanji'},{word:'たべる', note:'kana only'}],
+    kanji:['食'],
+    examples:[
+      {id:76281, jp:'毎朝りんごを食べます。', hit:'食べ', en:'I eat an apple every morning.'},
+      {id:129211, jp:'何か食べるものはありますか。', hit:'食べる', en:'Is there anything to eat?'},
+      {id:203377, jp:'彼は昼ご飯を食べずに出かけた。', hit:'食べ', en:'He went out without eating lunch.'}],
+    compounds:[{word:'食べ物', reading:'たべもの', gloss:'food', to:6},{word:'食事', reading:'しょくじ', gloss:'meal', to:7},{word:'食べ放題', reading:'たべほうだい', gloss:'all-you-can-eat'}] },
+
+  { id: 1283060, word:'高い', reading:'たかい', romaji:'takai', common:true, jlpt:'N5', cls:'iadj',
+    senses:[{pos:'i-adjective', glosses:['high','tall']},
+            {pos:'i-adjective', glosses:['expensive','costly','dear']},
+            {pos:'i-adjective', glosses:['loud'], note:'of a voice'}],
+    tags:['i-adjective'],
+    forms:[{word:'高価い', note:'irregular'}],
+    kanji:['高'],
+    examples:[
+      {id:81236, jp:'この本は高いです。', hit:'高い', en:'This book is expensive.'},
+      {id:98120, jp:'富士山は日本で一番高い山だ。', hit:'高い', en:'Mt. Fuji is the highest mountain in Japan.'},
+      {id:117433, jp:'彼女は声が高い。', hit:'高い', en:'She has a high-pitched voice.'}],
+    compounds:[{word:'高校', reading:'こうこう', gloss:'senior high school'},{word:'背が高い', reading:'せがたかい', gloss:'tall (of a person)'}] },
+
+  { id: 1522150, word:'本', reading:'ほん', romaji:'hon', common:true, jlpt:'N5', cls:'noun',
+    senses:[{pos:'Noun', glosses:['book','volume','script']},
+            {pos:'Noun · prefix', glosses:['this','present'], note:'本日 = today'},
+            {pos:'Counter', glosses:['counter for long cylindrical things'], note:'pens, bottles, trains'}],
+    tags:['noun','counter'],
+    forms:[],
+    kanji:['本'],
+    examples:[
+      {id:74521, jp:'その本を読みましたか。', hit:'本', en:'Have you read that book?'},
+      {id:151204, jp:'ビールを二本ください。', hit:'本', en:'Two beers, please.'}],
+    compounds:[{word:'日本語', reading:'にほんご', gloss:'Japanese language', to:4},{word:'本屋', reading:'ほんや', gloss:'bookshop'}] },
+
+  { id: 1464530, word:'日本語', reading:'にほんご', romaji:'nihongo', common:true, jlpt:'N5', cls:'noun',
+    senses:[{pos:'Noun', glosses:['Japanese (language)']}],
+    tags:['noun'],
+    forms:[{word:'にっぽんご', note:'alt. reading'}],
+    kanji:['日','本','語'],
+    examples:[
+      {id:82113, jp:'日本語を三年間勉強しています。', hit:'日本語', en:'I have been studying Japanese for three years.'},
+      {id:104822, jp:'日本語で話しましょう。', hit:'日本語', en:'Let\u2019s talk in Japanese.'}],
+    compounds:[{word:'国語', reading:'こくご', gloss:'national language'},{word:'外国語', reading:'がいこくご', gloss:'foreign language'}] },
+
+  { id: 1395700, word:'話す', reading:'はなす', romaji:'hanasu', common:true, jlpt:'N5', cls:'godan',
+    senses:[{pos:'Godan verb · transitive', glosses:['to talk','to speak','to converse','to chat']},
+            {pos:'Godan verb · transitive', glosses:['to tell','to explain','to narrate']}],
+    tags:['godan verb','transitive'],
+    forms:[{word:'咄す', note:'rare'}],
+    kanji:['話'],
+    examples:[
+      {id:90112, jp:'彼は英語を上手に話す。', hit:'話す', en:'He speaks English well.'},
+      {id:113409, jp:'先生と話したいです。', hit:'話し', en:'I want to talk with the teacher.'}],
+    compounds:[{word:'会話', reading:'かいわ', gloss:'conversation'},{word:'電話', reading:'でんわ', gloss:'telephone'}] },
+
+  { id: 1259290, word:'見る', reading:'みる', romaji:'miru', common:true, jlpt:'N5', cls:'ichidan',
+    senses:[{pos:'Ichidan verb · transitive', glosses:['to see','to look','to watch','to view']},
+            {pos:'Ichidan verb · transitive', glosses:['to look after','to keep an eye on']}],
+    tags:['ichidan verb','transitive'],
+    forms:[{word:'観る', note:'watch (a show)'},{word:'視る', note:'inspect'}],
+    kanji:['見'],
+    examples:[
+      {id:70021, jp:'テレビを見ますか。', hit:'見', en:'Do you watch television?'},
+      {id:145112, jp:'子どもたちを見ていてください。', hit:'見', en:'Please keep an eye on the children.'}],
+    compounds:[{word:'見物', reading:'けんぶつ', gloss:'sightseeing'},{word:'意見', reading:'いけん', gloss:'opinion'}] },
+
+  { id: 1580640, word:'食べ物', reading:'たべもの', romaji:'tabemono', common:true, jlpt:'N5', cls:'noun',
+    senses:[{pos:'Noun', glosses:['food','foodstuff']}],
+    tags:['noun'],
+    forms:[{word:'たべ物', note:'mixed'}],
+    kanji:['食','物'],
+    examples:[{id:88422, jp:'好きな食べ物は何ですか。', hit:'食べ物', en:'What is your favourite food?'}],
+    compounds:[{word:'食べる', reading:'たべる', gloss:'to eat', to:1},{word:'飲み物', reading:'のみもの', gloss:'drink'}] },
+
+  { id: 1358560, word:'食事', reading:'しょくじ', romaji:'shokuji', common:true, jlpt:'N5', cls:'suru',
+    senses:[{pos:'Noun', glosses:['meal','dinner']},
+            {pos:'Suru verb · intransitive', glosses:['to eat','to have a meal']}],
+    tags:['noun','suru verb'],
+    forms:[],
+    kanji:['食','事'],
+    examples:[{id:99013, jp:'食事の前に手を洗いなさい。', hit:'食事', en:'Wash your hands before the meal.'}],
+    compounds:[{word:'食べる', reading:'たべる', gloss:'to eat', to:1},{word:'朝食', reading:'ちょうしょく', gloss:'breakfast'}] },
+
+  { id: 1332320, word:'待つ', reading:'まつ', romaji:'matsu', common:true, jlpt:'N5', cls:'godan',
+    senses:[{pos:'Godan verb · transitive', glosses:['to wait','to await','to look forward to']}],
+    tags:['godan verb','transitive'],
+    forms:[{word:'俟つ', note:'rare'}],
+    kanji:['待'],
+    examples:[{id:78440, jp:'ここで待っていてください。', hit:'待っ', en:'Please wait here.'}],
+    compounds:[{word:'期待', reading:'きたい', gloss:'expectation'},{word:'待合室', reading:'まちあいしつ', gloss:'waiting room'}] },
+
+  { id: 1207610, word:'学校', reading:'がっこう', romaji:'gakkou', common:true, jlpt:'N5', cls:'noun',
+    senses:[{pos:'Noun', glosses:['school']}],
+    tags:['noun'],
+    forms:[],
+    kanji:['学','校'],
+    examples:[{id:71212, jp:'学校まで歩いて行きます。', hit:'学校', en:'I walk to school.'}],
+    compounds:[{word:'小学校', reading:'しょうがっこう', gloss:'elementary school'},{word:'高校', reading:'こうこう', gloss:'high school'}] },
+];
+
+const DRAW_POOL = ['一','二','人','大','山','川','子','日','月','木','火','水','本','四','右','名','先','字','見','言','学','金','雨','音','食','前','待','高','校','家','時','話','新','語','読','聞','親'];
+
+const ROMAJI = [['shi','し'],['chi','ち'],['tsu','つ'],['sha','しゃ'],['shu','しゅ'],['sho','しょ'],['ka','か'],['ki','き'],['ku','く'],['ke','け'],['ko','こ'],['sa','さ'],['su','す'],['se','せ'],['so','そ'],['ta','た'],['te','て'],['to','と'],['na','な'],['ni','に'],['nu','ぬ'],['ne','ね'],['no','の'],['ha','は'],['hi','ひ'],['fu','ふ'],['he','へ'],['ho','ほ'],['ma','ま'],['mi','み'],['mu','む'],['me','め'],['mo','も'],['ya','や'],['yu','ゆ'],['yo','よ'],['ra','ら'],['ri','り'],['ru','る'],['re','れ'],['ro','ろ'],['wa','わ'],['ga','が'],['gi','ぎ'],['gu','ぐ'],['ge','げ'],['go','ご'],['za','ざ'],['ji','じ'],['zu','ず'],['ze','ぜ'],['zo','ぞ'],['da','だ'],['de','で'],['do','ど'],['ba','ば'],['bi','び'],['bu','ぶ'],['be','べ'],['bo','ぼ'],['pa','ぱ'],['a','あ'],['i','い'],['u','う'],['e','え'],['o','お'],['n','ん']];
+
+const DEINFLECT = [['べた','べる'],['べて','べる'],['べます','べる'],['べない','べる'],['した','す'],['して','す'],['します','す'],['った','つ'],['って','つ'],['かった','い'],['くない','い'],['ました','る'],['ます','る'],['ない','る'],['て','る'],['た','る']];
+
+class Component extends DCLogic {
+  state = { screen:'search', query:'', mode:'jp', drawOpen:false, strokes:[], drawing:false,
+            entryId:null, tab:'meaning', steps:{}, recents:[1358280,1283060,1464530,1332320,1207610] };
+
+  toRomajiKana(q) {
+    let out = '', i = 0;
+    while (i < q.length) {
+      const hit = ROMAJI.find(([r]) => q.startsWith(r, i));
+      if (!hit) return null;
+      out += hit[1]; i += hit[0].length;
+    }
+    return out;
+  }
+
+  matches(q) {
+    const raw = q.trim();
+    if (!raw) return [];
+    const low = raw.toLowerCase();
+    const kana = /^[a-z]+$/.test(low) ? this.toRomajiKana(low) : null;
+    const out = [];
+    const push = (e, note) => { if (!out.some(o => o.e.id === e.id)) out.push({ e, note }); };
+    for (const e of ENTRIES) {
+      if (e.word.includes(raw) || e.reading.includes(raw)) push(e, null);
+      else if (e.romaji.startsWith(low)) push(e, null);
+      else if (kana && e.reading.startsWith(kana)) push(e, null);
+      else if (e.senses.some(s => s.glosses.some(g => g.toLowerCase().includes(low)))) push(e, null);
+    }
+    if (!out.length) {
+      for (const [suf, base] of DEINFLECT) {
+        if (!raw.endsWith(suf)) continue;
+        const stem = raw.slice(0, raw.length - suf.length) + base;
+        const e = ENTRIES.find(x => x.word === stem);
+        if (e) { push(e, 'de-inflected from ' + raw); break; }
+      }
+    }
+    return out;
+  }
+
+  conj(e) {
+    const w = e.word, s = w.slice(0, -1), last = w.slice(-1);
+    if (e.cls === 'ichidan') return [
+      { label:'Non-past', plain:w, polite:s+'ます' },
+      { label:'Past', plain:s+'た', polite:s+'ました' },
+      { label:'Negative', plain:s+'ない', polite:s+'ません' },
+      { label:'Past neg.', plain:s+'なかった', polite:s+'ませんでした' },
+      { label:'Te-form', plain:s+'て', polite:'—' },
+      { label:'Potential', plain:s+'られる', polite:s+'られます' },
+      { label:'Passive', plain:s+'られる', polite:s+'られます' },
+      { label:'Causative', plain:s+'させる', polite:s+'させます' },
+      { label:'Volitional', plain:s+'よう', polite:s+'ましょう' },
+      { label:'Conditional', plain:s+'れば', polite:'—' },
+      { label:'Imperative', plain:s+'ろ', polite:'—' } ];
+    if (e.cls === 'godan') {
+      const M = { 'す':['し','して','した','さ','せ','そ'], 'つ':['ち','って','った','た','て','と'],
+                  'む':['み','んで','んだ','ま','め','も'], 'く':['き','いて','いた','か','け','こ'],
+                  'る':['り','って','った','ら','れ','ろ'], 'う':['い','って','った','わ','え','お'] }[last];
+      const [i, te, ta, a, ee, oo] = M;
+      return [
+        { label:'Non-past', plain:w, polite:s+i+'ます' },
+        { label:'Past', plain:s+ta, polite:s+i+'ました' },
+        { label:'Negative', plain:s+a+'ない', polite:s+i+'ません' },
+        { label:'Past neg.', plain:s+a+'なかった', polite:s+i+'ませんでした' },
+        { label:'Te-form', plain:s+te, polite:'—' },
+        { label:'Potential', plain:s+ee+'る', polite:s+ee+'ます' },
+        { label:'Passive', plain:s+a+'れる', polite:s+a+'れます' },
+        { label:'Causative', plain:s+a+'せる', polite:s+a+'せます' },
+        { label:'Volitional', plain:s+oo+'う', polite:s+i+'ましょう' },
+        { label:'Conditional', plain:s+ee+'ば', polite:'—' },
+        { label:'Imperative', plain:s+ee, polite:'—' } ];
+    }
+    if (e.cls === 'iadj') return [
+      { label:'Non-past', plain:w, polite:w+'です' },
+      { label:'Past', plain:s+'かった', polite:s+'かったです' },
+      { label:'Negative', plain:s+'くない', polite:s+'くないです' },
+      { label:'Past neg.', plain:s+'くなかった', polite:s+'くなかったです' },
+      { label:'Te-form', plain:s+'くて', polite:'—' },
+      { label:'Adverbial', plain:s+'く', polite:'—' },
+      { label:'Conditional', plain:s+'ければ', polite:'—' } ];
+    if (e.cls === 'suru') return [
+      { label:'Non-past', plain:w+'する', polite:w+'します' },
+      { label:'Past', plain:w+'した', polite:w+'しました' },
+      { label:'Negative', plain:w+'しない', polite:w+'しません' },
+      { label:'Te-form', plain:w+'して', polite:'—' },
+      { label:'Potential', plain:w+'できる', polite:w+'できます' },
+      { label:'Volitional', plain:w+'しよう', polite:w+'しましょう' } ];
+    return [];
+  }
+
+  pt(e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    return [ Math.round((e.clientX - r.left) / r.width * 300), Math.round((e.clientY - r.top) / r.height * 300) ];
+  }
+
+  renderVals() {
+    const st = this.state;
+    const entry = ENTRIES.find(e => e.id === st.entryId) || null;
+    const found = this.matches(st.query);
+    const hasQuery = st.query.trim().length > 0;
+    const open = id => () => this.setState(s => ({
+      screen:'detail', entryId:id, tab:'meaning', drawOpen:false,
+      recents:[id, ...s.recents.filter(r => r !== id)].slice(0, 6) }));
+
+    const results = found.map(({ e, note }) => ({
+      word:e.word, reading:e.reading, isCommon:e.common, viaNote:note,
+      gloss:e.senses.map(s => s.glosses[0]).slice(0, 3).join(' · '),
+      tags:e.tags.map(t => ({ label:t })), open:open(e.id) }));
+
+    const cands = (() => {
+      const n = st.strokes.length;
+      if (!n) return [];
+      return DRAW_POOL.map(c => {
+        const k = KANJI[c];
+        const sc = k ? k.strokes : (c.length + n);
+        return { c, sc, d: Math.abs(sc - n) };
+      }).sort((a, b) => a.d - b.d || a.sc - b.sc).slice(0, 10)
+        .map(x => ({ char:x.c, strokes:x.sc,
+          pick: () => this.setState(s => ({ query:s.query + x.c })) }));
+    })();
+
+    const tabDefs = [['meaning','意味 Meaning'],['sent','例文 Sentences'],['kanji','漢字 Kanji']];
+    if (entry && this.conj(entry).length) tabDefs.push(['conj','活用 Conj.']);
+    const tabs = tabDefs.map(([k, label]) => ({
+      label, pick: () => this.setState({ tab:k }),
+      style: 'flex:1;border:0;border-right:1px solid rgba(32,30,29,.18);cursor:pointer;padding:12px 4px;min-height:46px;'
+        + "font:800 11px/1.2 'Archivo',sans-serif;letter-spacing:.04em;"
+        + (st.tab === k ? 'background:#ec3013;color:#f3f2f2' : 'background:transparent;color:#605d5d')
+    }));
+
+    const groups = [];
+    if (entry) for (const s of entry.senses) {
+      let g = groups.find(x => x.pos === s.pos);
+      if (!g) { g = { pos:s.pos, items:[] }; groups.push(g); }
+      for (const gl of s.glosses) g.items.push({ n:g.items.length + 1, gloss:gl, note:s.note && gl === s.glosses[0] ? s.note : null });
+    }
+
+    const mode = st.mode;
+    const tabStyle = on => 'flex:1;border:0;cursor:pointer;padding:11px 6px;min-height:44px;text-align:left;'
+      + "font:800 11px/1.2 'Archivo',sans-serif;letter-spacing:.06em;text-transform:uppercase;"
+      + (on ? 'background:#201e1d;color:#f3f2f2' : 'background:transparent;color:#605d5d');
+
+    return {
+      isSearch: st.screen === 'search', isDetail: st.screen === 'detail', drawOpen: st.drawOpen,
+      query: st.query, hasQuery, placeholder: mode === 'jp' ? '食べる · たべる · taberu' : 'to eat, book, school…',
+      onQuery: ev => this.setState({ query: ev.target.value }),
+      clearQuery: () => this.setState({ query:'' }),
+      openDraw: () => this.setState({ drawOpen:true }),
+      closeDraw: () => this.setState({ drawOpen:false }),
+      setJp: () => this.setState({ mode:'jp' }), setEn: () => this.setState({ mode:'en' }),
+      jpTabStyle: tabStyle(mode === 'jp'), enTabStyle: tabStyle(mode === 'en'),
+      results, resultCount: found.length === 1 ? '1 entry' : found.length + ' entries',
+      resultLabel: mode === 'jp' ? 'Japanese → English' : 'English → Japanese',
+      isEmpty: hasQuery && !found.length, showRecents: !hasQuery,
+      recents: st.recents.map(id => ENTRIES.find(e => e.id === id)).filter(Boolean)
+        .map(e => ({ word:e.word, pick:open(e.id) })),
+      back: () => this.setState({ screen:'search' }),
+      entryWord: entry && entry.word, entryReading: entry && entry.reading,
+      entryBadges: entry ? [{ label:'common' }, { label:'JLPT ' + entry.jlpt }, ...entry.tags.map(t => ({ label:t })), { label:'#' + entry.id }] : [],
+      tabs, tabMeaning: st.tab === 'meaning', tabSentences: st.tab === 'sent',
+      tabKanji: st.tab === 'kanji', tabConj: st.tab === 'conj',
+      senseGroups: groups,
+      hasForms: !!(entry && entry.forms.length), entryForms: entry ? entry.forms : [],
+      compounds: entry ? entry.compounds.map(c => ({ ...c, open: c.to ? open(c.to) : () => this.setState({ query:c.word, screen:'search' }) })) : [],
+      examples: entry ? entry.examples.map(x => {
+        const i = x.jp.indexOf(x.hit);
+        return { id:x.id, en:x.en, pre: i < 0 ? x.jp : x.jp.slice(0, i), hit: i < 0 ? '' : x.hit, post: i < 0 ? '' : x.jp.slice(i + x.hit.length) };
+      }) : [],
+      kanjiCards: entry ? entry.kanji.map(c => {
+        const k = KANJI[c], step = st.steps[c] || 0;
+        return { char:c, meanings:k.meanings.join(', '), on:k.on.join('、') || '—', kun:k.kun.join('、') || '—',
+          strokeLabel: k.strokes + ' strokes', gradeLabel: 'grade ' + k.grade, freqLabel: 'freq #' + k.freq,
+          stepLabel: step ? 'stroke ' + step + ' / ' + k.strokes : k.strokes + ' strokes',
+          barStyle: 'height:4px;background:#ec3013;width:' + Math.round(step / k.strokes * 100) + '%',
+          step: () => this.setState(s => ({ steps: { ...s.steps, [c]: (s.steps[c] || 0) % k.strokes + 1 } })) };
+      }) : [],
+      conjRows: entry ? this.conj(entry) : [],
+      conjNote: entry ? 'Generated from the entry’s word class — ' + entry.tags[0] + '.' : '',
+      strokePaths: st.strokes.map(p => ({ d: 'M' + p.map(q => q.join(' ')).join(' L') })),
+      strokeCount: st.strokes.length, canvasEmpty: st.strokes.length === 0,
+      penWidth: this.props.penWidth ?? 9,
+      candidates: cands, candidateNote: st.strokes.length ? 'top 10 of 6,355' : 'draw to search',
+      onDown: ev => { ev.currentTarget.setPointerCapture(ev.pointerId); const p = this.pt(ev);
+        this.setState(s => ({ drawing:true, strokes:[...s.strokes, [p]] })); },
+      onMove: ev => { if (!this.state.drawing) return; const p = this.pt(ev);
+        this.setState(s => { const st2 = s.strokes.slice(); st2[st2.length - 1] = [...st2[st2.length - 1], p]; return { strokes:st2 }; }); },
+      onUp: () => this.state.drawing && this.setState({ drawing:false }),
+      undo: () => this.setState(s => ({ strokes: s.strokes.slice(0, -1) })),
+      clearDraw: () => this.setState({ strokes:[] }),
+    };
+  }
+}
+</script>
+</body>
+</html>
