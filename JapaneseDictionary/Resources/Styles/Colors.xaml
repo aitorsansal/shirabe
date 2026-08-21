@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Design tokens from the Claude Design handoff (Japanese Dictionary.dc.html),
+         light/dark pairs. Consume via {AppThemeBinding Light=..., Dark=...} at the
+         point of use (Color-typed properties can't host a reactive resource directly),
+         except the fixed-role accents below, which are the same value in both themes. -->
+
+    <Color x:Key="ScreenBackgroundLight">#f3f2f2</Color>
+    <Color x:Key="ScreenBackgroundDark">#17191c</Color>
+    <Color x:Key="SurfaceLight">#ffffff</Color>
+    <Color x:Key="SurfaceDark">#232527</Color>
+    <Color x:Key="PressedFillLight">#eae9e9</Color>
+    <Color x:Key="PressedFillDark">#2c2e30</Color>
+
+    <Color x:Key="InkPrimaryLight">#201e1d</Color>
+    <Color x:Key="InkPrimaryDark">#f0eeec</Color>
+    <Color x:Key="InkSecondaryLight">#605d5d</Color>
+    <Color x:Key="InkSecondaryDark">#b7b3b1</Color>
+    <Color x:Key="InkTertiaryLight">#7d7979</Color>
+    <Color x:Key="InkTertiaryDark">#96928f</Color>
+    <Color x:Key="InkMetaLight">#9b9797</Color>
+    <Color x:Key="InkMetaDark">#8d8988</Color>
+    <Color x:Key="InkGlossBodyLight">#444141</Color>
+    <Color x:Key="InkGlossBodyDark">#d8d5d3</Color>
+
+    <Color x:Key="RuleMajorLight">#66201e1d</Color>
+    <!-- rgba(32,30,29,.4) -->
+    <Color x:Key="RuleMajorDark">#59ffffff</Color>
+    <!-- rgba(255,255,255,.35) -->
+    <Color x:Key="RuleMinorLight">#2e201e1d</Color>
+    <!-- rgba(32,30,29,.18) -->
+    <Color x:Key="RuleMinorDark">#24ffffff</Color>
+    <!-- rgba(255,255,255,.14) -->
+    <Color x:Key="RuleBorderLight">#4d201e1d</Color>
+    <!-- rgba(32,30,29,.3) -->
+    <Color x:Key="RuleBorderDark">#40ffffff</Color>
+    <!-- rgba(255,255,255,.25) -->
+
+    <Color x:Key="ModalBackdropLight">#73201e1d</Color>
+    <!-- rgba(32,30,29,.45) -->
+    <Color x:Key="ModalBackdropDark">#99000000</Color>
+    <!-- rgba(0,0,0,.6) -->
+    <Color x:Key="CanvasGuideDashLight">#d7d3d3</Color>
+    <Color x:Key="CanvasGuideDashDark">#3a3c3e</Color>
+    <Color x:Key="CanvasPlaceholderLight">#bab6b6</Color>
+    <Color x:Key="CanvasPlaceholderDark">#55575a</Color>
+
+    <!-- Fixed-role accents: same value in both themes since they sit on their own solid fill. -->
+    <Color x:Key="PrimaryAction">#2f8fc4</Color>
+    <Color x:Key="PrimaryActionPressed">#256f9c</Color>
+    <Color x:Key="DrawButtonFill">#6b3aa8</Color>
+    <Color x:Key="StrokeProgress">#6fbf73</Color>
+
+    <!-- Theme-adaptive accents: swap with the theme, used as text/fill on the page background. -->
+    <Color x:Key="ReadingAccentLight">#6b3aa8</Color>
+    <Color x:Key="ReadingAccentDark">#c9a8f0</Color>
+    <Color x:Key="KickerAccentLight">#c99a00</Color>
+    <Color x:Key="KickerAccentDark">#f0c14b</Color>
+    <Color x:Key="CommonBadgeFillLight">#c3d926</Color>
+    <Color x:Key="CommonBadgeFillDark">#4a4a12</Color>
+
+    <!-- Five-hue palette cycled across word-class tags, JLPT/id badges, and kanji meta chips.
+         Each hue is a tinted-fill / text / border triple, per theme. -->
+    <Color x:Key="Hue0FillLight">#dff2e6</Color>
+    <Color x:Key="Hue0TextLight">#1f6b3a</Color>
+    <Color x:Key="Hue0BorderLight">#8fd6a6</Color>
+    <Color x:Key="Hue0FillDark">#1f3d2b</Color>
+    <Color x:Key="Hue0TextDark">#8fe0a6</Color>
+    <Color x:Key="Hue0BorderDark">#3d7d55</Color>
+
+    <Color x:Key="Hue1FillLight">#f3f7c9</Color>
+    <Color x:Key="Hue1TextLight">#6b6b0a</Color>
+    <Color x:Key="Hue1BorderLight">#c3d926</Color>
+    <Color x:Key="Hue1FillDark">#3a3a12</Color>
+    <Color x:Key="Hue1TextDark">#e0d84a</Color>
+    <Color x:Key="Hue1BorderDark">#6b6b1f</Color>
+
+    <Color x:Key="Hue2FillLight">#fdecc0</Color>
+    <Color x:Key="Hue2TextLight">#8a6300</Color>
+    <Color x:Key="Hue2BorderLight">#f0c14b</Color>
+    <Color x:Key="Hue2FillDark">#3d310f</Color>
+    <Color x:Key="Hue2TextDark">#f0c14b</Color>
+    <Color x:Key="Hue2BorderDark">#7a5f1f</Color>
+
+    <Color x:Key="Hue3FillLight">#dbeef8</Color>
+    <Color x:Key="Hue3TextLight">#1f5c80</Color>
+    <Color x:Key="Hue3BorderLight">#7fc2e6</Color>
+    <Color x:Key="Hue3FillDark">#12303d</Color>
+    <Color x:Key="Hue3TextDark">#7fc2e6</Color>
+    <Color x:Key="Hue3BorderDark">#1f5c80</Color>
+
+    <Color x:Key="Hue4FillLight">#ecdff8</Color>
+    <Color x:Key="Hue4TextLight">#5a2f8f</Color>
+    <Color x:Key="Hue4BorderLight">#b98fe6</Color>
+    <Color x:Key="Hue4FillDark">#2a1f3d</Color>
+    <Color x:Key="Hue4TextDark">#c9a8f0</Color>
+    <Color x:Key="Hue4BorderDark">#5a2f8f</Color>
+
+</ResourceDictionary>
