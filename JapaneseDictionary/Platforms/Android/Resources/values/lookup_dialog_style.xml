@@ -3,7 +3,15 @@
     <!-- ProcessTextLookupActivity's theme: a floating, outside-touch-dismissable
          window with a transparent system background so only our own rounded
          card (lookup_popup_background.xml) is visible, instead of double
-         nesting our card inside AppCompat's default dialog chrome. -->
+         nesting our card inside AppCompat's default dialog chrome.
+
+         Deliberately NOT named styles.xml: MAUI's build auto-generates its
+         own values/styles.xml (defining Maui.MainTheme, Maui.SplashTheme,
+         Maui.MainTheme.NoActionBar — everything Shell's navigation depends
+         on). A hand-written file at that same relative path got merged at
+         the file level instead of the XML-element level, silently replacing
+         MAUI's generated theme entirely and breaking Shell's Fragment
+         navigation app-wide (see docs/process-text-lookup-plan.md §9). -->
     <style name="LookupDialogTheme" parent="Theme.AppCompat.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>
