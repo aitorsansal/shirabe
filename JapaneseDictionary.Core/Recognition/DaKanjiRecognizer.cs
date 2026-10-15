@@ -28,15 +28,15 @@ public sealed class DaKanjiRecognizer : IDrawRecognizer, IDisposable
     private const float BrushRadiusRatio = 1f / 24f;
     private const float MarginRatio = 0.12f;
 
-    private readonly InferenceSession _session;
-    private readonly string _labels;
+    private readonly InferenceSession session;
+    private readonly string labels;
 
     /// <param name="modelBytes">The raw .onnx model file contents.</param>
     /// <param name="labels">The label string: one character per output class index.</param>
     public DaKanjiRecognizer(byte[] modelBytes, string labels)
     {
-        _session = new InferenceSession(modelBytes);
-        _labels = labels;
+        session = new InferenceSession(modelBytes);
+        this.labels = labels;
     }
 
     public Task<IReadOnlyList<RecognitionCandidate>> RecognizeAsync(
@@ -47,18 +47,18 @@ public sealed class DaKanjiRecognizer : IDrawRecognizer, IDisposable
         cancellationToken.ThrowIfCancellationRequested();
 
         var inputs = new List<NamedOnnxValue> { NamedOnnxValue.CreateFromTensor(InputName, input) };
-        using var results = _session.Run(inputs);
+        using var results = session.Run(inputs);
         var probs = results.First(r => r.Name == OutputName).AsEnumerable<float>().ToArray();
 
         var candidates = new RecognitionCandidate[probs.Length];
         for (var i = 0; i < probs.Length; i++)
-            candidates[i] = new RecognitionCandidate(_labels[i].ToString(), probs[i]);
+            candidates[i] = new RecognitionCandidate(labels[i].ToString(), probs[i]);
 
         IReadOnlyList<RecognitionCandidate> ranked = candidates.OrderByDescending(c => c.Score).ToList();
         return Task.FromResult(ranked);
     }
 
-    public void Dispose() => _session.Dispose();
+    public void Dispose() => session.Dispose();
 
     /// <summary>Pure-software rasterizer: no platform canvas/bitmap dependency,
     /// deterministic, directly testable. Strokes are centered and scaled to

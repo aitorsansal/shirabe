@@ -13,21 +13,21 @@ namespace JapaneseDictionary.Core.Data;
 /// </summary>
 public sealed class DictionaryRepository : IDisposable
 {
-    private readonly SQLiteConnection _db;
+    private readonly SQLiteConnection db;
 
     public DictionaryRepository(string databasePath)
     {
-        _db = new SQLiteConnection(databasePath, SQLiteOpenFlags.ReadOnly);
+        db = new SQLiteConnection(databasePath, SQLiteOpenFlags.ReadOnly);
     }
 
-    public void Dispose() => _db.Dispose();
+    public void Dispose() => db.Dispose();
 
     /// <summary>Entry ids whose kanji form or reading exactly equals <paramref name="text"/>.</summary>
     public IReadOnlyList<int> FindByExactText(string text)
     {
         var ids = new HashSet<int>();
-        ids.UnionWith(_db.Table<KanjiFormRow>().Where(r => r.Text == text).Select(r => r.EntryId));
-        ids.UnionWith(_db.Table<ReadingFormRow>().Where(r => r.Text == text).Select(r => r.EntryId));
+        ids.UnionWith(db.Table<KanjiFormRow>().Where(r => r.Text == text).Select(r => r.EntryId));
+        ids.UnionWith(db.Table<ReadingFormRow>().Where(r => r.Text == text).Select(r => r.EntryId));
         return ids.ToList();
     }
 
@@ -37,10 +37,10 @@ public sealed class DictionaryRepository : IDisposable
     {
         var ids = new List<(int EntryId, bool IsCommon)>();
 
-        ids.AddRange(_db.Table<KanjiFormRow>()
+        ids.AddRange(db.Table<KanjiFormRow>()
             .Where(r => r.Text.StartsWith(prefix))
             .Select(r => new ValueTuple<int, bool>(r.EntryId, r.IsCommon)));
-        ids.AddRange(_db.Table<ReadingFormRow>()
+        ids.AddRange(db.Table<ReadingFormRow>()
             .Where(r => r.Text.StartsWith(prefix))
             .Select(r => new ValueTuple<int, bool>(r.EntryId, r.IsCommon)));
 
@@ -57,7 +57,7 @@ public sealed class DictionaryRepository : IDisposable
     /// data (&lt;xref&gt;) isn't parsed into the schema, so this approximates it
     /// by kanji overlap instead.</summary>
     public IReadOnlyList<int> FindByKanjiContains(string text, int excludeEntryId, int limit) =>
-        _db.Table<KanjiFormRow>()
+        db.Table<KanjiFormRow>()
             .Where(r => r.Text.Contains(text) && r.EntryId != excludeEntryId)
             .Select(r => r.EntryId)
             .Distinct()
@@ -70,9 +70,9 @@ public sealed class DictionaryRepository : IDisposable
         // SQLite's LIKE operator is case-insensitive for ASCII by default, which
         // covers English gloss text without needing an explicit .ToLower() call
         // (sqlite-net-pcl's LINQ translator doesn't support that reliably anyway).
-        return _db.Table<GlossRow>()
+        return db.Table<GlossRow>()
             .Where(g => g.Text.Contains(text))
-            .Join(_db.Table<SenseRow>(), g => g.SenseId, s => s.Id, (g, s) => s.EntryId)
+            .Join(db.Table<SenseRow>(), g => g.SenseId, s => s.Id, (g, s) => s.EntryId)
             .Distinct()
             .Take(limit)
             .ToList();
@@ -86,7 +86,7 @@ public sealed class DictionaryRepository : IDisposable
         // Most-common-first (matching FindByPrefix's convention) so that a common
         // verb like 聞く isn't silently excluded from the capped candidate window
         // by an otherwise-arbitrary (unordered) row order.
-        var readingRows = _db.Table<ReadingFormRow>()
+        var readingRows = db.Table<ReadingFormRow>()
             .Where(r => r.Text.StartsWith(stem))
             .OrderByDescending(r => r.IsCommon)
             .Take(limit)
@@ -99,7 +99,7 @@ public sealed class DictionaryRepository : IDisposable
         // table (every WordEntryRow, 442k+ rows) into memory on every call. Scope
         // the WordEntryRow lookup to just the candidate entry ids instead (IN clause).
         var entryIds = readingRows.Select(r => r.EntryId).Distinct().ToList();
-        var classesByEntryId = _db.Table<WordEntryRow>()
+        var classesByEntryId = db.Table<WordEntryRow>()
             .Where(w => entryIds.Contains(w.Id))
             .ToDictionary(w => w.Id, w => w.WordClassesJoined);
 
@@ -117,18 +117,18 @@ public sealed class DictionaryRepository : IDisposable
 
     public DictionaryEntry? GetEntry(int id)
     {
-        var wordRow = _db.Find<WordEntryRow>(id);
+        var wordRow = db.Find<WordEntryRow>(id);
         if (wordRow == null) return null;
 
-        var kanjiForms = _db.Table<KanjiFormRow>().Where(r => r.EntryId == id)
+        var kanjiForms = db.Table<KanjiFormRow>().Where(r => r.EntryId == id)
             .Select(r => new KanjiForm(r.Text, r.IsCommon)).ToList();
-        var readings = _db.Table<ReadingFormRow>().Where(r => r.EntryId == id)
+        var readings = db.Table<ReadingFormRow>().Where(r => r.EntryId == id)
             .Select(r => new ReadingForm(r.Text, r.IsCommon, true, [])).ToList();
 
-        var senseRows = _db.Table<SenseRow>().Where(s => s.EntryId == id).OrderBy(s => s.SenseOrder).ToList();
+        var senseRows = db.Table<SenseRow>().Where(s => s.EntryId == id).OrderBy(s => s.SenseOrder).ToList();
         var senses = senseRows.Select(s =>
         {
-            var glosses = _db.Table<GlossRow>().Where(g => g.SenseId == s.Id).OrderBy(g => g.GlossOrder)
+            var glosses = db.Table<GlossRow>().Where(g => g.SenseId == s.Id).OrderBy(g => g.GlossOrder)
                 .Select(g => g.Text).ToList();
             return new WordSense(
                 ParseWordClasses(""), // per-sense class breakdown isn't preserved separately from the entry-level roll-up; see WordEntryRow.WordClassesJoined
@@ -143,7 +143,7 @@ public sealed class DictionaryRepository : IDisposable
 
     public KanjiInfo? GetKanjiInfo(string character)
     {
-        var row = _db.Find<KanjiRow>(character);
+        var row = db.Find<KanjiRow>(character);
         if (row == null) return null;
         return new KanjiInfo(
             row.Character, row.StrokeCount, row.Grade, row.JlptLevel, row.FrequencyRank,
@@ -151,15 +151,15 @@ public sealed class DictionaryRepository : IDisposable
     }
 
     public IReadOnlyList<(int StrokeIndex, string SvgPath)> GetKanjiStrokes(string character) =>
-        _db.Table<KanjiStrokeRow>().Where(r => r.Character == character).OrderBy(r => r.StrokeIndex)
+        db.Table<KanjiStrokeRow>().Where(r => r.Character == character).OrderBy(r => r.StrokeIndex)
             .Select(r => (r.StrokeIndex, r.SvgPath)).ToList();
 
     public IReadOnlyList<ExampleSentence> GetExampleSentences(int entryId, int limit)
     {
-        var sentenceIds = _db.Table<ExampleSentenceLinkRow>().Where(l => l.EntryId == entryId)
+        var sentenceIds = db.Table<ExampleSentenceLinkRow>().Where(l => l.EntryId == entryId)
             .Take(limit).Select(l => l.SentenceId).ToList();
 
-        return sentenceIds.Select(id => _db.Find<ExampleSentenceRow>(id))
+        return sentenceIds.Select(id => db.Find<ExampleSentenceRow>(id))
             .Where(r => r != null)
             .Select(r => new ExampleSentence(r!.Id, r.Japanese, r.English, [entryId]))
             .ToList();
@@ -173,7 +173,7 @@ public sealed class DictionaryRepository : IDisposable
     /// senses at build time) — the granularity the deinflection matcher needs.</summary>
     public IReadOnlyList<WordClass> GetEntryWordClasses(int entryId)
     {
-        var row = _db.Find<WordEntryRow>(entryId);
+        var row = db.Find<WordEntryRow>(entryId);
         return row == null ? [] : ParseWordClasses(row.WordClassesJoined);
     }
 

@@ -13,8 +13,8 @@ namespace JapaneseDictionary.Services;
 /// </summary>
 public sealed class AppDataContext : IAsyncDisposable
 {
-    private readonly SemaphoreSlim _initLock = new(1, 1);
-    private bool _initialized;
+    private readonly SemaphoreSlim initLock = new(1, 1);
+    private bool initialized;
 
     public DictionaryRepository DictionaryRepository { get; private set; } = null!;
     public UserDataRepository UserDataRepository { get; private set; } = null!;
@@ -23,22 +23,22 @@ public sealed class AppDataContext : IAsyncDisposable
 
     public async Task EnsureInitializedAsync()
     {
-        if (_initialized) return;
-        await _initLock.WaitAsync();
+        if (initialized) return;
+        await initLock.WaitAsync();
         try
         {
-            if (_initialized) return;
+            if (initialized) return;
 
             var dictionaryPath = await DatabaseInitializer.EnsureDictionaryDatabaseAsync();
             DictionaryRepository = new DictionaryRepository(dictionaryPath);
             UserDataRepository = new UserDataRepository(DatabaseInitializer.UserDataDatabasePath);
             SearchService = new SearchService(DictionaryRepository);
 
-            _initialized = true;
+            initialized = true;
         }
         finally
         {
-            _initLock.Release();
+            initLock.Release();
         }
     }
 

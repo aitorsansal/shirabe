@@ -22,13 +22,13 @@ public enum SearchMode { Japanese, English }
 /// </summary>
 public sealed partial class SearchService
 {
-    private readonly DictionaryRepository _repo;
+    private readonly DictionaryRepository repo;
 
     /// <summary>Longest conjugation ending this deinflects (ませんでした, 6 chars) —
     /// bounds how far back from the query's end a dictionary-form stem is tried.</summary>
     private const int MaxEndingLength = 7;
 
-    public SearchService(DictionaryRepository repo) => _repo = repo;
+    public SearchService(DictionaryRepository repo) => this.repo = repo;
 
     /// <summary>Minimum query length before an (unindexed, substring) gloss
     /// search is attempted — a 1-character English substring matches such a
@@ -66,7 +66,7 @@ public sealed partial class SearchService
         var queryForms = BuildQueryForms(query);
 
         foreach (var form in queryForms)
-            AddAll(_repo.FindByExactText(form), SearchMatchKind.ExactMatch);
+            AddAll(repo.FindByExactText(form), SearchMatchKind.ExactMatch);
 
         if (mode == SearchMode.Japanese)
         {
@@ -76,7 +76,7 @@ public sealed partial class SearchService
             if (results.Count < limit)
             {
                 foreach (var form in queryForms)
-                    AddAll(_repo.FindByPrefix(form, limit - results.Count), SearchMatchKind.Prefix);
+                    AddAll(repo.FindByPrefix(form, limit - results.Count), SearchMatchKind.Prefix);
             }
         }
 
@@ -86,7 +86,7 @@ public sealed partial class SearchService
         // ASCII in it (romaji, punctuation), so that heuristic previously ran
         // an expensive substring scan on every keystroke regardless of mode.
         if (mode == SearchMode.English && results.Count < limit && query.Length >= MinGlossQueryLength)
-            AddAll(_repo.FindByGlossContains(query, limit - results.Count), SearchMatchKind.Gloss);
+            AddAll(repo.FindByGlossContains(query, limit - results.Count), SearchMatchKind.Gloss);
 
         return results.Take(limit).ToList();
     }
@@ -111,7 +111,7 @@ public sealed partial class SearchService
         for (var stemLength = kanaQuery.Length - 1; stemLength >= Math.Max(1, kanaQuery.Length - MaxEndingLength); stemLength--)
         {
             var stem = kanaQuery[..stemLength];
-            var candidates = _repo.FindReadingCandidates(stem, ReadingCandidateLimit);
+            var candidates = repo.FindReadingCandidates(stem, ReadingCandidateLimit);
 
             var matchedThisLength = false;
             foreach (var candidate in candidates)

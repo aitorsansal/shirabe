@@ -17,12 +17,12 @@ public partial class WordDetailViewModel : ObservableObject
     private const int CompoundsLimit = 8;
     private const int ExamplesLimit = 20;
 
-    private readonly AppDataContext _data;
-    private DictionaryEntry? _entry;
+    private readonly AppDataContext data;
+    private DictionaryEntry? entry;
 
     public WordDetailViewModel(AppDataContext data)
     {
-        _data = data;
+        this.data = data;
     }
 
     [ObservableProperty]
@@ -73,7 +73,7 @@ public partial class WordDetailViewModel : ObservableObject
     {
         if (compound.EntryId is { } id)
         {
-            _data.UserDataRepository.RecordView(id);
+            data.UserDataRepository.RecordView(id);
             await Shell.Current.GoToAsync($"{nameof(WordDetailPage)}?entryId={id}");
         }
         // No linked entry id (a compound outside the dictionary we resolved,
@@ -89,16 +89,16 @@ public partial class WordDetailViewModel : ObservableObject
 
     private async Task LoadAsync()
     {
-        await _data.EnsureInitializedAsync();
+        await data.EnsureInitializedAsync();
 
-        var entry = _data.DictionaryRepository.GetEntry(EntryId);
+        var entry = data.DictionaryRepository.GetEntry(EntryId);
         if (entry == null) return;
-        _entry = entry;
+        this.entry = entry;
 
         EntryWord = entry.PrimaryText;
         EntryReading = entry.PrimaryReading;
 
-        var wordClasses = _data.DictionaryRepository.GetEntryWordClasses(EntryId);
+        var wordClasses = data.DictionaryRepository.GetEntryWordClasses(EntryId);
         var primaryClass = wordClasses.FirstOrDefault();
 
         LoadBadges(entry, wordClasses);
@@ -178,10 +178,10 @@ public partial class WordDetailViewModel : ObservableObject
         foreach (var ch in primaryKanji)
         {
             if (Compounds.Count >= CompoundsLimit) break;
-            foreach (var relatedId in _data.DictionaryRepository.FindByKanjiContains(ch.ToString(), entry.Id, CompoundsLimit))
+            foreach (var relatedId in data.DictionaryRepository.FindByKanjiContains(ch.ToString(), entry.Id, CompoundsLimit))
             {
                 if (!seen.Add(relatedId)) continue;
-                var related = _data.DictionaryRepository.GetEntry(relatedId);
+                var related = data.DictionaryRepository.GetEntry(relatedId);
                 if (related == null) continue;
 
                 var gloss = related.Senses.SelectMany(s => s.Glosses).FirstOrDefault() ?? "";
@@ -194,7 +194,7 @@ public partial class WordDetailViewModel : ObservableObject
     private void LoadExamples(DictionaryEntry entry)
     {
         Examples.Clear();
-        var sentences = _data.DictionaryRepository.GetExampleSentences(entry.Id, ExamplesLimit);
+        var sentences = data.DictionaryRepository.GetExampleSentences(entry.Id, ExamplesLimit);
         var highlightCandidates = entry.KanjiForms.Select(k => k.Text)
             .Concat(entry.Readings.Select(r => r.Text))
             .OrderByDescending(s => s.Length) // prefer the longest/most specific match
@@ -229,10 +229,10 @@ public partial class WordDetailViewModel : ObservableObject
 
         foreach (var character in characters)
         {
-            var info = _data.DictionaryRepository.GetKanjiInfo(character);
+            var info = data.DictionaryRepository.GetKanjiInfo(character);
             if (info == null) continue;
 
-            var strokes = _data.DictionaryRepository.GetKanjiStrokes(character).Select(s => s.SvgPath).ToList();
+            var strokes = data.DictionaryRepository.GetKanjiStrokes(character).Select(s => s.SvgPath).ToList();
             KanjiCards.Add(new KanjiCard
             {
                 Character = character,

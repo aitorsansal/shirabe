@@ -14,13 +14,13 @@ public sealed class DaKanjiRecognizerService : IAsyncDisposable
     private const string ModelAsset = "Models/char_classifier.onnx";
     private const string LabelsAsset = "Models/char_classifier_labels.txt";
 
-    private readonly Lazy<Task<DaKanjiRecognizer>> _loaded = new(LoadAsync);
+    private readonly Lazy<Task<DaKanjiRecognizer>> loaded = new(LoadAsync);
 
     public async Task<IReadOnlyList<RecognitionCandidate>> RecognizeAsync(
         IReadOnlyList<IReadOnlyList<PointF>> strokes,
         CancellationToken cancellationToken = default)
     {
-        var recognizer = await _loaded.Value;
+        var recognizer = await loaded.Value;
         var converted = strokes
             .Select(stroke => (IReadOnlyList<DrawPoint>)stroke.Select(p => new DrawPoint(p.X, p.Y)).ToList())
             .ToList();
@@ -43,8 +43,8 @@ public sealed class DaKanjiRecognizerService : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (!_loaded.IsValueCreated) return;
-        var recognizer = await _loaded.Value;
+        if (!loaded.IsValueCreated) return;
+        var recognizer = await loaded.Value;
         recognizer.Dispose();
     }
 }

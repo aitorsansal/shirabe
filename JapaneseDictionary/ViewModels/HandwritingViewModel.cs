@@ -14,11 +14,11 @@ public partial class HandwritingViewModel : ObservableObject
 {
     private const int MaxCandidates = 10;
 
-    private readonly AppDataContext _data;
+    private readonly AppDataContext data;
 
     public HandwritingViewModel(AppDataContext data)
     {
-        _data = data;
+        this.data = data;
     }
 
     [ObservableProperty]
@@ -53,12 +53,12 @@ public partial class HandwritingViewModel : ObservableObject
         }
 
         IsRecognizing = true;
-        await _data.EnsureInitializedAsync();
+        await data.EnsureInitializedAsync();
 
         IReadOnlyList<RecognitionCandidate> results;
         try
         {
-            results = await _data.Recognizer.RecognizeAsync(strokes);
+            results = await data.Recognizer.RecognizeAsync(strokes);
         }
         finally
         {
@@ -68,7 +68,7 @@ public partial class HandwritingViewModel : ObservableObject
         Candidates.Clear();
         foreach (var candidate in results.Take(MaxCandidates))
         {
-            var info = _data.DictionaryRepository.GetKanjiInfo(candidate.Character);
+            var info = data.DictionaryRepository.GetKanjiInfo(candidate.Character);
             Candidates.Add(new CandidateTile(candidate.Character, info?.StrokeCount ?? 0, candidate.Score));
         }
 

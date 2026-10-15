@@ -14,60 +14,60 @@ public sealed class UserDataRepository : IDisposable
     /// <summary>History is trimmed to this many most-recently-viewed entries.</summary>
     private const int MaxHistoryEntries = 200;
 
-    private readonly SQLiteConnection _db;
+    private readonly SQLiteConnection db;
 
     /// <summary>Guarantees strictly increasing view timestamps even if two
     /// <see cref="RecordView"/> calls land in the same millisecond, so
     /// "most recent first" ordering is never ambiguous.</summary>
-    private long _lastViewTimestampMs;
+    private long lastViewTimestampMs;
 
     public UserDataRepository(string databasePath)
     {
-        _db = new SQLiteConnection(databasePath);
-        _db.CreateTable<HistoryEntryRow>();
-        _db.CreateTable<FavoriteEntryRow>();
+        db = new SQLiteConnection(databasePath);
+        db.CreateTable<HistoryEntryRow>();
+        db.CreateTable<FavoriteEntryRow>();
     }
 
-    public void Dispose() => _db.Dispose();
+    public void Dispose() => db.Dispose();
 
     public void RecordView(int entryId)
     {
-        var now = Math.Max(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), _lastViewTimestampMs + 1);
-        _lastViewTimestampMs = now;
-        _db.InsertOrReplace(new HistoryEntryRow { EntryId = entryId, ViewedAtUtc = now });
+        var now = Math.Max(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), lastViewTimestampMs + 1);
+        lastViewTimestampMs = now;
+        db.InsertOrReplace(new HistoryEntryRow { EntryId = entryId, ViewedAtUtc = now });
         TrimHistory();
     }
 
     public IReadOnlyList<int> GetRecentHistory(int limit) =>
-        _db.Table<HistoryEntryRow>().OrderByDescending(r => r.ViewedAtUtc).Take(limit).Select(r => r.EntryId).ToList();
+        db.Table<HistoryEntryRow>().OrderByDescending(r => r.ViewedAtUtc).Take(limit).Select(r => r.EntryId).ToList();
 
-    public void ClearHistory() => _db.DeleteAll<HistoryEntryRow>();
+    public void ClearHistory() => db.DeleteAll<HistoryEntryRow>();
 
     public void AddFavorite(int entryId)
     {
         if (IsFavorite(entryId)) return;
-        _db.Insert(new FavoriteEntryRow { EntryId = entryId, AddedAtUtc = DateTimeOffset.UtcNow.ToUnixTimeSeconds() });
+        db.Insert(new FavoriteEntryRow { EntryId = entryId, AddedAtUtc = DateTimeOffset.UtcNow.ToUnixTimeSeconds() });
     }
 
-    public void RemoveFavorite(int entryId) => _db.Delete<FavoriteEntryRow>(entryId);
+    public void RemoveFavorite(int entryId) => db.Delete<FavoriteEntryRow>(entryId);
 
-    public bool IsFavorite(int entryId) => _db.Find<FavoriteEntryRow>(entryId) != null;
+    public bool IsFavorite(int entryId) => db.Find<FavoriteEntryRow>(entryId) != null;
 
     public IReadOnlyList<int> GetFavorites() =>
-        _db.Table<FavoriteEntryRow>().OrderByDescending(r => r.AddedAtUtc).Select(r => r.EntryId).ToList();
+        db.Table<FavoriteEntryRow>().OrderByDescending(r => r.AddedAtUtc).Select(r => r.EntryId).ToList();
 
     private void TrimHistory()
     {
-        var count = _db.Table<HistoryEntryRow>().Count();
+        var count = db.Table<HistoryEntryRow>().Count();
         if (count <= MaxHistoryEntries) return;
 
-        var toRemove = _db.Table<HistoryEntryRow>()
+        var toRemove = db.Table<HistoryEntryRow>()
             .OrderBy(r => r.ViewedAtUtc)
             .Take(count - MaxHistoryEntries)
             .Select(r => r.EntryId)
             .ToList();
 
         foreach (var id in toRemove)
-            _db.Delete<HistoryEntryRow>(id);
+            db.Delete<HistoryEntryRow>(id);
     }
 }

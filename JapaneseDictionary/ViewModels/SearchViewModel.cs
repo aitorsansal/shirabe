@@ -14,12 +14,12 @@ public partial class SearchViewModel : ObservableObject
     private const int RecentsLimit = 6;
     private const int ResultsLimit = 50;
 
-    private readonly AppDataContext _data;
-    private CancellationTokenSource? _searchCts;
+    private readonly AppDataContext data;
+    private CancellationTokenSource? searchCts;
 
     public SearchViewModel(AppDataContext data)
     {
-        _data = data;
+        this.data = data;
     }
 
     [ObservableProperty]
@@ -43,7 +43,7 @@ public partial class SearchViewModel : ObservableObject
 
     public async Task OnAppearingAsync()
     {
-        await _data.EnsureInitializedAsync();
+        await data.EnsureInitializedAsync();
         RefreshRecents();
     }
 
@@ -94,8 +94,8 @@ public partial class SearchViewModel : ObservableObject
 
     private async Task OpenEntryAsync(int entryId)
     {
-        await _data.EnsureInitializedAsync();
-        _data.UserDataRepository.RecordView(entryId);
+        await data.EnsureInitializedAsync();
+        data.UserDataRepository.RecordView(entryId);
         await Shell.Current.GoToAsync($"{nameof(WordDetailPage)}?entryId={entryId}");
     }
 
@@ -110,8 +110,8 @@ public partial class SearchViewModel : ObservableObject
 
     private async Task RunSearchCoreAsync()
     {
-        _searchCts?.Cancel();
-        var cts = _searchCts = new CancellationTokenSource();
+        searchCts?.Cancel();
+        var cts = searchCts = new CancellationTokenSource();
         var token = cts.Token;
 
         if (!HasQuery)
@@ -137,18 +137,18 @@ public partial class SearchViewModel : ObservableObject
         IsLoading = true;
         OnPropertyChanged(nameof(IsEmpty));
 
-        await _data.EnsureInitializedAsync();
+        await data.EnsureInitializedAsync();
         if (token.IsCancellationRequested) return;
 
         var mode = IsJapaneseMode ? SearchMode.Japanese : SearchMode.English;
         var query = Query;
-        var matches = await Task.Run(() => _data.SearchService.Search(query, mode, ResultsLimit), token);
+        var matches = await Task.Run(() => data.SearchService.Search(query, mode, ResultsLimit), token);
         if (token.IsCancellationRequested) return;
 
         Results.Clear();
         foreach (var match in matches)
         {
-            var entry = _data.DictionaryRepository.GetEntry(match.EntryId);
+            var entry = data.DictionaryRepository.GetEntry(match.EntryId);
             if (entry == null) continue;
 
             var firstSense = entry.Senses.FirstOrDefault();
@@ -174,9 +174,9 @@ public partial class SearchViewModel : ObservableObject
     private void RefreshRecents()
     {
         Recents.Clear();
-        foreach (var id in _data.UserDataRepository.GetRecentHistory(RecentsLimit))
+        foreach (var id in data.UserDataRepository.GetRecentHistory(RecentsLimit))
         {
-            var entry = _data.DictionaryRepository.GetEntry(id);
+            var entry = data.DictionaryRepository.GetEntry(id);
             if (entry != null) Recents.Add(new RecentWordChip(id, entry.PrimaryText));
         }
     }

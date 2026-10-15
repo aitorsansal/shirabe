@@ -25,20 +25,20 @@ namespace JapaneseDictionary;
     DataMimeType = "text/plain")]
 public class ProcessTextLookupActivity : Android.App.Activity
 {
-    private TextView _wordText = null!;
-    private TextView _readingText = null!;
-    private TextView _glossText = null!;
-    private Android.Widget.ProgressBar _progress = null!;
+    private TextView wordText = null!;
+    private TextView readingText = null!;
+    private TextView glossText = null!;
+    private Android.Widget.ProgressBar progress = null!;
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
         SetContentView(Resource.Layout.process_text_lookup);
 
-        _wordText = FindViewById<TextView>(Resource.Id.lookupWord)!;
-        _readingText = FindViewById<TextView>(Resource.Id.lookupReading)!;
-        _glossText = FindViewById<TextView>(Resource.Id.lookupGlosses)!;
-        _progress = FindViewById<Android.Widget.ProgressBar>(Resource.Id.lookupProgress)!;
+        wordText = FindViewById<TextView>(Resource.Id.lookupWord)!;
+        readingText = FindViewById<TextView>(Resource.Id.lookupReading)!;
+        glossText = FindViewById<TextView>(Resource.Id.lookupGlosses)!;
+        progress = FindViewById<Android.Widget.ProgressBar>(Resource.Id.lookupProgress)!;
 
         ShowLoading();
 
@@ -48,10 +48,10 @@ public class ProcessTextLookupActivity : Android.App.Activity
 
     private void ShowLoading()
     {
-        _progress.Visibility = ViewStates.Visible;
-        _wordText.Visibility = ViewStates.Gone;
-        _readingText.Visibility = ViewStates.Gone;
-        _glossText.Visibility = ViewStates.Gone;
+        progress.Visibility = ViewStates.Visible;
+        wordText.Visibility = ViewStates.Gone;
+        readingText.Visibility = ViewStates.Gone;
+        glossText.Visibility = ViewStates.Gone;
     }
 
     private async Task LookUpAsync(string? selectedText)
@@ -115,24 +115,24 @@ public class ProcessTextLookupActivity : Android.App.Activity
     {
         var glosses = string.Join(" / ", entry.Senses.SelectMany(s => s.Glosses).Take(3));
 
-        _progress.Visibility = ViewStates.Gone;
-        _wordText.Visibility = ViewStates.Visible;
-        _readingText.Visibility = ViewStates.Visible;
-        _glossText.Visibility = ViewStates.Visible;
+        progress.Visibility = ViewStates.Gone;
+        wordText.Visibility = ViewStates.Visible;
+        readingText.Visibility = ViewStates.Visible;
+        glossText.Visibility = ViewStates.Visible;
 
-        _wordText.Text = entry.PrimaryText;
-        _readingText.Text = entry.PrimaryReading;
-        _glossText.Text = glosses.Length > 0 ? glosses : "(no glosses)";
+        wordText.Text = entry.PrimaryText;
+        readingText.Text = entry.PrimaryReading;
+        glossText.Text = glosses.Length > 0 ? glosses : "(no glosses)";
     }
 
     private void ShowMessage(string message)
     {
-        _progress.Visibility = ViewStates.Gone;
-        _wordText.Visibility = ViewStates.Visible;
-        _readingText.Visibility = ViewStates.Gone;
-        _glossText.Visibility = ViewStates.Visible;
+        progress.Visibility = ViewStates.Gone;
+        wordText.Visibility = ViewStates.Visible;
+        readingText.Visibility = ViewStates.Gone;
+        glossText.Visibility = ViewStates.Visible;
 
-        _wordText.Text = "Look Up";
-        _glossText.Text = message;
+        wordText.Text = "Look Up";
+        glossText.Text = message;
     }
 }
