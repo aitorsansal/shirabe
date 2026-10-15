@@ -62,7 +62,11 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <AndroidLinkMode>SdkOnly</AndroidLinkMode>
-        <RunAOTCompilation>false</RunAOTCompilation>
+        <!-- Profiled AOT: measured on a phone, cold start drops from ~1.24s to ~0.75s
+             for +3MB. Full AOT (AndroidEnableProfiledAot=false) starts no faster and
+             runs searches/page loads no faster, for +8MB. -->
+        <RunAOTCompilation>true</RunAOTCompilation>
+        <AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>
         <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers>
     </PropertyGroup>
 
