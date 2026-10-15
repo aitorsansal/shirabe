@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="JapaneseDictionary.Views.AboutPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    x:DataType="vm:AboutViewModel"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!--  Header  -->
+        <VerticalStackLayout Grid.Row="0" Padding="16,50,16,0" Spacing="0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
+            <Button
+                Text="‹  BACK"
+                Command="{Binding GoBackCommand}"
+                BackgroundColor="Transparent"
+                TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}"
+                FontFamily="ArchivoExtraBold"
+                FontSize="11"
+                CharacterSpacing="1"
+                HorizontalOptions="Start"
+                Padding="0,6"
+                MinimumHeightRequest="36" />
+            <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
+        </VerticalStackLayout>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="0" Padding="16,18,16,40">
+
+                <!--  App identity  -->
+                <VerticalStackLayout Spacing="4" Margin="0,0,0,8">
+                    <Label Text="辞書" FontFamily="NotoSerifJPBold" FontSize="46" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <Label Text="{Binding AppName}" FontFamily="ArchivoExtraBold" FontSize="14" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <Label Text="{Binding VersionText}" FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                </VerticalStackLayout>
+
+                <!--  Attribution sections (content lives in AboutViewModel.Sections)  -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sections}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AboutSection">
+                            <VerticalStackLayout Spacing="8" Margin="0,18,0,0">
+                                <Label Text="{Binding Title}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                                <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
+                                <Label Text="{Binding Body}" FontFamily="ArchivoRegular" FontSize="14" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" />
+                                <VerticalStackLayout Spacing="0" BindableLayout.ItemsSource="{Binding Links}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:AboutLink">
+                                            <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="14" Padding="0,8" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnLinkTapped" CommandParameter="{Binding Url}" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

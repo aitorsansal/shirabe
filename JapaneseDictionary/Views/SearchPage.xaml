@@ -23,6 +23,10 @@
                             Command="{Binding Source={StaticResource ThemeService}, Path=ToggleThemeCommand}"
                             Style="{StaticResource IconGlyphButtonStyle}"
                             FontSize="17" />
+                    <Button Text="ⓘ"
+                            Command="{Binding OpenAboutCommand}"
+                            Style="{StaticResource IconGlyphButtonStyle}"
+                            FontSize="17" />
                 </HorizontalStackLayout>
             </Grid>
 
