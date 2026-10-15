@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+. Same exclusions as backup_rules.xml. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="dictionary.db3" />
+        <exclude domain="file" path="dictionary.db3.version" />
+        <exclude domain="file" path="dictionary.db3.tmp" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="dictionary.db3" />
+        <exclude domain="file" path="dictionary.db3.version" />
+        <exclude domain="file" path="dictionary.db3.tmp" />
+    </device-transfer>
+</data-extraction-rules>

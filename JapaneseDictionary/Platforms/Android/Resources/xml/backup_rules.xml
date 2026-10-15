@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and older. The bundled dictionary copy is ~130MB, well over Auto
+     Backup's 25MB quota, which would make the whole backup fail; it's restored
+     from the APK on first launch anyway. -->
+<full-backup-content>
+    <exclude domain="file" path="dictionary.db3" />
+    <exclude domain="file" path="dictionary.db3.version" />
+    <exclude domain="file" path="dictionary.db3.tmp" />
+</full-backup-content>
