@@ -26,10 +26,10 @@
         <MauiXamlInflator>SourceGen</MauiXamlInflator>
 
         <!-- Display name -->
-        <ApplicationTitle>JapaneseDictionary</ApplicationTitle>
+        <ApplicationTitle>Shirabe</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.japanesedictionary</ApplicationId>
+        <ApplicationId>com.aitorsansal.japanesedictionary</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -39,6 +39,15 @@
         <WindowsPackageType>None</WindowsPackageType>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    </PropertyGroup>
+
+    <!-- Android signing. keystore.local.props (gitignored, see keystore.local.props.template)
+         supplies the keystore path, alias and passwords. It applies to Debug as well as Release,
+         so both sign with the same certificate and switching configurations does not trigger
+         an uninstall prompt. Without the file (fresh clone, fork) the default debug key is used. -->
+    <Import Project="keystore.local.props" Condition="Exists('keystore.local.props')" />
+    <PropertyGroup Condition="Exists('keystore.local.props') And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <AndroidKeyStore>True</AndroidKeyStore>
     </PropertyGroup>
 
     <!-- ONNX Runtime on Android needs these three fixes or libonnxruntime.so
