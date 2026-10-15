@@ -40,6 +40,7 @@ public partial class SearchViewModel : ObservableObject
     public ObservableCollection<RecentWordChip> Recents { get; } = [];
 
     public bool HasQuery => !string.IsNullOrWhiteSpace(Query);
+    public bool HasRecents => Recents.Count > 0;
     public bool ShowRecents => !HasQuery && !IsPreparingDictionary;
     public bool IsEmpty => HasQuery && !IsLoading && !IsPreparingDictionary && Results.Count == 0;
     public string Placeholder => "食べる · taberu · to eat";
@@ -68,6 +69,13 @@ public partial class SearchViewModel : ObservableObject
 
     [RelayCommand]
     private void ClearQuery() => Query = "";
+
+    [RelayCommand]
+    private void ClearRecents()
+    {
+        data.UserDataRepository.ClearHistory();
+        RefreshRecents();
+    }
 
     [RelayCommand]
     private async Task OpenDrawAsync()
@@ -206,5 +214,7 @@ public partial class SearchViewModel : ObservableObject
             var entry = data.DictionaryRepository.GetEntry(id);
             if (entry != null) Recents.Add(new RecentWordChip(id, entry.PrimaryText));
         }
+
+        OnPropertyChanged(nameof(HasRecents));
     }
 }

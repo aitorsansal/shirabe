@@ -21,6 +21,7 @@
                     <Label Text="OFFLINE · JMDICT" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" VerticalOptions="Center" />
                     <Button Text="{Binding Source={StaticResource ThemeService}, Path=ThemeIcon}"
                             Command="{Binding Source={StaticResource ThemeService}, Path=ToggleThemeCommand}"
+                            SemanticProperties.Description="{Binding Source={StaticResource ThemeService}, Path=ThemeDescription}"
                             Style="{StaticResource IconGlyphButtonStyle}"
                             FontSize="17" />
                     <Button Text="ⓘ"
@@ -79,8 +80,15 @@
 
                 <!--  Recents  -->
                 <VerticalStackLayout IsVisible="{Binding ShowRecents}" Padding="16,0,16,4" Spacing="0">
-                    <Label Text="RECENT" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" Margin="0,0,0,10" />
-                    <FlexLayout BindableLayout.ItemsSource="{Binding Recents}" Wrap="Wrap" Direction="Row" JustifyContent="Start">
+                    <Grid IsVisible="{Binding HasRecents}" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                        <Label Grid.Column="0" Text="RECENT" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="CLEAR" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" VerticalOptions="Center" Padding="12,6,0,6" SemanticProperties.Description="Clear recent words">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ClearRecentsCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+                    <FlexLayout IsVisible="{Binding HasRecents}" BindableLayout.ItemsSource="{Binding Recents}" Wrap="Wrap" Direction="Row" JustifyContent="Start">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:RecentWordChip">
                                 <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Margin="0,0,6,6" Padding="11,7" FlexLayout.Shrink="0">
@@ -93,7 +101,7 @@
                         </BindableLayout.ItemTemplate>
                     </FlexLayout>
 
-                    <BoxView HeightRequest="1" Margin="0,18,0,14" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
+                    <BoxView IsVisible="{Binding HasRecents}" HeightRequest="1" Margin="0,18,0,14" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
                     <Label Text="TRY" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" Margin="0,0,0,8" />
                     <Label FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" LineBreakMode="WordWrap">
                         <Label.FormattedText>
