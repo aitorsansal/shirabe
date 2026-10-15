@@ -29,5 +29,12 @@ const string outputPath = "../JapaneseDictionary/Resources/Raw/dictionary.db3";
 Log($"Writing {outputPath}...");
 SqliteWriter.Write(outputPath, entries, kanji, kanjiStrokes, sentences);
 
+// The app recopies its installed dictionary whenever this value changes (see
+// DatabaseInitializer), so every regenerated database must get a new one.
+const string versionPath = "../JapaneseDictionary/Resources/Raw/dictionary.version";
+var dataVersion = DateTime.UtcNow.ToString("yyyyMMdd'T'HHmmss'Z'");
+File.WriteAllText(versionPath, dataVersion + "\n");
+Log($"Data version {dataVersion} written to {versionPath}");
+
 var size = new FileInfo(outputPath).Length;
 Log($"Done. {size / 1024.0 / 1024.0:F1} MB");
