@@ -116,6 +116,13 @@
         <ScrollView Grid.Row="1" Margin="0,14,0,0">
             <VerticalStackLayout Spacing="0" Padding="0,0,0,56">
 
+                <!--  First launch after install or dictionary update  -->
+                <VerticalStackLayout IsVisible="{Binding IsPreparingDictionary}" Padding="16,24" Spacing="12">
+                    <ActivityIndicator IsRunning="{Binding IsPreparingDictionary}" HorizontalOptions="Start" />
+                    <Label Text="Preparing the dictionary…" FontFamily="ArchivoExtraBold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <Label Text="Setting up the offline dictionary on your device. This only happens after installing or updating, and takes a few seconds." FontFamily="ArchivoRegular" FontSize="14" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                </VerticalStackLayout>
+
                 <!--  Recents  -->
                 <VerticalStackLayout IsVisible="{Binding ShowRecents}" Padding="16,0,16,4" Spacing="0">
                     <Label Text="RECENT" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" Margin="0,0,0,10" />

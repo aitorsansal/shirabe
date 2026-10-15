@@ -22,26 +22,34 @@ public static class DatabaseInitializer
 
     public static string UserDataDatabasePath => Path.Combine(FileSystem.AppDataDirectory, "userdata.db3");
 
+    public static async Task<bool> IsDictionaryUpToDateAsync() =>
+        File.Exists(DictionaryDatabasePath) && await ReadInstalledVersionAsync() == await ReadBundledVersionAsync();
+
     public static async Task<string> EnsureDictionaryDatabaseAsync()
     {
         var destination = DictionaryDatabasePath;
-        var bundledVersion = await ReadBundledVersionAsync();
-
-        if (File.Exists(destination) && await ReadInstalledVersionAsync() == bundledVersion)
+        if (await IsDictionaryUpToDateAsync())
             return destination;
 
-        // Copy to a temporary file and swap it in afterwards: if the process is
-        // killed mid-copy, a truncated file must never sit at the real path, and
-        // the version is only recorded once the swap has happened.
-        var temporary = destination + ".tmp";
-        await using (var assetStream = await FileSystem.OpenAppPackageFileAsync(DictionaryAsset))
-        await using (var fileStream = File.Create(temporary))
-        {
-            await assetStream.CopyToAsync(fileStream);
-        }
+        var bundledVersion = await ReadBundledVersionAsync();
 
-        File.Move(temporary, destination, overwrite: true);
-        await File.WriteAllTextAsync(InstalledVersionPath, bundledVersion);
+        // The APK asset stream reads synchronously under the hood, so the copy
+        // runs on a worker thread to keep the UI (and its "preparing" state) alive.
+        // It goes to a temporary file that is swapped in afterwards: if the process
+        // is killed mid-copy, a truncated file must never sit at the real path, and
+        // the version is only recorded once the swap has happened.
+        await Task.Run(async () =>
+        {
+            var temporary = destination + ".tmp";
+            await using (var assetStream = await FileSystem.OpenAppPackageFileAsync(DictionaryAsset))
+            await using (var fileStream = File.Create(temporary))
+            {
+                await assetStream.CopyToAsync(fileStream);
+            }
+
+            File.Move(temporary, destination, overwrite: true);
+            await File.WriteAllTextAsync(InstalledVersionPath, bundledVersion);
+        });
 
         return destination;
     }

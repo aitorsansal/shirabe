@@ -21,6 +21,8 @@ public sealed class AppDataContext : IAsyncDisposable
     public SearchService SearchService { get; private set; } = null!;
     public DaKanjiRecognizerService Recognizer { get; } = new();
 
+    public bool IsInitialized => initialized;
+
     public async Task EnsureInitializedAsync()
     {
         if (initialized) return;

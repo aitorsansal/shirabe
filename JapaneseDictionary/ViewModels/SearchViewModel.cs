@@ -31,19 +31,30 @@ public partial class SearchViewModel : ObservableObject
     [ObservableProperty]
     private bool isLoading;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowRecents))]
+    [NotifyPropertyChangedFor(nameof(IsEmpty))]
+    private bool isPreparingDictionary;
+
     public ObservableCollection<SearchResultRow> Results { get; } = [];
     public ObservableCollection<RecentWordChip> Recents { get; } = [];
 
     public bool HasQuery => !string.IsNullOrWhiteSpace(Query);
-    public bool ShowRecents => !HasQuery;
-    public bool IsEmpty => HasQuery && !IsLoading && Results.Count == 0;
+    public bool ShowRecents => !HasQuery && !IsPreparingDictionary;
+    public bool IsEmpty => HasQuery && !IsLoading && !IsPreparingDictionary && Results.Count == 0;
     public string Placeholder => IsJapaneseMode ? "食べる · たべる · taberu" : "to eat, book, school…";
     public string ResultLabel => IsJapaneseMode ? "Japanese → English" : "English → Japanese";
     public string ResultCountText => Results.Count == 1 ? "1 entry" : $"{Results.Count} entries";
 
     public async Task OnAppearingAsync()
     {
+        // Only the first launch after an install or a dictionary update copies the
+        // ~130MB database, which takes a few seconds; every other start skips this.
+        if (!data.IsInitialized && !await DatabaseInitializer.IsDictionaryUpToDateAsync())
+            IsPreparingDictionary = true;
+
         await data.EnsureInitializedAsync();
+        IsPreparingDictionary = false;
         RefreshRecents();
     }
 
@@ -105,6 +116,7 @@ public partial class SearchViewModel : ObservableObject
         // otherwise vanish and leave the list silently empty (that is how a missing native
         // SQLite library showed up as "0 entries"). Log it instead.
         try { await RunSearchCoreAsync(); }
+        catch (OperationCanceledException) { }
         catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Search failed: {ex}"); }
     }
 
@@ -114,39 +126,58 @@ public partial class SearchViewModel : ObservableObject
         var cts = searchCts = new CancellationTokenSource();
         var token = cts.Token;
 
-        if (!HasQuery)
-        {
-            Results.Clear();
-            OnPropertyChanged(nameof(IsEmpty));
-            OnPropertyChanged(nameof(ResultCountText));
-            return;
-        }
-
-        // Debounce: a keystroke that's immediately followed by another one
-        // cancels this delay and never reaches the actual search — so typing
-        // "たべ" fires one search, not three.
         try
         {
-            await Task.Delay(200, token);
+            if (!HasQuery)
+            {
+                Results.Clear();
+                return;
+            }
+
+            // Debounce: a keystroke that's immediately followed by another one
+            // cancels this delay and never reaches the actual search — so typing
+            // "たべ" fires one search, not three.
+            try
+            {
+                await Task.Delay(200, token);
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+
+            IsLoading = true;
+            OnPropertyChanged(nameof(IsEmpty));
+
+            await data.EnsureInitializedAsync();
+            if (token.IsCancellationRequested) return;
+
+            var mode = IsJapaneseMode ? SearchMode.Japanese : SearchMode.English;
+            var query = Query;
+            var rows = await Task.Run(() => BuildResultRows(query, mode), token);
+            if (token.IsCancellationRequested) return;
+
+            Results.Clear();
+            foreach (var row in rows) Results.Add(row);
         }
-        catch (TaskCanceledException)
+        finally
         {
-            return;
+            // Only the newest search owns the loading state: a superseded one
+            // returning early must not hide the spinner of the search that
+            // replaced it, and clearing the query mid-search must not leave it on.
+            if (searchCts == cts)
+            {
+                IsLoading = false;
+                OnPropertyChanged(nameof(IsEmpty));
+                OnPropertyChanged(nameof(ResultCountText));
+            }
         }
+    }
 
-        IsLoading = true;
-        OnPropertyChanged(nameof(IsEmpty));
-
-        await data.EnsureInitializedAsync();
-        if (token.IsCancellationRequested) return;
-
-        var mode = IsJapaneseMode ? SearchMode.Japanese : SearchMode.English;
-        var query = Query;
-        var matches = await Task.Run(() => data.SearchService.Search(query, mode, ResultsLimit), token);
-        if (token.IsCancellationRequested) return;
-
-        Results.Clear();
-        foreach (var match in matches)
+    private List<SearchResultRow> BuildResultRows(string query, SearchMode mode)
+    {
+        var rows = new List<SearchResultRow>();
+        foreach (var match in data.SearchService.Search(query, mode, ResultsLimit))
         {
             var entry = data.DictionaryRepository.GetEntry(match.EntryId);
             if (entry == null) continue;
@@ -157,18 +188,16 @@ public partial class SearchViewModel : ObservableObject
                 .ToList() ?? [];
             var gloss = string.Join(" · ", entry.Senses.SelectMany(s => s.Glosses).Take(3));
             var viaNote = match.Kind == SearchMatchKind.Conjugated
-                ? $"de-inflected from {Query} ({match.ConjugationForm})"
+                ? $"de-inflected from {match.ConjugatedText ?? query} ({match.ConjugationForm})"
                 : null;
 
-            Results.Add(new SearchResultRow(
+            rows.Add(new SearchResultRow(
                 entry.Id, entry.PrimaryReading, entry.PrimaryText,
                 entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon),
                 tags, gloss, viaNote));
         }
 
-        IsLoading = false;
-        OnPropertyChanged(nameof(IsEmpty));
-        OnPropertyChanged(nameof(ResultCountText));
+        return rows;
     }
 
     private void RefreshRecents()
