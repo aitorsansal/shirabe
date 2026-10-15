@@ -40,3 +40,9 @@ JapaneseDictionary.DataBuilder/RawData/
 
 # DataBuilder scratch database
 JapaneseDictionary.DataBuilder/repro.db3
+
+# Android signing: keystore and passwords must never be committed.
+JapaneseDictionary/keystore.local.props
+JapaneseDictionary/keystore/
+*.keystore
+*.jks
