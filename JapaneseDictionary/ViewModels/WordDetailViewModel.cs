@@ -55,16 +55,36 @@ public partial class WordDetailViewModel : ObservableObject
     public bool IsKanjiTab => SelectedTab == DetailTab.Kanji;
     public bool IsConjugationTab => SelectedTab == DetailTab.Conjugation;
 
+    // The Meaning tab is built on open; the others only the first time they're
+    // selected, so opening a word doesn't lay out three hidden tabs.
+    private DictionaryEntry? loadedEntry;
+    private IReadOnlyList<ConjugationTableRow> conjugationTable = [];
+    private bool examplesLoaded;
+    private bool kanjiLoaded;
+    private bool conjugationLoaded;
+
+    private sealed record MeaningContent(
+        DictionaryEntry Entry,
+        List<EntryBadge> Badges,
+        List<SenseGroup> SenseGroups,
+        List<FormChip> OtherForms,
+        List<CompoundRow> Compounds,
+        IReadOnlyList<ConjugationTableRow> ConjugationTable,
+        string ConjugationNote);
+
     partial void OnEntryIdChanged(int value) => _ = LoadAsync();
 
-    [RelayCommand]
-    private void SelectTab(string tabName)
+    // Concurrent so the tab buttons don't disable themselves while a tab loads.
+    [RelayCommand(AllowConcurrentExecutions = true)]
+    private async Task SelectTab(string tabName)
     {
         SelectedTab = Enum.Parse<DetailTab>(tabName);
         OnPropertyChanged(nameof(IsMeaningTab));
         OnPropertyChanged(nameof(IsSentencesTab));
         OnPropertyChanged(nameof(IsKanjiTab));
         OnPropertyChanged(nameof(IsConjugationTab));
+
+        await LoadTabContentAsync(SelectedTab);
     }
 
     [RelayCommand]
@@ -90,46 +110,89 @@ public partial class WordDetailViewModel : ObservableObject
     {
         await data.EnsureInitializedAsync();
 
-        var entry = data.DictionaryRepository.GetEntry(EntryId);
-        if (entry == null) return;
+        var entryId = EntryId;
+        var content = await Task.Run(() => BuildMeaningContent(entryId));
+        if (content is null) return;
 
-        EntryWord = entry.PrimaryText;
-        EntryReading = entry.PrimaryReading;
+        loadedEntry = content.Entry;
+        EntryWord = content.Entry.PrimaryText;
+        EntryReading = content.Entry.PrimaryReading;
+        Fill(Badges, content.Badges);
+        Fill(SenseGroups, content.SenseGroups);
+        Fill(OtherForms, content.OtherForms);
+        OnPropertyChanged(nameof(HasOtherForms));
+        Fill(Compounds, content.Compounds);
 
-        var wordClasses = data.DictionaryRepository.GetEntryWordClasses(EntryId);
-        var primaryClass = wordClasses.FirstOrDefault();
+        conjugationTable = content.ConjugationTable;
+        ShowConjugationTab = conjugationTable.Count > 0;
+        ConjugationNote = content.ConjugationNote;
+        OnPropertyChanged(nameof(ConjugationNote));
 
-        LoadBadges(entry, wordClasses);
-        LoadSenseGroups(entry);
-        LoadOtherForms(entry);
-        LoadCompounds(entry);
-        LoadExamples(entry);
-        LoadKanjiCards(entry);
-        LoadConjugation(entry, primaryClass);
-
-        SelectedTab = DetailTab.Meaning;
-        OnPropertyChanged(nameof(IsMeaningTab));
-        OnPropertyChanged(nameof(IsSentencesTab));
-        OnPropertyChanged(nameof(IsKanjiTab));
-        OnPropertyChanged(nameof(IsConjugationTab));
+        if (SelectedTab != DetailTab.Meaning)
+            await LoadTabContentAsync(SelectedTab);
     }
 
-    private void LoadBadges(DictionaryEntry entry, IReadOnlyList<WordClass> wordClasses)
+    private async Task LoadTabContentAsync(DetailTab tab)
     {
-        Badges.Clear();
+        if (loadedEntry is not { } entry) return;
+
+        switch (tab)
+        {
+            case DetailTab.Sentences when !examplesLoaded:
+                examplesLoaded = true;
+                Fill(Examples, await Task.Run(() => BuildExamples(entry)));
+                break;
+            case DetailTab.Kanji when !kanjiLoaded:
+                kanjiLoaded = true;
+                Fill(KanjiCards, await Task.Run(() => BuildKanjiCards(entry)));
+                break;
+            case DetailTab.Conjugation when !conjugationLoaded:
+                conjugationLoaded = true;
+                Fill(ConjugationRows, conjugationTable);
+                break;
+        }
+    }
+
+    private static void Fill<T>(ObservableCollection<T> target, IEnumerable<T> items)
+    {
+        target.Clear();
+        foreach (var item in items) target.Add(item);
+    }
+
+    private MeaningContent? BuildMeaningContent(int entryId)
+    {
+        var entry = data.DictionaryRepository.GetEntry(entryId);
+        if (entry == null) return null;
+
+        var wordClasses = data.DictionaryRepository.GetEntryWordClasses(entryId);
+        var primaryClass = wordClasses.FirstOrDefault();
+        var conjugationTable = BuildConjugationTable(entry, primaryClass);
+
+        return new MeaningContent(
+            entry,
+            BuildBadges(entry, wordClasses),
+            BuildSenseGroups(entry),
+            BuildOtherForms(entry),
+            BuildCompounds(entry),
+            conjugationTable,
+            conjugationTable.Count > 0 ? $"Generated from the entry's word class — {FormatWordClass(primaryClass)}." : "");
+    }
+
+    private static List<EntryBadge> BuildBadges(DictionaryEntry entry, IReadOnlyList<WordClass> wordClasses)
+    {
+        var badges = new List<EntryBadge>();
         if (entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon))
-            Badges.Add(new EntryBadge("common", IsCommon: true, HueIndex: 0));
+            badges.Add(new EntryBadge("common", IsCommon: true, HueIndex: 0));
 
         var hue = 0;
         foreach (var wc in wordClasses.Distinct())
-            Badges.Add(new EntryBadge(FormatWordClass(wc), IsCommon: false, HueIndex: hue++));
-        Badges.Add(new EntryBadge($"#{entry.Id}", IsCommon: false, HueIndex: hue));
+            badges.Add(new EntryBadge(FormatWordClass(wc), IsCommon: false, HueIndex: hue++));
+        badges.Add(new EntryBadge($"#{entry.Id}", IsCommon: false, HueIndex: hue));
+        return badges;
     }
 
-    private void LoadSenseGroups(DictionaryEntry entry)
-    {
-        SenseGroups.Clear();
-        var groups = entry.Senses
+    private static List<SenseGroup> BuildSenseGroups(DictionaryEntry entry) =>
+        entry.Senses
             .GroupBy(s => s.PartOfSpeechTags.Count > 0 ? string.Join(", ", s.PartOfSpeechTags) : "Other")
             .Select(g =>
             {
@@ -144,30 +207,24 @@ public partial class WordDetailViewModel : ObservableObject
                 }
 
                 return new SenseGroup(g.Key.ToUpperInvariant(), items);
-            });
+            })
+            .ToList();
 
-        foreach (var group in groups) SenseGroups.Add(group);
-    }
-
-    private void LoadOtherForms(DictionaryEntry entry)
+    private static List<FormChip> BuildOtherForms(DictionaryEntry entry)
     {
-        OtherForms.Clear();
         var primaryKanji = entry.KanjiForms.FirstOrDefault(k => k.IsCommon)?.Text ?? entry.KanjiForms.FirstOrDefault()?.Text;
         var primaryReading = entry.Readings.FirstOrDefault(r => r.IsCommon)?.Text ?? entry.Readings.FirstOrDefault()?.Text;
 
-        foreach (var kanji in entry.KanjiForms.Where(k => k.Text != primaryKanji))
-            OtherForms.Add(new FormChip(kanji.Text, "alternate form"));
-        foreach (var reading in entry.Readings.Where(r => r.Text != primaryReading))
-            OtherForms.Add(new FormChip(reading.Text, "alternate reading"));
-
-        OnPropertyChanged(nameof(HasOtherForms));
+        return entry.KanjiForms.Where(k => k.Text != primaryKanji).Select(k => new FormChip(k.Text, "alternate form"))
+            .Concat(entry.Readings.Where(r => r.Text != primaryReading).Select(r => new FormChip(r.Text, "alternate reading")))
+            .ToList();
     }
 
-    private void LoadCompounds(DictionaryEntry entry)
+    private List<CompoundRow> BuildCompounds(DictionaryEntry entry)
     {
-        Compounds.Clear();
+        var compounds = new List<CompoundRow>();
         var primaryKanji = entry.KanjiForms.FirstOrDefault()?.Text;
-        if (string.IsNullOrEmpty(primaryKanji)) return;
+        if (string.IsNullOrEmpty(primaryKanji)) return compounds;
 
         // Best-effort "related words": other entries sharing a kanji from this
         // headword. JMdict's own curated cross-references aren't parsed into
@@ -175,7 +232,7 @@ public partial class WordDetailViewModel : ObservableObject
         var seen = new HashSet<int>();
         foreach (var ch in primaryKanji)
         {
-            if (Compounds.Count >= CompoundsLimit) break;
+            if (compounds.Count >= CompoundsLimit) break;
             foreach (var relatedId in data.DictionaryRepository.FindByKanjiContains(ch.ToString(), entry.Id, CompoundsLimit))
             {
                 if (!seen.Add(relatedId)) continue;
@@ -183,55 +240,59 @@ public partial class WordDetailViewModel : ObservableObject
                 if (related == null) continue;
 
                 var gloss = related.Senses.SelectMany(s => s.Glosses).FirstOrDefault() ?? "";
-                Compounds.Add(new CompoundRow(related.Id, related.PrimaryText, related.PrimaryReading, gloss));
-                if (Compounds.Count >= CompoundsLimit) break;
+                compounds.Add(new CompoundRow(related.Id, related.PrimaryText, related.PrimaryReading, gloss));
+                if (compounds.Count >= CompoundsLimit) break;
             }
         }
+
+        return compounds;
     }
 
-    private void LoadExamples(DictionaryEntry entry)
+    private List<ExampleCard> BuildExamples(DictionaryEntry entry)
     {
-        Examples.Clear();
         var sentences = data.DictionaryRepository.GetExampleSentences(entry.Id, ExamplesLimit);
         var highlightCandidates = entry.KanjiForms.Select(k => k.Text)
             .Concat(entry.Readings.Select(r => r.Text))
             .OrderByDescending(s => s.Length) // prefer the longest/most specific match
             .ToList();
 
+        var examples = new List<ExampleCard>();
         foreach (var sentence in sentences)
         {
             var hitText = highlightCandidates.FirstOrDefault(h => sentence.Japanese.Contains(h));
             if (hitText == null)
             {
-                Examples.Add(new ExampleCard(sentence.Id, sentence.Japanese, "", "", sentence.English));
+                examples.Add(new ExampleCard(sentence.Id, sentence.Japanese, "", "", sentence.English));
                 continue;
             }
 
             var index = sentence.Japanese.IndexOf(hitText, StringComparison.Ordinal);
-            Examples.Add(new ExampleCard(
+            examples.Add(new ExampleCard(
                 sentence.Id,
                 sentence.Japanese[..index],
                 hitText,
                 sentence.Japanese[(index + hitText.Length)..],
                 sentence.English));
         }
+
+        return examples;
     }
 
-    private void LoadKanjiCards(DictionaryEntry entry)
+    private List<KanjiCard> BuildKanjiCards(DictionaryEntry entry)
     {
-        KanjiCards.Clear();
         var characters = (entry.KanjiForms.FirstOrDefault()?.Text ?? "")
             .Where(IsKanji)
             .Select(c => c.ToString())
             .Distinct();
 
+        var cards = new List<KanjiCard>();
         foreach (var character in characters)
         {
             var info = data.DictionaryRepository.GetKanjiInfo(character);
             if (info == null) continue;
 
             var strokes = data.DictionaryRepository.GetKanjiStrokes(character).Select(s => s.SvgPath).ToList();
-            KanjiCards.Add(new KanjiCard
+            cards.Add(new KanjiCard
             {
                 Character = character,
                 Meanings = string.Join(", ", info.Meanings),
@@ -242,26 +303,17 @@ public partial class WordDetailViewModel : ObservableObject
                 StrokePaths = strokes,
             });
         }
+
+        return cards;
     }
 
-    private void LoadConjugation(DictionaryEntry entry, WordClass wordClass)
+    private static IReadOnlyList<ConjugationTableRow> BuildConjugationTable(DictionaryEntry entry, WordClass wordClass)
     {
-        ConjugationRows.Clear();
-        if (wordClass == WordClass.Other)
-        {
-            ShowConjugationTab = false;
-            return;
-        }
+        if (wordClass == WordClass.Other) return [];
 
         var rows = Deinflector.GetConjugationTable(entry.PrimaryReading, wordClass);
         var stem = ConjugationTableRow.CommonStem(rows);
-        foreach (var row in rows) ConjugationRows.Add(ConjugationTableRow.From(row, stem));
-
-        ShowConjugationTab = ConjugationRows.Count > 0;
-        ConjugationNote = ShowConjugationTab
-            ? $"Generated from the entry's word class — {FormatWordClass(wordClass)}."
-            : "";
-        OnPropertyChanged(nameof(ConjugationNote));
+        return rows.Select(row => ConjugationTableRow.From(row, stem)).ToList();
     }
 
     private static bool IsKanji(char c) => c is >= '一' and <= '鿿';
