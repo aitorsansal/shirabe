@@ -14,7 +14,7 @@
         <VerticalStackLayout Grid.Row="0" Padding="16,54,16,0" Spacing="0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
             <Grid ColumnDefinitions="*,Auto">
                 <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
-                    <Label Text="辞書" FontFamily="NotoSerifJPBold" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <Label Text="辞書" FontFamily="NotoSerifJPBoldWordmark" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     <Label Text="SHIRABE" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
                 </HorizontalStackLayout>
                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">

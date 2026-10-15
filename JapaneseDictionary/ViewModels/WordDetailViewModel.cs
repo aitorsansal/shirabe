@@ -18,7 +18,6 @@ public partial class WordDetailViewModel : ObservableObject
     private const int ExamplesLimit = 20;
 
     private readonly AppDataContext data;
-    private DictionaryEntry? entry;
 
     public WordDetailViewModel(AppDataContext data)
     {
@@ -93,7 +92,6 @@ public partial class WordDetailViewModel : ObservableObject
 
         var entry = data.DictionaryRepository.GetEntry(EntryId);
         if (entry == null) return;
-        this.entry = entry;
 
         EntryWord = entry.PrimaryText;
         EntryReading = entry.PrimaryReading;

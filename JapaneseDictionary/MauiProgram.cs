@@ -22,7 +22,8 @@ public static class MauiProgram
                 fonts.AddFont("Archivo-ExtraBold.ttf", "ArchivoExtraBold");
                 fonts.AddFont("NotoSerifJP-Regular.ttf", "NotoSerifJPRegular");
                 fonts.AddFont("NotoSerifJP-SemiBold.ttf", "NotoSerifJPSemiBold");
-                fonts.AddFont("NotoSerifJP-Bold.ttf", "NotoSerifJPBold");
+                // Subset to just 辞書 (2KB instead of 7.5MB): it's only used for the wordmark.
+                fonts.AddFont("NotoSerifJP-Bold-Wordmark.ttf", "NotoSerifJPBoldWordmark");
             });
 
 #if DEBUG

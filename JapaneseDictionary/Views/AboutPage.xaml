@@ -31,7 +31,7 @@
 
                 <!--  App identity  -->
                 <VerticalStackLayout Spacing="4" Margin="0,0,0,8">
-                    <Label Text="辞書" FontFamily="NotoSerifJPBold" FontSize="46" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <Label Text="辞書" FontFamily="NotoSerifJPBoldWordmark" FontSize="46" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     <Label Text="{Binding AppName}" FontFamily="ArchivoExtraBold" FontSize="14" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     <Label Text="{Binding VersionText}" FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
                 </VerticalStackLayout>

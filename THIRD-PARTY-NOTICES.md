@@ -43,7 +43,7 @@ The model was trained on the ETL Character Database and the KanjiVG dataset (cre
 | Font | License |
 |---|---|
 | [Archivo](https://github.com/Omnibus-Type/Archivo) | SIL Open Font License 1.1 |
-| [Noto Serif JP](https://fonts.google.com/noto/specimen/Noto+Serif+JP) | SIL Open Font License 1.1 |
+| [Noto Serif JP](https://fonts.google.com/noto/specimen/Noto+Serif+JP) (the Bold weight is subset to the 辞書 wordmark) | SIL Open Font License 1.1 |
 
 ## Libraries
 
