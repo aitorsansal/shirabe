@@ -26,10 +26,10 @@ public partial class SearchViewModel : ObservableObject
     private string query = "";
 
     [ObservableProperty]
-    private bool isJapaneseMode = true;
+    private bool isLoading;
 
     [ObservableProperty]
-    private bool isLoading;
+    private string resultLabel = "";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowRecents))]
@@ -42,8 +42,7 @@ public partial class SearchViewModel : ObservableObject
     public bool HasQuery => !string.IsNullOrWhiteSpace(Query);
     public bool ShowRecents => !HasQuery && !IsPreparingDictionary;
     public bool IsEmpty => HasQuery && !IsLoading && !IsPreparingDictionary && Results.Count == 0;
-    public string Placeholder => IsJapaneseMode ? "食べる · たべる · taberu" : "to eat, book, school…";
-    public string ResultLabel => IsJapaneseMode ? "Japanese → English" : "English → Japanese";
+    public string Placeholder => "食べる · taberu · to eat";
     public string ResultCountText => Results.Count == 1 ? "1 entry" : $"{Results.Count} entries";
 
     public async Task OnAppearingAsync()
@@ -67,24 +66,6 @@ public partial class SearchViewModel : ObservableObject
 
     [RelayCommand]
     private void ClearQuery() => Query = "";
-
-    [RelayCommand]
-    private void SetJapaneseMode()
-    {
-        IsJapaneseMode = true;
-        OnPropertyChanged(nameof(Placeholder));
-        OnPropertyChanged(nameof(ResultLabel));
-        _ = RunSearchAsync();
-    }
-
-    [RelayCommand]
-    private void SetEnglishMode()
-    {
-        IsJapaneseMode = false;
-        OnPropertyChanged(nameof(Placeholder));
-        OnPropertyChanged(nameof(ResultLabel));
-        _ = RunSearchAsync();
-    }
 
     [RelayCommand]
     private async Task OpenDrawAsync()
@@ -152,13 +133,13 @@ public partial class SearchViewModel : ObservableObject
             await data.EnsureInitializedAsync();
             if (token.IsCancellationRequested) return;
 
-            var mode = IsJapaneseMode ? SearchMode.Japanese : SearchMode.English;
             var query = Query;
-            var rows = await Task.Run(() => BuildResultRows(query, mode), token);
+            var (rows, label) = await Task.Run(() => BuildResultRows(query), token);
             if (token.IsCancellationRequested) return;
 
             Results.Clear();
             foreach (var row in rows) Results.Add(row);
+            ResultLabel = label;
         }
         finally
         {
@@ -174,10 +155,15 @@ public partial class SearchViewModel : ObservableObject
         }
     }
 
-    private List<SearchResultRow> BuildResultRows(string query, SearchMode mode)
+    private (List<SearchResultRow> Rows, string Label) BuildResultRows(string query)
     {
+        var matches = data.SearchService.Search(query, ResultsLimit);
+        var hasEnglish = matches.Any(m => m.Kind == SearchMatchKind.Gloss);
+        var hasJapanese = matches.Any(m => m.Kind != SearchMatchKind.Gloss);
+        var isMixed = hasEnglish && hasJapanese;
+
         var rows = new List<SearchResultRow>();
-        foreach (var match in data.SearchService.Search(query, mode, ResultsLimit))
+        foreach (var match in matches)
         {
             var entry = data.DictionaryRepository.GetEntry(match.EntryId);
             if (entry == null) continue;
@@ -187,18 +173,28 @@ public partial class SearchViewModel : ObservableObject
                 .Select((tag, i) => new TagChip(tag, i))
                 .ToList() ?? [];
             var gloss = string.Join(" · ", entry.Senses.SelectMany(s => s.Glosses).Take(3));
-            var viaNote = match.Kind == SearchMatchKind.Conjugated
-                ? $"de-inflected from {match.ConjugatedText ?? query} ({match.ConjugationForm})"
-                : null;
 
             rows.Add(new SearchResultRow(
                 entry.Id, entry.PrimaryReading, entry.PrimaryText,
                 entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon),
-                tags, gloss, viaNote));
+                tags, gloss, MatchNote(match, query, isMixed)));
         }
 
-        return rows;
+        var label = isMixed ? "Japanese · English"
+            : hasEnglish ? "English → Japanese"
+            : "Japanese → English";
+        return (rows, label);
     }
+
+    // When one Latin query matches both ways ("go": 碁 as romaji, 行く as "to go"),
+    // each row says which reading of the query found it.
+    private static string? MatchNote(SearchResult match, string query, bool isMixed) => match.Kind switch
+    {
+        SearchMatchKind.Conjugated => $"de-inflected from {match.MatchedText ?? query} ({match.ConjugationForm})",
+        SearchMatchKind.Gloss when isMixed => $"English: {match.MatchedText}",
+        _ when isMixed && match.MatchedText is { } kana && kana != query => $"romaji: {kana}",
+        _ => null,
+    };
 
     private void RefreshRecents()
     {

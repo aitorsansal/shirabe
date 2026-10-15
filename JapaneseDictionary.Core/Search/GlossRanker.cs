@@ -14,9 +14,12 @@ namespace JapaneseDictionary.Core.Search;
 /// (esp. cool or cold)", "dog (Canis familiaris)"). Remaining ties go to common
 /// words, earlier senses and glosses, then <see cref="KanjiRarity"/>.
 /// </summary>
+/// <param name="MatchRank">0 exact gloss, 1 whole word, 2 substring.</param>
+internal sealed record RankedGloss(int EntryId, int MatchRank, string GlossText, bool IsCommon, int Rarity);
+
 internal static partial class GlossRanker
 {
-    public static IReadOnlyList<int> Rank(
+    public static IReadOnlyList<RankedGloss> Rank(
         string query,
         IEnumerable<GlossCandidateRow> candidates,
         IReadOnlyDictionary<char, int> kanjiFrequencyRanks,
@@ -28,7 +31,7 @@ internal static partial class GlossRanker
             $"(?<![a-z0-9]){Regex.Escape(normalizedQuery)}(?![a-z0-9])",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-        var best = new Dictionary<int, (int, int, int, int, int, int, int, int)>();
+        var best = new Dictionary<int, ((int, int, int, int, int, int, int, int) Key, string Gloss)>();
         foreach (var candidate in candidates)
         {
             var gloss = candidate.GlossText;
@@ -49,11 +52,15 @@ internal static partial class GlossRanker
                 core.Length,
                 candidate.EntryId);
 
-            if (!best.TryGetValue(candidate.EntryId, out var existing) || key.CompareTo(existing) < 0)
-                best[candidate.EntryId] = key;
+            if (!best.TryGetValue(candidate.EntryId, out var existing) || key.CompareTo(existing.Key) < 0)
+                best[candidate.EntryId] = (key, candidate.GlossText);
         }
 
-        return best.Values.Order().Take(limit).Select(key => key.Item8).ToList();
+        return best.Values
+            .OrderBy(v => v.Key)
+            .Take(limit)
+            .Select(v => new RankedGloss(v.Key.Item8, v.Key.Item1, v.Gloss, v.Key.Item2 == 0, v.Key.Item6))
+            .ToList();
     }
 
     private static string StripQualifiers(string gloss)

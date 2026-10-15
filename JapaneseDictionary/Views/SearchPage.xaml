@@ -64,52 +64,6 @@
                         Padding="0" />
                 </Grid>
             </Border>
-
-            <!--  Mode toggle  -->
-            <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Margin="0,10,0,0" Padding="0">
-                <Grid ColumnDefinitions="*,*">
-                    <Button
-                        Grid.Column="0"
-                        Text="日本語 · かな · rōmaji"
-                        Command="{Binding SetJapaneseModeCommand}"
-                        FontFamily="ArchivoExtraBold"
-                        FontSize="11"
-                        CornerRadius="0">
-                        <Button.BackgroundColor>
-                            <MultiBinding Converter="{StaticResource JapaneseModeToBgConverter}">
-                                <Binding Path="IsJapaneseMode" />
-                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                            </MultiBinding>
-                        </Button.BackgroundColor>
-                        <Button.TextColor>
-                            <MultiBinding Converter="{StaticResource JapaneseModeToFgConverter}">
-                                <Binding Path="IsJapaneseMode" />
-                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                            </MultiBinding>
-                        </Button.TextColor>
-                    </Button>
-                    <Button
-                        Grid.Column="1"
-                        Text="English"
-                        Command="{Binding SetEnglishModeCommand}"
-                        FontFamily="ArchivoExtraBold"
-                        FontSize="11"
-                        CornerRadius="0">
-                        <Button.BackgroundColor>
-                            <MultiBinding Converter="{StaticResource EnglishModeToBgConverter}">
-                                <Binding Path="IsJapaneseMode" />
-                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                            </MultiBinding>
-                        </Button.BackgroundColor>
-                        <Button.TextColor>
-                            <MultiBinding Converter="{StaticResource EnglishModeToFgConverter}">
-                                <Binding Path="IsJapaneseMode" />
-                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                            </MultiBinding>
-                        </Button.TextColor>
-                    </Button>
-                </Grid>
-            </Border>
         </VerticalStackLayout>
 
         <!--  Content  -->
@@ -146,9 +100,11 @@
                             <FormattedString>
                                 <Span Text="Type " />
                                 <Span Text="taberu" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
-                                <Span Text=" for rōmaji, " />
+                                <Span Text=" or " />
+                                <Span Text="eat" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                <Span Text=" (rōmaji and English both work), " />
                                 <Span Text="食べた" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
-                                <Span Text=" to test de-inflection, or draw a kanji you can't type." />
+                                <Span Text=" to see de-inflection, or draw a kanji you can't type." />
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>

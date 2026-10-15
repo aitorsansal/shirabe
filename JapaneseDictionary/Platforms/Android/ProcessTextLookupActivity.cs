@@ -92,24 +92,10 @@ public class ProcessTextLookupActivity : Android.App.Activity
         }
     }
 
-    // Selected text with any Japanese in it is looked up as Japanese; otherwise
-    // it's English first. Japanese mode treats plain ASCII as romaji, so trying
-    // it first would turn a selected "run" into るんるん. The other mode is
-    // still a fallback for the rare romaji selection.
-    private static DictionaryEntry? FindBestEntry(DictionaryRepository repo, SearchService search, string query)
-    {
-        var (first, second) = ContainsJapanese(query)
-            ? (SearchMode.Japanese, SearchMode.English)
-            : (SearchMode.English, SearchMode.Japanese);
-
-        var best = search.Search(query, first, limit: 1).FirstOrDefault()
-            ?? search.Search(query, second, limit: 1).FirstOrDefault();
-
-        return best is null ? null : repo.GetEntry(best.EntryId);
-    }
-
-    private static bool ContainsJapanese(string text) =>
-        text.Any(c => c is >= '぀' and <= 'ヿ' or >= '一' and <= '鿿');
+    // SearchService itself tells Japanese from English (and romaji), so the
+    // best match is simply its first result.
+    private static DictionaryEntry? FindBestEntry(DictionaryRepository repo, SearchService search, string query) =>
+        search.Search(query, limit: 1).FirstOrDefault() is { } best ? repo.GetEntry(best.EntryId) : null;
 
     private void ShowEntry(DictionaryEntry entry)
     {

@@ -15,15 +15,18 @@ public enum SearchMatchKind
 
 /// <param name="ConjugationForm">For conjugated matches, the forms undone, innermost
 /// first (e.g. "causative · passive · negative · past").</param>
-/// <param name="ConjugatedText">For conjugated matches, the text that was
-/// deinflected: the query itself, or its kana conversion for romaji input.</param>
-public sealed record SearchResult(int EntryId, SearchMatchKind Kind, string? ConjugationForm, string? ConjugatedText = null);
-
-public enum SearchMode { Japanese, English }
+/// <param name="MatchedText">What the entry matched on: the deinflected text for
+/// conjugated matches, the kana form for romaji input, the gloss for English.</param>
+public sealed record SearchResult(int EntryId, SearchMatchKind Kind, string? ConjugationForm, string? MatchedText = null);
 
 /// <summary>
-/// Single entry point for dictionary search: kanji, kana (with romaji
-/// auto-conversion), conjugated verb/adjective forms, and English meanings.
+/// Single entry point for dictionary search: kanji, kana, romaji, conjugated
+/// verb/adjective forms and English meanings, from one search box.
+/// Text with any Japanese in it is searched as Japanese only. Latin text is
+/// searched as English, and also as romaji when all of it converts to kana
+/// ("taberu", "go", but not "eat"), with both merged into one list by match
+/// strength: exact matches, then conjugations, whole-word English, Japanese
+/// prefixes, and English substrings last.
 /// </summary>
 public sealed partial class SearchService
 {
@@ -37,78 +40,108 @@ public sealed partial class SearchService
     /// scan for essentially no useful results.</summary>
     private const int MinGlossQueryLength = 2;
 
+    /// <summary>Up to this length an English query only matches whole words: "go"
+    /// is inside tens of thousands of glosses ("good", "ago"), which is slow to
+    /// rank and useless to show.</summary>
+    private const int MaxWholeWordOnlyLength = 3;
+
     // Loaded on first use; a race between two first searches only means
     // building the same small dictionary twice.
     private IReadOnlyDictionary<char, int>? kanjiFrequencyRanks;
 
-    public IReadOnlyList<SearchResult> Search(string rawQuery, int limit = 50) =>
-        Search(rawQuery, SearchMode.Japanese, limit);
-
-    public IReadOnlyList<SearchResult> Search(string rawQuery, SearchMode mode, int limit = 50)
+    public IReadOnlyList<SearchResult> Search(string rawQuery, int limit = 50)
     {
         var query = rawQuery.Trim();
         if (query.Length == 0) return [];
 
+        kanjiFrequencyRanks ??= repo.GetKanjiFrequencyRanks();
+
+        var japaneseForms = BuildJapaneseForms(query);
+        var glosses = !ContainsJapanese(query) && query.Length >= MinGlossQueryLength
+            ? GlossRanker.Rank(query, repo.FindGlossCandidates(query, wholeWordOnly: query.Length <= MaxWholeWordOnlyLength), kanjiFrequencyRanks, limit)
+            : [];
+
         var results = new List<SearchResult>();
         var seen = new HashSet<int>();
 
-        void AddAll(IEnumerable<int> ids, SearchMatchKind kind)
+        void Add(IEnumerable<SearchResult> tier)
         {
-            foreach (var id in ids)
+            foreach (var result in tier)
             {
-                if (seen.Add(id))
-                    results.Add(new SearchResult(id, kind, null));
+                if (results.Count < limit && seen.Add(result.EntryId))
+                    results.Add(result);
             }
         }
 
-        var queryForms = BuildQueryForms(query);
+        Add(MergeByCommonness(
+            FindExactMatches(japaneseForms),
+            glosses.Where(g => g.MatchRank == 0).Select(GlossResult).ToList()));
 
-        foreach (var form in queryForms)
-            AddAll(repo.FindByExactText(form), SearchMatchKind.ExactMatch);
+        foreach (var form in japaneseForms.Where(ContainsJapanese))
+            Add(FindConjugatedMatches(form));
 
-        if (mode == SearchMode.Japanese)
+        Add(glosses.Where(g => g.MatchRank == 1).Select(g => GlossResult(g).Result));
+
+        // Kanji forms and readings are Japanese, so the raw Latin text never
+        // prefixes one; skipping it saves two table scans per keystroke.
+        foreach (var form in japaneseForms.Where(ContainsJapanese))
         {
-            foreach (var form in queryForms.Where(ContainsJapanese))
-            {
-                foreach (var match in FindConjugatedMatches(form))
-                {
-                    if (seen.Add(match.EntryId))
-                        results.Add(match);
-                }
-            }
-
-            if (results.Count < limit)
-            {
-                foreach (var form in queryForms)
-                    AddAll(repo.FindByPrefix(form, limit - results.Count), SearchMatchKind.Prefix);
-            }
+            if (results.Count >= limit) break;
+            Add(repo.FindByPrefix(form, limit - results.Count).Select(id => new SearchResult(id, SearchMatchKind.Prefix, null, form)));
         }
 
-        // Gloss search is gated to English mode (per the mode toggle's whole
-        // purpose — "which field the query matches against") rather than a
-        // "does this look like English" guess: any input mode always has some
-        // ASCII in it (romaji, punctuation), so that heuristic previously ran
-        // an expensive substring scan on every keystroke regardless of mode.
-        if (mode == SearchMode.English && results.Count < limit && query.Length >= MinGlossQueryLength)
-        {
-            kanjiFrequencyRanks ??= repo.GetKanjiFrequencyRanks();
-            var ranked = GlossRanker.Rank(query, repo.FindGlossCandidates(query), kanjiFrequencyRanks, limit - results.Count);
-            AddAll(ranked, SearchMatchKind.Gloss);
-        }
+        Add(glosses.Where(g => g.MatchRank == 2).Select(g => GlossResult(g).Result));
 
-        return results.Take(limit).ToList();
+        return results;
     }
 
-    /// <summary>The literal query, plus its romaji-to-kana conversions (hiragana
-    /// and katakana) when it looks like romaji — so typing "tabeta" on a normal
-    /// keyboard still finds たべた without switching input methods.</summary>
-    private static List<string> BuildQueryForms(string query)
+    private static (SearchResult Result, bool IsCommon, int Rarity) GlossResult(RankedGloss gloss) =>
+        (new SearchResult(gloss.EntryId, SearchMatchKind.Gloss, null, gloss.GlossText), gloss.IsCommon, gloss.Rarity);
+
+    /// <summary>Exact kanji/reading matches for each form, common and everyday
+    /// words first (かみ: 紙 and 神 before rarer homophones).</summary>
+    private List<(SearchResult Result, bool IsCommon, int Rarity)> FindExactMatches(IReadOnlyList<string> forms)
+    {
+        var formOrder = forms.Select((form, i) => (form, i)).ToDictionary(x => x.form, x => x.i);
+        return repo.FindByExactTexts(forms.ToList())
+            .GroupBy(m => m.EntryId)
+            .Select(g => g.OrderBy(m => formOrder[m.Text]).First())
+            .Select(m => (new SearchResult(m.EntryId, SearchMatchKind.ExactMatch, null, m.Text), m.IsCommon, KanjiRarity.Of(m.PrimaryText, kanjiFrequencyRanks!)))
+            .OrderBy(x => x.Item2 ? 0 : 1)
+            .ThenBy(x => x.Item3)
+            .ToList();
+    }
+
+    /// <summary>Merges two already-ranked lists, taking whichever head is more
+    /// common/everyday, so each keeps its own internal order (the gloss ranker's
+    /// sense and qualifier ordering isn't flattened).</summary>
+    private static IEnumerable<SearchResult> MergeByCommonness(
+        List<(SearchResult Result, bool IsCommon, int Rarity)> first,
+        List<(SearchResult Result, bool IsCommon, int Rarity)> second)
+    {
+        int i = 0, j = 0;
+        while (i < first.Count || j < second.Count)
+        {
+            var takeFirst = j >= second.Count
+                || (i < first.Count && (first[i].IsCommon ? 0 : 1, first[i].Rarity).CompareTo((second[j].IsCommon ? 0 : 1, second[j].Rarity)) <= 0);
+            yield return takeFirst ? first[i++].Result : second[j++].Result;
+        }
+    }
+
+    /// <summary>The literal query, plus its kana conversions when it reads as
+    /// romaji — so typing "tabeta" on a normal keyboard still finds たべた. Only a
+    /// full conversion counts: "eat" would leave a stray t, so it's English only.</summary>
+    private static List<string> BuildJapaneseForms(string query)
     {
         var forms = new List<string> { query };
         if (LooksLikeRomaji(query))
         {
-            forms.Add(RomajiConverter.ToHiragana(query));
-            forms.Add(RomajiConverter.ToKatakana(query));
+            var hiragana = RomajiConverter.ToHiragana(query);
+            if (!hiragana.Any(char.IsAsciiLetter))
+            {
+                forms.Add(hiragana);
+                forms.Add(RomajiConverter.ToKatakana(query));
+            }
         }
 
         return forms;

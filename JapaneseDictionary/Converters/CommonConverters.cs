@@ -4,62 +4,6 @@ using Microsoft.Maui.Controls.Shapes;
 
 namespace JapaneseDictionary.Converters;
 
-/// <summary>Shared base for the two-segment mode toggle: the active side gets
-/// a solid ink fill/background text, the inactive side stays transparent with
-/// secondary-color text (see the mode toggle in the design handoff). Themed
-/// via MultiBinding of [IsJapaneseMode, ThemeService.IsDark] since the ink/
-/// background swap direction flips with the theme.</summary>
-public abstract class ModeToggleConverterBase : IMultiValueConverter
-{
-    protected abstract bool ActiveWhenJapanese { get; }
-
-    public abstract object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture);
-
-    public object?[] ConvertBack(object? value, Type[] targetTypes, object? parameter, CultureInfo culture) =>
-        throw new NotSupportedException();
-
-    protected bool IsActive(object?[] values) =>
-        values.Length > 0 && values[0] is bool isJapanese && isJapanese == ActiveWhenJapanese;
-
-    protected static bool IsDark(object?[] values) => values.Length > 1 && values[1] is true;
-}
-
-public sealed class JapaneseModeToBgConverter : ModeToggleConverterBase
-{
-    protected override bool ActiveWhenJapanese => true;
-
-    public override object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture) =>
-        IsActive(values) ? Color.FromArgb(IsDark(values) ? "#f0eeec" : "#201e1d") : Colors.Transparent;
-}
-
-public sealed class JapaneseModeToFgConverter : ModeToggleConverterBase
-{
-    protected override bool ActiveWhenJapanese => true;
-
-    public override object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture) =>
-        IsActive(values)
-            ? Color.FromArgb(IsDark(values) ? "#17191c" : "#f3f2f2")
-            : Color.FromArgb(IsDark(values) ? "#b7b3b1" : "#605d5d");
-}
-
-public sealed class EnglishModeToBgConverter : ModeToggleConverterBase
-{
-    protected override bool ActiveWhenJapanese => false;
-
-    public override object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture) =>
-        IsActive(values) ? Color.FromArgb(IsDark(values) ? "#f0eeec" : "#201e1d") : Colors.Transparent;
-}
-
-public sealed class EnglishModeToFgConverter : ModeToggleConverterBase
-{
-    protected override bool ActiveWhenJapanese => false;
-
-    public override object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture) =>
-        IsActive(values)
-            ? Color.FromArgb(IsDark(values) ? "#17191c" : "#f3f2f2")
-            : Color.FromArgb(IsDark(values) ? "#b7b3b1" : "#605d5d");
-}
-
 /// <summary>Active tab gets the fixed sky-blue primary-action fill (same in
 /// both themes) with white text; inactive tabs stay transparent with
 /// secondary-color text, themed via MultiBinding of [IsXTab, ThemeService.IsDark]

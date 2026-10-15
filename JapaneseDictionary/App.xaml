@@ -11,10 +11,6 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <conv:JapaneseModeToBgConverter x:Key="JapaneseModeToBgConverter" />
-            <conv:JapaneseModeToFgConverter x:Key="JapaneseModeToFgConverter" />
-            <conv:EnglishModeToBgConverter x:Key="EnglishModeToBgConverter" />
-            <conv:EnglishModeToFgConverter x:Key="EnglishModeToFgConverter" />
             <conv:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
             <conv:TabActiveBgConverter x:Key="TabActiveBgConverter" />
             <conv:TabActiveFgConverter x:Key="TabActiveFgConverter" />

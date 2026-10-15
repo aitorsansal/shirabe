@@ -53,7 +53,7 @@ public class SearchServiceTests : IDisposable
     public void Search_EnglishGloss_FindsToEat()
     {
         Skip.If(search == null, "dictionary.db3 not built");
-        var results = search!.Search("to eat", SearchMode.English);
+        var results = search!.Search("to eat");
         Assert.Contains(results, r => r.EntryId == 1358280 && r.Kind == SearchMatchKind.Gloss);
     }
 

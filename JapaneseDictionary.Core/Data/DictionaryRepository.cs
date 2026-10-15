@@ -65,20 +65,38 @@ public sealed class DictionaryRepository : IDisposable
             .ToList();
 
     /// <summary>Every gloss containing <paramref name="text"/> (case-insensitive),
-    /// unranked and uncapped — <see cref="Search.GlossRanker"/> orders them.</summary>
-    public IReadOnlyList<GlossCandidateRow> FindGlossCandidates(string text)
+    /// unranked and uncapped — <see cref="Search.GlossRanker"/> orders them. With
+    /// <paramref name="wholeWordOnly"/>, only glosses where it stands as a word.</summary>
+    public IReadOnlyList<GlossCandidateRow> FindGlossCandidates(string text, bool wholeWordOnly = false)
     {
         // Raw SQL because sqlite-net-pcl's .Join() isn't translated to SQL: it
         // falls back to LINQ-to-objects and loads the whole SenseRow table.
         // SQLite's LIKE is case-insensitive for ASCII, which covers English glosses.
-        const string sql = """
+        // The whole-word form pads the gloss with spaces and turns brackets and
+        // separators into spaces, so "go (somewhere)" matches "% go %".
+        const string select = """
             SELECT s.EntryId, g.Text AS GlossText, s.SenseOrder, g.GlossOrder, w.IsCommon, w.PrimaryText
             FROM GlossRow g
             JOIN SenseRow s ON s.Id = g.SenseId
             JOIN WordEntryRow w ON w.Id = s.EntryId
+            """;
+        const string substring = select + """
+
             WHERE g.Text LIKE ? ESCAPE '\'
             """;
-        return db.Query<GlossCandidateRow>(sql, $"%{EscapeLike(text)}%");
+        const string wholeWord = select + """
+
+            WHERE g.Text LIKE ? ESCAPE '\'
+                AND (' ' || REPLACE(REPLACE(REPLACE(REPLACE(g.Text, '(', ' '), ')', ' '), ',', ' '), ';', ' ') || ' ')
+                    LIKE ? ESCAPE '\'
+            """;
+
+        // The plain substring LIKE goes first so the costlier whole-word check
+        // only runs on glosses that already contain the text.
+        var escaped = EscapeLike(text);
+        return wholeWordOnly
+            ? db.Query<GlossCandidateRow>(wholeWord, $"%{escaped}%", $"% {escaped} %")
+            : db.Query<GlossCandidateRow>(substring, $"%{escaped}%");
     }
 
     /// <summary>KANJIDIC2 newspaper frequency rank (1 = most frequent) for every
