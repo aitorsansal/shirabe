@@ -6,7 +6,7 @@ The app's product name is **Shirabe** (launcher label, About page, header wordma
 
 ## Commands
 
-- Build the app: `dotnet build JapaneseDictionary/JapaneseDictionary.csproj -f net10.0-android` — the target framework must be passed explicitly; the app only targets `net10.0-android` (no iOS/Windows/MacCatalyst configured despite the MAUI template scaffolding under `Platforms/`).
+- Build the app: `dotnet build JapaneseDictionary/JapaneseDictionary.csproj -f net10.0-android` — the target framework must be passed explicitly; the app only targets `net10.0-android` (the MAUI template's iOS/MacCatalyst/Windows scaffolding was removed).
 - Build and deploy to a connected/adb-visible device or emulator: `dotnet build JapaneseDictionary/JapaneseDictionary.csproj -f net10.0-android -t:Run`
 - Build the whole solution (app + Core + DataBuilder + Tests): `dotnet build JapaneseDictionary.sln`
 - Run tests: `dotnet test JapaneseDictionary.Tests/JapaneseDictionary.Tests.csproj`

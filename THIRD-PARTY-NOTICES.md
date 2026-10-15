@@ -44,7 +44,6 @@ The model was trained on the ETL Character Database and the KanjiVG dataset (cre
 |---|---|
 | [Archivo](https://github.com/Omnibus-Type/Archivo) | SIL Open Font License 1.1 |
 | [Noto Serif JP](https://fonts.google.com/noto/specimen/Noto+Serif+JP) | SIL Open Font License 1.1 |
-| Open Sans (from the .NET MAUI template) | Apache License 2.0 |
 
 ## Libraries
 

@@ -70,7 +70,6 @@ The dictionary data is not mine. It comes from the projects below, which are use
 **Fonts**
 
 - [Archivo](https://github.com/Omnibus-Type/Archivo) and [Noto Serif JP](https://fonts.google.com/noto/specimen/Noto+Serif+JP): SIL Open Font License 1.1.
-- Open Sans, included with the .NET MAUI template: Apache License 2.0.
 
 **Libraries**: [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) (MIT), [sqlite-net-pcl](https://github.com/praeclarum/sqlite-net) (MIT) and [SQLitePCLRaw](https://github.com/ericsink/SQLitePCL.raw) (Apache 2.0).
 
