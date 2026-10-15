@@ -50,11 +50,11 @@ public class DictionaryRepositoryTests : IDisposable
     }
 
     [SkippableFact]
-    public void FindByGlossContains_ToEatMatchesTaberu()
+    public void FindGlossCandidates_ToEatMatchesTaberu()
     {
         Skip.If(repo == null, "dictionary.db3 not built");
-        var ids = repo!.FindByGlossContains("to eat", 500);
-        Assert.Contains(1358280, ids);
+        var candidates = repo!.FindGlossCandidates("to eat");
+        Assert.Contains(candidates, c => c.EntryId == 1358280);
     }
 
     [SkippableFact]
@@ -77,10 +77,10 @@ public class DictionaryRepositoryTests : IDisposable
     }
 
     [SkippableFact]
-    public void FindReadingCandidates_FindsTaberuAsIchidan()
+    public void FindByExactTexts_FindsTaberuAsIchidan()
     {
         Skip.If(repo == null, "dictionary.db3 not built");
-        var candidates = repo!.FindReadingCandidates("たべ", 1000);
-        Assert.Contains(candidates, c => c.EntryId == 1358280 && c.WordClasses.Contains(WordClass.IchidanVerb));
+        var matches = repo!.FindByExactTexts(["食べる"]);
+        Assert.Contains(matches, m => m.EntryId == 1358280 && m.WordClasses.Contains(WordClass.IchidanVerb));
     }
 }

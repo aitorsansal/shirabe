@@ -33,7 +33,7 @@ Four projects:
 
 ### Search
 
-`SearchService.Search()` is the single entry point: exact match → kana deinflection (conjugation-stripping via `Deinflector` against `WordClass` rules, only tried on kana-only queries) → prefix match → English gloss substring (English mode only, minimum 2 characters — an unindexed scan otherwise). Romaji input is auto-converted to hiragana/katakana before matching (`RomajiConverter`).
+`SearchService.Search()` is the single entry point: exact match → deinflection (`Deinflector.Deinflect` undoes conjugation endings with chained suffix rules in `Deinflector.Rules.cs`, then candidates are looked up exactly and filtered by `WordClass`; works on kanji and kana alike) → prefix match → English gloss substring (English mode only, minimum 2 characters — an unindexed scan otherwise). Romaji input is auto-converted to hiragana/katakana before matching (`RomajiConverter`).
 
 ### Theming
 

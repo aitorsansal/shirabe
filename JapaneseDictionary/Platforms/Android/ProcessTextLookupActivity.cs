@@ -92,24 +92,24 @@ public class ProcessTextLookupActivity : Android.App.Activity
         }
     }
 
-    // Runs both search modes and merges rather than trying to detect script
-    // upfront (warm searches are only ~50ms each per the Gate 1 spike).
-    // Japanese-mode hits are prioritized; English-mode gloss hits fill in
-    // after, deduped by entry id.
+    // Selected text with any Japanese in it is looked up as Japanese; otherwise
+    // it's English first. Japanese mode treats plain ASCII as romaji, so trying
+    // it first would turn a selected "run" into るんるん. The other mode is
+    // still a fallback for the rare romaji selection.
     private static DictionaryEntry? FindBestEntry(DictionaryRepository repo, SearchService search, string query)
     {
-        var japaneseResults = search.Search(query, SearchMode.Japanese);
-        var englishResults = search.Search(query, SearchMode.English);
+        var (first, second) = ContainsJapanese(query)
+            ? (SearchMode.Japanese, SearchMode.English)
+            : (SearchMode.English, SearchMode.Japanese);
 
-        var seen = new HashSet<int>();
-        foreach (var result in japaneseResults.Concat(englishResults))
-        {
-            if (seen.Add(result.EntryId))
-                return repo.GetEntry(result.EntryId);
-        }
+        var best = search.Search(query, first, limit: 1).FirstOrDefault()
+            ?? search.Search(query, second, limit: 1).FirstOrDefault();
 
-        return null;
+        return best is null ? null : repo.GetEntry(best.EntryId);
     }
+
+    private static bool ContainsJapanese(string text) =>
+        text.Any(c => c is >= '぀' and <= 'ヿ' or >= '一' and <= '鿿');
 
     private void ShowEntry(DictionaryEntry entry)
     {
