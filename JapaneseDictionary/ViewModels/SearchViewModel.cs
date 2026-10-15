@@ -101,6 +101,15 @@ public partial class SearchViewModel : ObservableObject
 
     private async Task RunSearchAsync()
     {
+        // Callers fire-and-forget this (`_ = RunSearchAsync()`), so an exception here would
+        // otherwise vanish and leave the list silently empty (that is how a missing native
+        // SQLite library showed up as "0 entries"). Log it instead.
+        try { await RunSearchCoreAsync(); }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Search failed: {ex}"); }
+    }
+
+    private async Task RunSearchCoreAsync()
+    {
         _searchCts?.Cancel();
         var cts = _searchCts = new CancellationTokenSource();
         var token = cts.Token;

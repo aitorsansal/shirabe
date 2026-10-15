@@ -9,6 +9,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.27.0" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+    <!-- sqlite-net-pcl pulls in lib 2.1.2 (SQLite 3.49.1, CVE-2025-6965); pin the fixed native build.
+         PrivateAssets=all keeps this from flowing to the Android app, which must use only its own
+         lib.e_sqlite3.android; letting both in made libe_sqlite3 unloadable at runtime
+         (DllNotFoundException: e_sqlite3). -->
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.13" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

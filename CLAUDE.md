@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+The app's product name is **Shirabe** (launcher label, About page, header wordmark). The solution, project folders, namespaces and `ApplicationId` (`com.aitorsansal.japanesedictionary`) deliberately keep the original `JapaneseDictionary` working title, so don't rename those when changing user-facing text.
+
 ## Commands
 
 - Build the app: `dotnet build JapaneseDictionary/JapaneseDictionary.csproj -f net10.0-android` — the target framework must be passed explicitly; the app only targets `net10.0-android` (no iOS/Windows/MacCatalyst configured despite the MAUI template scaffolding under `Platforms/`).

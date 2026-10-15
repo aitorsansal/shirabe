@@ -1,6 +1,6 @@
-# Japanese Dictionary
+# Shirabe
 
-An offline Japanese-English dictionary for Android, built with .NET MAUI. Everything runs on the device: the dictionary is a bundled SQLite database, so lookups need no network connection.
+Shirabe (調べ, "looking something up") is an offline Japanese-English dictionary for Android, built with .NET MAUI. Everything runs on the device: the dictionary is a bundled SQLite database, so lookups need no network connection.
 
 ## Features
 
@@ -20,7 +20,7 @@ An offline Japanese-English dictionary for Android, built with .NET MAUI. Everyt
 | `JapaneseDictionary.DataBuilder` | Console tool that builds `dictionary.db3` from the public source corpora |
 | `JapaneseDictionary.Tests` | xUnit tests for Core |
 
-`CLAUDE.md` has a more detailed architecture walkthrough, and `design/` holds the UI design reference.
+The app is called Shirabe; the solution, project and namespace names keep the original working title, `JapaneseDictionary`. `CLAUDE.md` has a more detailed architecture walkthrough, and `design/` holds the UI design reference.
 
 ## Building
 

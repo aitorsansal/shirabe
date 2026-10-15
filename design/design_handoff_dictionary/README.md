@@ -20,7 +20,7 @@ The bundled file (`Japanese Dictionary.dc.html`) is a **design reference built i
 ## Screens
 
 ### 1. Search (default screen)
-- **Header**: "辞書 Jisho" wordmark (Noto Serif JP 22px + Archivo uppercase label) left, "Offline · JMdict" meta right; 2px rule below.
+- **Header**: "辞書 Shirabe" wordmark (Noto Serif JP 22px + Archivo uppercase label) left, "Offline · JMdict" meta right; 2px rule below.
 - **Search bar**: bordered input (search icon, placeholder swaps by mode — `食べる · たべる · taberu` vs `to eat, book, school…`), a clear (×) button that appears once text is entered, and a dark square button (pencil/draw icon) that opens the handwriting sheet.
 - **Mode toggle**: two-segment control — "日本語 · かな · rōmaji" / "English" — switches placeholder + which field the query matches against.
 - **Recents** (shown when query is empty): last 6 opened words as pill buttons in Noto Serif JP, plus a short "Try" hint block.

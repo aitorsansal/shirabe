@@ -111,6 +111,10 @@
         <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.27.0" GeneratePathProperty="true" />
         <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+        <!-- Native SQLite for Android. Pinned above the one bundle_green pulls in: lib 2.1.11 and
+             older ship SQLite 3.49.1, affected by CVE-2025-6965 (GHSA-2m69-gcr7-jv3q, fixed in
+             SQLite 3.50.2). 2.1.13 ships SQLite 3.53.3. -->
+        <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.android" Version="2.1.13" />
     </ItemGroup>
 
     <ItemGroup>
