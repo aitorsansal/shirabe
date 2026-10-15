@@ -41,6 +41,7 @@ public partial class SearchViewModel : ObservableObject
 
     public bool HasQuery => !string.IsNullOrWhiteSpace(Query);
     public bool HasRecents => Recents.Count > 0;
+    public bool ShowHomeContent => !HasQuery;
     public bool ShowRecents => !HasQuery && !IsPreparingDictionary;
     public bool IsEmpty => HasQuery && !IsLoading && !IsPreparingDictionary && Results.Count == 0;
     public string Placeholder => "食べる · taberu · to eat";
@@ -64,6 +65,7 @@ public partial class SearchViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasQuery));
         OnPropertyChanged(nameof(ShowRecents));
+        OnPropertyChanged(nameof(ShowHomeContent));
         _ = RunSearchAsync();
     }
 
