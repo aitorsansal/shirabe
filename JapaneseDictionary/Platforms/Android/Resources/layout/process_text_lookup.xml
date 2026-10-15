@@ -30,6 +30,22 @@
         android:textSize="14sp"
         android:textColor="@color/lookupGlossBody" />
 
+    <TextView
+        android:id="@+id/lookupOpen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="14dp"
+        android:paddingVertical="6dp"
+        android:paddingHorizontal="4dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:text="OPEN IN SHIRABE ›"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:textColor="@color/lookupReadingAccent"
+        android:visibility="gone" />
+
     <ProgressBar
         android:id="@+id/lookupProgress"
         style="?android:attr/progressBarStyleSmall"

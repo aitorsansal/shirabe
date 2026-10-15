@@ -28,6 +28,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
     private TextView wordText = null!;
     private TextView readingText = null!;
     private TextView glossText = null!;
+    private TextView openButton = null!;
     private Android.Widget.ProgressBar progress = null!;
 
     protected override void OnCreate(Bundle? savedInstanceState)
@@ -38,6 +39,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
         wordText = FindViewById<TextView>(Resource.Id.lookupWord)!;
         readingText = FindViewById<TextView>(Resource.Id.lookupReading)!;
         glossText = FindViewById<TextView>(Resource.Id.lookupGlosses)!;
+        openButton = FindViewById<TextView>(Resource.Id.lookupOpen)!;
         progress = FindViewById<Android.Widget.ProgressBar>(Resource.Id.lookupProgress)!;
 
         ShowLoading();
@@ -109,6 +111,21 @@ public class ProcessTextLookupActivity : Android.App.Activity
         wordText.Text = entry.PrimaryText;
         readingText.Text = entry.PrimaryReading;
         glossText.Text = glosses.Length > 0 ? glosses : "(no glosses)";
+
+        openButton.Visibility = ViewStates.Visible;
+        openButton.Click += (_, _) => OpenInApp(entry.Id);
+    }
+
+    // NewTask brings Shirabe's own task forward (this popup lives in the calling
+    // app's task); ClearTop + SingleTop reuse a running MainActivity through
+    // OnNewIntent instead of stacking a second copy of the app.
+    private void OpenInApp(int entryId)
+    {
+        var intent = new Android.Content.Intent(this, typeof(MainActivity));
+        intent.PutExtra(MainActivity.EntryIdExtra, entryId);
+        intent.AddFlags(Android.Content.ActivityFlags.NewTask | Android.Content.ActivityFlags.ClearTop | Android.Content.ActivityFlags.SingleTop);
+        StartActivity(intent);
+        Finish();
     }
 
     private void ShowMessage(string message)

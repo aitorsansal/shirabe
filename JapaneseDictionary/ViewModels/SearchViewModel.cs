@@ -55,6 +55,8 @@ public partial class SearchViewModel : ObservableObject
         await data.EnsureInitializedAsync();
         IsPreparingDictionary = false;
         RefreshRecents();
+
+        await EntryLinks.OpenPendingAsync();
     }
 
     partial void OnQueryChanged(string value)
