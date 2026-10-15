@@ -46,7 +46,7 @@ public partial class WordDetailViewModel : ObservableObject
     public ObservableCollection<CompoundRow> Compounds { get; } = [];
     public ObservableCollection<ExampleCard> Examples { get; } = [];
     public ObservableCollection<KanjiCard> KanjiCards { get; } = [];
-    public ObservableCollection<Deinflector.ConjugationRow> ConjugationRows { get; } = [];
+    public ObservableCollection<ConjugationTableRow> ConjugationRows { get; } = [];
 
     public bool HasOtherForms => OtherForms.Count > 0;
     public string ConjugationNote { get; private set; } = "";
@@ -256,7 +256,8 @@ public partial class WordDetailViewModel : ObservableObject
         }
 
         var rows = Deinflector.GetConjugationTable(entry.PrimaryReading, wordClass);
-        foreach (var row in rows) ConjugationRows.Add(row);
+        var stem = ConjugationTableRow.CommonStem(rows);
+        foreach (var row in rows) ConjugationRows.Add(ConjugationTableRow.From(row, stem));
 
         ShowConjugationTab = ConjugationRows.Count > 0;
         ConjugationNote = ShowConjugationTab

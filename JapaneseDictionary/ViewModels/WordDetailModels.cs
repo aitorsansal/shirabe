@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using JapaneseDictionary.Core.Search;
 
 namespace JapaneseDictionary.ViewModels;
 
@@ -41,4 +42,42 @@ public partial class KanjiCard : ObservableObject
     public IReadOnlyList<string> VisiblePaths => CurrentStep == 0 ? [] : StrokePaths.Take(CurrentStep).ToList();
 
     public void Step() => CurrentStep = CurrentStep % TotalStrokes + 1;
+}
+
+/// <summary>A conjugation table row with each form split into the stem shared by
+/// the whole table (shown highlighted) and the conjugated ending.</summary>
+public sealed record ConjugationTableRow(string Label, string PlainStem, string PlainEnding, string PoliteStem, string PoliteEnding)
+{
+    /// <summary>The prefix every form in the table shares: い for 行く (いく,
+    /// いった, いかない), たべ for 食べる, べんきょう for 勉強. Empty for 来る, whose
+    /// stem changes too (くる, こない, きた).</summary>
+    public static string CommonStem(IEnumerable<Deinflector.ConjugationRow> rows)
+    {
+        string? stem = null;
+        foreach (var form in rows.SelectMany(r => new[] { r.Plain, r.Polite }).Where(f => f != "—"))
+        {
+            if (stem is null)
+            {
+                stem = form;
+                continue;
+            }
+
+            var length = 0;
+            while (length < stem.Length && length < form.Length && stem[length] == form[length])
+                length++;
+            stem = stem[..length];
+        }
+
+        return stem ?? "";
+    }
+
+    public static ConjugationTableRow From(Deinflector.ConjugationRow row, string stem)
+    {
+        var (plainStem, plainEnding) = Split(row.Plain, stem);
+        var (politeStem, politeEnding) = Split(row.Polite, stem);
+        return new ConjugationTableRow(row.Label, plainStem, plainEnding, politeStem, politeEnding);
+    }
+
+    private static (string Stem, string Ending) Split(string form, string stem) =>
+        form.StartsWith(stem, StringComparison.Ordinal) ? (stem, form[stem.Length..]) : ("", form);
 }
