@@ -64,7 +64,7 @@ The dictionary data is not mine. It comes from the projects below, which are use
 
 **Handwriting recognition**
 
-- Character recognition uses the model from [DaKanji Single Kanji Recognition](https://github.com/CaptainDario/DaKanji-Single-Kanji-Recognition) (code under MIT). Character recognition powered by machine learning from Dariyooo (DaAppLab). The model was trained on the ETL Character Database and the KanjiVG dataset.
+- Character recognition uses the model from [DaKanji Single Kanji Recognition](https://github.com/CaptainDario/DaKanji-Single-Kanji-Recognition) (MIT, copyright CaptainDario). Character recognition powered by machine learning from Dariyooo (DaAppLab). The model was trained on the [ETL Character Database](https://etlcdb.db.aist.go.jp/) (AIST) and the KanjiVG dataset.
 - Inference runs through [ONNX Runtime](https://github.com/microsoft/onnxruntime) (MIT).
 
 **Fonts**
@@ -73,6 +73,13 @@ The dictionary data is not mine. It comes from the projects below, which are use
 - Open Sans, included with the .NET MAUI template: Apache License 2.0.
 
 **Libraries**: [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) (MIT), [sqlite-net-pcl](https://github.com/praeclarum/sqlite-net) (MIT) and [SQLitePCLRaw](https://github.com/ericsink/SQLitePCL.raw) (Apache 2.0).
+
+## License
+
+- **Source code**: [MIT](LICENSE). You are free to fork, modify and redistribute it.
+- **Dictionary database** (`dictionary.db3`): [CC BY-SA 4.0](DATA-LICENSE.md), because it is derived from JMdict, KANJIDIC2, KanjiVG and Tatoeba. Redistributions must credit those sources and keep the same license.
+- **Third-party components** (handwriting model, fonts, libraries): see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+- The application name and icon are not covered by the code license. If you publish a fork, please use your own name and icon.
 
 ## Development history
 
