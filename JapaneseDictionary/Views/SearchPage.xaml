@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:services="clr-namespace:JapaneseDictionary.Services"
     x:DataType="vm:SearchViewModel"
     Shell.NavBarIsVisible="False"
     BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
@@ -17,17 +18,11 @@
                     <Label Text="辞書" FontFamily="NotoSerifJPBoldWordmark" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     <Label Text="SHIRABE" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
                 </HorizontalStackLayout>
-                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                    <Label Text="OFFLINE · JMDICT" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" VerticalOptions="Center" />
-                    <Button Text="{Binding Source={StaticResource ThemeService}, Path=ThemeIcon}"
-                            Command="{Binding Source={StaticResource ThemeService}, Path=ToggleThemeCommand}"
-                            SemanticProperties.Description="{Binding Source={StaticResource ThemeService}, Path=ThemeDescription}"
-                            Style="{StaticResource IconGlyphButtonStyle}"
-                            FontSize="17" />
-                    <Button Text="ⓘ"
-                            Command="{Binding OpenAboutCommand}"
-                            Style="{StaticResource IconGlyphButtonStyle}"
-                            FontSize="17" />
+                <HorizontalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" Margin="0,0,-10,0">
+                    <Button Text="{x:Static services:IconGlyphs.Settings}"
+                            Command="{Binding OpenSettingsCommand}"
+                            SemanticProperties.Description="Settings"
+                            Style="{StaticResource IconButtonStyle}" />
                 </HorizontalStackLayout>
             </Grid>
 

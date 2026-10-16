@@ -44,6 +44,7 @@ The model was trained on the ETL Character Database and the KanjiVG dataset (cre
 |---|---|
 | [Archivo](https://github.com/Omnibus-Type/Archivo) | SIL Open Font License 1.1 |
 | [Noto Serif JP](https://fonts.google.com/noto/specimen/Noto+Serif+JP) (the Bold weight is subset to the 辞書 wordmark) | SIL Open Font License 1.1 |
+| [Material Symbols Sharp](https://github.com/google/material-design-icons) (static instances, subset to the icons the app uses) | Apache License 2.0 |
 
 ## Libraries
 

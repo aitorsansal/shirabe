@@ -102,4 +102,12 @@
         <Setter Property="MinimumHeightRequest" Value="40" />
     </Style>
 
+    <!--  Material Symbols glyph button (Services/IconGlyphs.cs); 44 wide for touch targets  -->
+    <Style x:Key="IconButtonStyle" TargetType="Button" BasedOn="{StaticResource IconGlyphButtonStyle}">
+        <Setter Property="FontFamily" Value="Icons" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="MinimumWidthRequest" Value="44" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+    </Style>
+
 </ResourceDictionary>

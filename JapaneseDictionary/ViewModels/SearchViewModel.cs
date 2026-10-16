@@ -88,7 +88,7 @@ public partial class SearchViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private static Task OpenAboutAsync() => Shell.Current.GoToAsync(nameof(AboutPage));
+    private static Task OpenSettingsAsync() => Shell.Current.GoToAsync(nameof(SettingsPage));
 
     [RelayCommand]
     private Task OpenResultAsync(int entryId) => OpenEntryAsync(entryId);

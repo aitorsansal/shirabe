@@ -68,7 +68,7 @@ public sealed partial class AboutViewModel : ObservableObject
             ]),
 
         new("FONTS AND LIBRARIES",
-            "Archivo and Noto Serif JP are used under the SIL Open Font License 1.1. ONNX Runtime, CommunityToolkit.Mvvm and sqlite-net are used under the MIT license.",
+            "Archivo and Noto Serif JP are used under the SIL Open Font License 1.1. Material Symbols icons are used under the Apache License 2.0. ONNX Runtime, CommunityToolkit.Mvvm and sqlite-net are used under the MIT license.",
             [
                 new("Full third-party notices", $"{RepoUrl}/blob/main/THIRD-PARTY-NOTICES.md"),
             ]),

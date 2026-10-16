@@ -24,6 +24,9 @@ public static class MauiProgram
                 fonts.AddFont("NotoSerifJP-SemiBold.ttf", "NotoSerifJPSemiBold");
                 // Subset to just 辞書 (2KB instead of 7.5MB): it's only used for the wordmark.
                 fonts.AddFont("NotoSerifJP-Bold-Wordmark.ttf", "NotoSerifJPBoldWordmark");
+                // Material Symbols Sharp, subset to the glyphs in Services/IconGlyphs.cs.
+                fonts.AddFont("MaterialSymbolsSharp-Icons.ttf", "Icons");
+                fonts.AddFont("MaterialSymbolsSharp-Filled.ttf", "IconsFilled");
             });
 
 #if DEBUG
@@ -40,15 +43,18 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<AppDataContext>();
         builder.Services.AddSingleton<ThemeService>();
+        builder.Services.AddSingleton<JapaneseTtsService>();
 
         builder.Services.AddTransient<SearchViewModel>();
         builder.Services.AddTransient<WordDetailViewModel>();
         builder.Services.AddTransient<HandwritingViewModel>();
         builder.Services.AddTransient<AboutViewModel>();
+        builder.Services.AddTransient<SettingsViewModel>();
 
         builder.Services.AddTransient<SearchPage>();
         builder.Services.AddTransient<WordDetailPage>();
         builder.Services.AddTransient<AboutPage>();
+        builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<HandwritingSheetPage>();
 
         return builder.Build();

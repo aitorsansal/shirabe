@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 	<application android:allowBackup="true" android:fullBackupContent="@xml/backup_rules" android:dataExtractionRules="@xml/data_extraction_rules" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true" android:enableOnBackInvokedCallback="false"></application>
+	<!-- Android 11+ package visibility: TTS needs to see the installed engines, and
+	     Launcher.TryOpenAsync needs to see the Play Store to open market:// links. -->
+	<queries>
+		<intent>
+			<action android:name="android.intent.action.TTS_SERVICE" />
+		</intent>
+		<intent>
+			<action android:name="android.intent.action.VIEW" />
+			<data android:scheme="market" />
+		</intent>
+	</queries>
 </manifest>
