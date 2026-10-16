@@ -13,6 +13,18 @@ public static class RomajiConverter
     public static string ToHiragana(string romaji) => Convert(romaji, Hiragana);
     public static string ToKatakana(string romaji) => Convert(romaji, Katakana);
 
+    /// <summary>True if <paramref name="text"/> is just <paramref name="kana"/>
+    /// spelled in romaji, ignoring case, spaces and hyphens. JMdict sometimes
+    /// lists the romanized word itself as the first gloss (お食い初め:
+    /// "okuizome", then "weaning ceremony"), which is useless as a meaning.</summary>
+    public static bool IsRomanizationOf(string text, string kana)
+    {
+        if (text.Length == 0 || kana.Length == 0) return false;
+        var compact = text.Replace(" ", "").Replace("-", "");
+        if (compact.Any(c => !char.IsAsciiLetter(c))) return false;
+        return ToHiragana(compact) == kana || ToKatakana(compact) == kana;
+    }
+
     private static string Convert(string romaji, IReadOnlyDictionary<string, string> table)
     {
         var input = romaji.ToLowerInvariant();

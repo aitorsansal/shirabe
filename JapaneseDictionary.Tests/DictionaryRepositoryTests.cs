@@ -77,6 +77,19 @@ public class DictionaryRepositoryTests : IDisposable
     }
 
     [SkippableFact]
+    public void FindRelatedByKanji_MatchesHeadwordsOnly_CommonFirst()
+    {
+        Skip.If(repo == null, "dictionary.db3 not built");
+        var related = repo!.FindRelatedByKanji("食", 1358280, 8).Select(id => repo.GetEntry(id)!).ToList();
+
+        Assert.Equal(8, related.Count);
+        Assert.DoesNotContain(related, e => e.Id == 1358280);
+        Assert.All(related, e => Assert.Contains("食", e.PrimaryText));
+        // Common words lead; くっ付く only matched through its rare 食っ付く spelling.
+        Assert.All(related, e => Assert.True(e.KanjiForms.Any(k => k.IsCommon) || e.Readings.Any(r => r.IsCommon)));
+    }
+
+    [SkippableFact]
     public void FindByExactTexts_FindsTaberuAsIchidan()
     {
         Skip.If(repo == null, "dictionary.db3 not built");

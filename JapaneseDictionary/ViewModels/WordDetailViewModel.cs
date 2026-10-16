@@ -261,26 +261,29 @@ public partial class WordDetailViewModel : ObservableObject
 
     private List<CompoundRow> BuildCompounds(DictionaryEntry entry)
     {
-        var compounds = new List<CompoundRow>();
-        var primaryKanji = entry.KanjiForms.FirstOrDefault()?.Text;
-        if (string.IsNullOrEmpty(primaryKanji)) return compounds;
-
         // Best-effort "related words": other entries sharing a kanji from this
-        // headword. JMdict's own curated cross-references aren't parsed into
-        // the schema (see DictionaryRepository.FindByKanjiContains).
-        var seen = new HashSet<int>();
-        foreach (var ch in primaryKanji)
-        {
-            if (compounds.Count >= CompoundsLimit) break;
-            foreach (var relatedId in data.DictionaryRepository.FindByKanjiContains(ch.ToString(), entry.Id, CompoundsLimit))
-            {
-                if (!seen.Add(relatedId)) continue;
-                var related = data.DictionaryRepository.GetEntry(relatedId);
-                if (related == null) continue;
+        // headword (see DictionaryRepository.FindRelatedByKanji). The kanji take
+        // turns filling the slots, best match first, so 学校 shows words with 校
+        // too instead of eight with 学.
+        var kanji = entry.PrimaryText.Where(IsKanji).Select(c => c.ToString()).Distinct().ToList();
+        if (kanji.Count == 0) return [];
 
-                var gloss = related.Senses.SelectMany(s => s.Glosses).FirstOrDefault() ?? "";
-                compounds.Add(new CompoundRow(related.Id, related.PrimaryText, related.PrimaryReading, gloss));
+        var candidates = kanji
+            .Select(k => data.DictionaryRepository.FindRelatedByKanji(k, entry.Id, CompoundsLimit))
+            .ToList();
+
+        var compounds = new List<CompoundRow>();
+        var seen = new HashSet<int>();
+        for (var rank = 0; compounds.Count < CompoundsLimit && candidates.Any(c => rank < c.Count); rank++)
+        {
+            foreach (var ids in candidates)
+            {
                 if (compounds.Count >= CompoundsLimit) break;
+                if (rank >= ids.Count || !seen.Add(ids[rank])) continue;
+                if (data.DictionaryRepository.GetEntry(ids[rank]) is not { } related) continue;
+
+                var gloss = related.MeaningGlosses.FirstOrDefault() ?? "";
+                compounds.Add(new CompoundRow(related.Id, related.PrimaryText, related.PrimaryReading, gloss));
             }
         }
 
@@ -290,28 +293,19 @@ public partial class WordDetailViewModel : ObservableObject
     private List<ExampleCard> BuildExamples(DictionaryEntry entry)
     {
         var sentences = data.DictionaryRepository.GetExampleSentences(entry.Id, ExamplesLimit);
-        var highlightCandidates = entry.KanjiForms.Select(k => k.Text)
-            .Concat(entry.Readings.Select(r => r.Text))
-            .OrderByDescending(s => s.Length) // prefer the longest/most specific match
-            .ToList();
+        var highlightCandidates = ExampleHighlighter.Candidates(entry, data.DictionaryRepository.GetEntryWordClasses(entry.Id));
 
         var examples = new List<ExampleCard>();
         foreach (var sentence in sentences)
         {
-            var hitText = highlightCandidates.FirstOrDefault(h => sentence.Japanese.Contains(h));
-            if (hitText == null)
+            var text = sentence.Japanese;
+            if (ExampleHighlighter.Find(text, highlightCandidates) is not var (index, length))
             {
-                examples.Add(new ExampleCard(sentence.Id, sentence.Japanese, "", "", sentence.English));
+                examples.Add(new ExampleCard(sentence.Id, text, "", "", sentence.English));
                 continue;
             }
 
-            var index = sentence.Japanese.IndexOf(hitText, StringComparison.Ordinal);
-            examples.Add(new ExampleCard(
-                sentence.Id,
-                sentence.Japanese[..index],
-                hitText,
-                sentence.Japanese[(index + hitText.Length)..],
-                sentence.English));
+            examples.Add(new ExampleCard(sentence.Id, text[..index], text.Substring(index, length), text[(index + length)..], sentence.English));
         }
 
         return examples;

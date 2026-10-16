@@ -53,6 +53,8 @@
     <Color x:Key="PrimaryActionPressed">#256f9c</Color>
     <Color x:Key="DrawButtonFill">#6b3aa8</Color>
     <Color x:Key="StrokeProgress">#6fbf73</Color>
+    <!-- Remove/delete actions (white text on it: 5.3:1). -->
+    <Color x:Key="DestructiveAction">#c4342f</Color>
 
     <!-- Theme-adaptive accents: swap with the theme, used as text/fill on the page background. -->
     <Color x:Key="ReadingAccentLight">#6b3aa8</Color>

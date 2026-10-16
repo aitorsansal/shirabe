@@ -52,17 +52,24 @@ public sealed class DictionaryRepository : IDisposable
             .ToList();
     }
 
-    /// <summary>Other entries whose kanji form contains <paramref name="text"/> —
-    /// a best-effort "related words" list. JMdict's own curated cross-reference
+    /// <summary>Other entries whose headword contains <paramref name="kanji"/>,
+    /// best first — a "related words" list. JMdict's own curated cross-reference
     /// data (&lt;xref&gt;) isn't parsed into the schema, so this approximates it
-    /// by kanji overlap instead.</summary>
-    public IReadOnlyList<int> FindByKanjiContains(string text, int excludeEntryId, int limit) =>
-        db.Table<KanjiFormRow>()
-            .Where(r => r.Text.Contains(text) && r.EntryId != excludeEntryId)
-            .Select(r => r.EntryId)
-            .Distinct()
-            .Take(limit)
-            .ToList();
+    /// by kanji overlap instead.
+    ///
+    /// Matches the headword (<see cref="WordEntryRow.PrimaryText"/>), not every
+    /// kanji spelling: rare alternate spellings otherwise pull in entries that
+    /// show no sign of the kanji (くっ付く via 食っ付く). Ranked common words
+    /// first, then words starting with the kanji (食事 before 月食), then
+    /// shortest, so the list leads with everyday compounds rather than whatever
+    /// the table scan hits first.</summary>
+    public IReadOnlyList<int> FindRelatedByKanji(string kanji, int excludeEntryId, int limit) =>
+        db.QueryScalars<int>("""
+            SELECT Id FROM WordEntryRow
+            WHERE PrimaryText LIKE ? AND Id != ?
+            ORDER BY IsCommon DESC, (PrimaryText LIKE ?) DESC, LENGTH(PrimaryText), Id
+            LIMIT ?
+            """, $"%{kanji}%", excludeEntryId, $"{kanji}%", limit);
 
     /// <summary>Every gloss containing <paramref name="text"/> (case-insensitive),
     /// unranked and uncapped — <see cref="Search.GlossRanker"/> orders them. With

@@ -21,6 +21,13 @@ public sealed record DictionaryEntry(
     /// <summary>The reading to show alongside <see cref="PrimaryText"/>.</summary>
     public string PrimaryReading =>
         Readings.FirstOrDefault(r => r.IsCommon)?.Text ?? Readings[0].Text;
+
+    /// <summary>Every gloss in sense order, minus ones that only spell a
+    /// reading in romaji (お食い初め's "okuizome"). For one-line previews
+    /// (search rows, related words); the full meaning list shows everything.</summary>
+    public IEnumerable<string> MeaningGlosses =>
+        Senses.SelectMany(s => s.Glosses)
+            .Where(g => !Readings.Any(r => Search.RomajiConverter.IsRomanizationOf(g, r.Text)));
 }
 
 /// <summary>A kanji spelling of an entry (JMdict k_ele).</summary>

@@ -59,7 +59,7 @@
                         <SwipeView.RightItems>
                             <SwipeItems Mode="Reveal">
                                 <SwipeItem Text="Remove"
-                                           BackgroundColor="{StaticResource PrimaryAction}"
+                                           BackgroundColor="{StaticResource DestructiveAction}"
                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ListDetailViewModel}}, Path=RemoveCommand}"
                                            CommandParameter="{Binding .}" />
                             </SwipeItems>

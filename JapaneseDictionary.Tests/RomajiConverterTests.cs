@@ -32,4 +32,16 @@ public class RomajiConverterTests
     {
         Assert.Equal("たべる!", RomajiConverter.ToHiragana("taberu!"));
     }
+
+    [Theory]
+    [InlineData("okuizome", "おくいぞめ", true)]
+    [InlineData("Oku-izome", "おくいぞめ", true)]
+    [InlineData("terebi", "テレビ", true)]
+    [InlineData("weaning ceremony", "おくいぞめ", false)]
+    [InlineData("cat", "ねこ", false)]
+    [InlineData("", "ねこ", false)]
+    public void IsRomanizationOf_DetectsGlossesThatAreJustTheReading(string gloss, string kana, bool expected)
+    {
+        Assert.Equal(expected, RomajiConverter.IsRomanizationOf(gloss, kana));
+    }
 }

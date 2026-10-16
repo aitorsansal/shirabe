@@ -19,7 +19,7 @@ public sealed record SearchResultRow(
         var tags = firstSense?.PartOfSpeechTags.Take(2)
             .Select((tag, i) => new TagChip(tag, i))
             .ToList() ?? [];
-        var gloss = string.Join(" · ", entry.Senses.SelectMany(s => s.Glosses).Take(3));
+        var gloss = string.Join(" · ", entry.MeaningGlosses.Take(3));
 
         return new SearchResultRow(
             entry.Id, entry.PrimaryReading, entry.PrimaryText,
