@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
 using JapaneseDictionary.Views;
 
@@ -27,17 +28,24 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly ThemeService theme;
     private readonly JapaneseTtsService tts;
     private readonly AppDataContext data;
+    private readonly LanguageService language;
 
-    public SettingsViewModel(ThemeService theme, JapaneseTtsService tts, AppDataContext data)
+    public SettingsViewModel(ThemeService theme, JapaneseTtsService tts, AppDataContext data, LanguageService language)
     {
         this.theme = theme;
         this.tts = tts;
         this.data = data;
+        this.language = language;
     }
 
     public bool IsThemeSystem => theme.Preference == ThemePreference.System;
     public bool IsThemeLight => theme.Preference == ThemePreference.Light;
     public bool IsThemeDark => theme.Preference == ThemePreference.Dark;
+
+    public bool IsLanguageSystem => LanguageService.Preference == "";
+    public bool IsLanguageEnglish => LanguageService.Preference == "en";
+    public bool IsLanguageSpanish => LanguageService.Preference == "es";
+    public bool IsLanguageCatalan => LanguageService.Preference == "ca";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(VoiceStatusText))]
@@ -48,9 +56,9 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public string VoiceStatusText => IsVoiceAvailable switch
     {
-        true => "A Japanese voice is installed. Word readings and example sentences can be read aloud.",
-        false => "No Japanese voice found. Install one in the system text-to-speech settings to hear readings.",
-        null => "Checking for a Japanese voice…",
+        true => AppResources.Settings_VoiceReady,
+        false => AppResources.Settings_VoiceMissing,
+        null => AppResources.Settings_VoiceChecking,
     };
 
     /// <summary>Only shown when more than one engine can speak Japanese;
@@ -66,7 +74,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool hasHistory;
 
-    public string VersionText => $"Version {AppInfo.Current.VersionString} ({AppInfo.Current.BuildString})";
+    public string VersionText => UiText.Format(AppResources.Settings_Version, AppInfo.Current.VersionString, AppInfo.Current.BuildString);
 
     public async Task OnAppearingAsync()
     {
@@ -101,8 +109,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         EngineChoices.Add(new EngineChoiceRow
         {
             Package = "",
-            Label = "Automatic",
-            Note = "Google's engine when it has Japanese, otherwise the system default.",
+            Label = AppResources.Settings_EngineAutomatic,
+            Note = AppResources.Settings_EngineAutomaticNote,
             IsSelected = preferred.Length == 0,
         });
         foreach (var engine in engines)
@@ -123,6 +131,20 @@ public sealed partial class SettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(IsThemeSystem));
         OnPropertyChanged(nameof(IsThemeLight));
         OnPropertyChanged(nameof(IsThemeDark));
+    }
+
+    /// <summary>Strings are read when a page is built, so the whole Shell is
+    /// rebuilt in the new language and Settings reopened on top of it, leaving
+    /// the user where they were.</summary>
+    [RelayCommand]
+    private async Task SetLanguageAsync(string value)
+    {
+        if (value == LanguageService.Preference) return;
+        language.SetPreference(value);
+
+        var window = Application.Current!.Windows[0];
+        window.Page = new AppShell();
+        await Shell.Current.GoToAsync(nameof(SettingsPage), animate: false);
     }
 
     [RelayCommand]
@@ -150,7 +172,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     private async Task ClearHistoryAsync()
     {
         var confirmed = await Shell.Current.DisplayAlertAsync(
-            "Clear history?", "Recently viewed words will be removed. Your lists stay as they are.", "Clear", "Cancel");
+            AppResources.Settings_ClearHistoryTitle, AppResources.Settings_ClearHistoryMessage, AppResources.Settings_ClearHistoryConfirm, AppResources.Common_Cancel);
         if (!confirmed) return;
 
         data.UserDataRepository.ClearHistory();
@@ -185,9 +207,9 @@ public sealed partial class SettingsViewModel : ObservableObject
         HasHistory = count > 0;
         HistorySummary = count switch
         {
-            0 => "No recently viewed words.",
-            1 => "1 recently viewed word.",
-            _ => $"{count} recently viewed words.",
+            0 => AppResources.Settings_HistoryNone,
+            1 => AppResources.Settings_HistoryOne,
+            _ => UiText.Format(AppResources.Settings_HistoryMany, count),
         };
     }
 }

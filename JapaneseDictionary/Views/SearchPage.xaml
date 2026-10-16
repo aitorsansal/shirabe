@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:res="clr-namespace:JapaneseDictionary.Resources.Localization"
     xmlns:services="clr-namespace:JapaneseDictionary.Services"
     xmlns:controls="clr-namespace:JapaneseDictionary.Controls"
     x:DataType="vm:SearchViewModel"
@@ -22,11 +23,11 @@
                 <HorizontalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" Margin="0,0,-10,0">
                     <Button Text="{x:Static services:IconGlyphs.Bookmarks}"
                             Command="{Binding OpenListsCommand}"
-                            SemanticProperties.Description="Lists"
+                            SemanticProperties.Description="{x:Static res:AppResources.Common_Lists}"
                             Style="{StaticResource IconButtonStyle}" />
                     <Button Text="{x:Static services:IconGlyphs.Settings}"
                             Command="{Binding OpenSettingsCommand}"
-                            SemanticProperties.Description="Settings"
+                            SemanticProperties.Description="{x:Static res:AppResources.Common_Settings}"
                             Style="{StaticResource IconButtonStyle}" />
                 </HorizontalStackLayout>
             </Grid>
@@ -74,15 +75,15 @@
                 <!--  First launch after install or dictionary update  -->
                 <VerticalStackLayout IsVisible="{Binding IsPreparingDictionary}" Padding="16,24" Spacing="12">
                     <ActivityIndicator IsRunning="{Binding IsPreparingDictionary}" HorizontalOptions="Start" />
-                    <Label Text="Preparing the dictionary…" FontFamily="ArchivoExtraBold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
-                    <Label Text="Setting up the offline dictionary on your device. This only happens after installing or updating, and takes a few seconds." FontFamily="ArchivoRegular" FontSize="14" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                    <Label Text="{x:Static res:AppResources.Search_PreparingTitle}" FontFamily="ArchivoExtraBold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <Label Text="{x:Static res:AppResources.Search_PreparingBody}" FontFamily="ArchivoRegular" FontSize="14" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
                 </VerticalStackLayout>
 
                 <!--  Recents  -->
                 <VerticalStackLayout IsVisible="{Binding ShowRecents}" Padding="16,0,16,4" Spacing="0">
                     <Grid IsVisible="{Binding HasRecents}" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
-                        <Label Grid.Column="0" Text="RECENT" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="CLEAR" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" VerticalOptions="Center" Padding="12,6,0,6" SemanticProperties.Description="Clear recent words">
+                        <Label Grid.Column="0" Text="{x:Static res:AppResources.Search_Recent}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="{x:Static res:AppResources.Search_Clear}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" VerticalOptions="Center" Padding="12,6,0,6" SemanticProperties.Description="{x:Static res:AppResources.Search_ClearDescription}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ClearRecentsCommand}" />
                             </Label.GestureRecognizers>
@@ -102,17 +103,17 @@
                     </FlexLayout>
 
                     <BoxView IsVisible="{Binding HasRecents}" HeightRequest="1" Margin="0,18,0,14" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
-                    <Label Text="TRY" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" Margin="0,0,0,8" />
+                    <Label Text="{x:Static res:AppResources.Search_Try}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" Margin="0,0,0,8" />
                     <Label FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" LineBreakMode="WordWrap">
                         <Label.FormattedText>
                             <FormattedString>
-                                <Span Text="Type " />
+                                <Span Text="{x:Static res:AppResources.Search_HintType}" />
                                 <Span Text="taberu" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
-                                <Span Text=" or " />
+                                <Span Text="{x:Static res:AppResources.Search_HintOr}" />
                                 <Span Text="eat" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
-                                <Span Text=" (rōmaji and English both work), " />
+                                <Span Text="{x:Static res:AppResources.Search_HintMiddle}" />
                                 <Span Text="食べた" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
-                                <Span Text=" to see de-inflection, or draw a kanji you can't type." />
+                                <Span Text="{x:Static res:AppResources.Search_HintEnd}" />
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
@@ -135,18 +136,18 @@
             <CollectionView.Footer>
                 <VerticalStackLayout Spacing="0" Padding="0,0,0,56">
                     <VerticalStackLayout IsVisible="{Binding IsEmpty}" Padding="16,24" Spacing="12">
-                        <Label Text="No matches" FontFamily="ArchivoExtraBold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                        <Label Text="{x:Static res:AppResources.Search_NoMatches}" FontFamily="ArchivoExtraBold" FontSize="19" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                         <Label FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" LineBreakMode="WordWrap">
                             <Label.FormattedText>
                                 <FormattedString>
-                                    <Span Text="Nothing in JMdict for &#8220;" />
+                                    <Span Text="{x:Static res:AppResources.Search_NoMatchesPrefix}" />
                                     <Span Text="{Binding Query}" />
-                                    <Span Text="&#8221;. If you copied it from a page, try drawing it instead." />
+                                    <Span Text="{x:Static res:AppResources.Search_NoMatchesSuffix}" />
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>
                         <Button
-                            Text="✎  Draw the kanji"
+                            Text="{x:Static res:AppResources.Search_DrawKanji}"
                             Command="{Binding OpenDrawCommand}"
                             BackgroundColor="{StaticResource DrawButtonFill}"
                             TextColor="White"

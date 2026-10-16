@@ -30,6 +30,10 @@
         <ApplicationVersion>1</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+
+        <!-- UI languages besides the neutral English in AppResources.resx. Also keeps
+             NuGet packages' satellite assemblies for every other language out of the APK. -->
+        <SatelliteResourceLanguages>es;ca</SatelliteResourceLanguages>
     </PropertyGroup>
 
     <!-- Android signing. keystore.local.props (gitignored, see keystore.local.props.template)
@@ -96,6 +100,19 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <!-- UI strings. The AppResources class is generated at build time (into obj/)
+         instead of a checked-in Designer.cs, so adding a string is a .resx edit only.
+         AppResources.es.resx / .ca.resx are picked up as satellites automatically. -->
+    <ItemGroup>
+        <EmbeddedResource Update="Resources\Localization\AppResources.resx">
+            <Generator>MSBuild:Compile</Generator>
+            <StronglyTypedFileName>$(IntermediateOutputPath)AppResources.Designer.cs</StronglyTypedFileName>
+            <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+            <StronglyTypedNamespace>JapaneseDictionary.Resources.Localization</StronglyTypedNamespace>
+            <StronglyTypedClassName>AppResources</StronglyTypedClassName>
+        </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>

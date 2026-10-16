@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:res="clr-namespace:JapaneseDictionary.Resources.Localization"
     xmlns:services="clr-namespace:JapaneseDictionary.Services"
     xmlns:controls="clr-namespace:JapaneseDictionary.Controls"
     x:DataType="vm:ListDetailViewModel"
@@ -17,7 +18,7 @@
             <Grid ColumnDefinitions="*,Auto">
                 <Button
                     Grid.Column="0"
-                    Text="‹  LISTS"
+                    Text="{x:Static res:AppResources.Lists_Back}"
                     Command="{Binding GoBackCommand}"
                     BackgroundColor="Transparent"
                     TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}"
@@ -32,12 +33,12 @@
                     <Button Text="{x:Static services:IconGlyphs.IosShare}"
                             Command="{Binding ExportCommand}"
                             IsVisible="{Binding CanExport}"
-                            SemanticProperties.Description="Export as CSV"
+                            SemanticProperties.Description="{x:Static res:AppResources.Lists_ExportDescription}"
                             Style="{StaticResource IconButtonStyle}" />
                     <Button Text="{x:Static services:IconGlyphs.MoreVert}"
                             Command="{Binding ShowListMenuCommand}"
                             IsVisible="{Binding IsUserList}"
-                            SemanticProperties.Description="Rename or delete the list"
+                            SemanticProperties.Description="{x:Static res:AppResources.Lists_MenuDescription}"
                             Style="{StaticResource IconButtonStyle}" />
                 </HorizontalStackLayout>
             </Grid>
@@ -50,7 +51,7 @@
                     <Label Text="{Binding Kicker}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.4" TextColor="{AppThemeBinding Light={StaticResource KickerAccentLight}, Dark={StaticResource KickerAccentDark}}" />
                     <Label Text="{Binding Title}" FontFamily="ArchivoExtraBold" FontSize="26" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     <Label Text="{Binding CountText}" FontFamily="ArchivoSemiBold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
-                    <Label Text="Swipe a word left to remove it from the list." IsVisible="{Binding CanRemove}" Margin="0,6,0,0" FontFamily="ArchivoRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" />
+                    <Label Text="{x:Static res:AppResources.Lists_SwipeHint}" IsVisible="{Binding CanRemove}" Margin="0,6,0,0" FontFamily="ArchivoRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" />
                 </VerticalStackLayout>
             </CollectionView.Header>
             <CollectionView.ItemTemplate>
@@ -58,7 +59,7 @@
                     <SwipeView IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type vm:ListDetailViewModel}}, Path=CanRemove}">
                         <SwipeView.RightItems>
                             <SwipeItems Mode="Reveal">
-                                <SwipeItem Text="Remove"
+                                <SwipeItem Text="{x:Static res:AppResources.Lists_Remove}"
                                            BackgroundColor="{StaticResource DestructiveAction}"
                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ListDetailViewModel}}, Path=RemoveCommand}"
                                            CommandParameter="{Binding .}" />

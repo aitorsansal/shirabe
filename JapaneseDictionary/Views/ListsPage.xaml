@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:res="clr-namespace:JapaneseDictionary.Resources.Localization"
     xmlns:services="clr-namespace:JapaneseDictionary.Services"
     x:DataType="vm:ListsViewModel"
     Shell.NavBarIsVisible="False"
@@ -35,7 +36,7 @@
             <Grid ColumnDefinitions="*,Auto">
                 <Button
                     Grid.Column="0"
-                    Text="‹  BACK"
+                    Text="{x:Static res:AppResources.Common_Back}"
                     Command="{Binding GoBackCommand}"
                     BackgroundColor="Transparent"
                     TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}"
@@ -49,7 +50,7 @@
                 <Button Grid.Column="1"
                         Text="{x:Static services:IconGlyphs.Add}"
                         Command="{Binding CreateListCommand}"
-                        SemanticProperties.Description="New list"
+                        SemanticProperties.Description="{x:Static res:AppResources.Common_NewList}"
                         Style="{StaticResource IconButtonStyle}"
                         Margin="0,0,-10,0" />
             </Grid>
@@ -58,15 +59,15 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="0" Padding="0,18,0,40">
-                <Label Text="Lists" Margin="16,0" FontFamily="ArchivoExtraBold" FontSize="26" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                <Label Text="{x:Static res:AppResources.Common_Lists}" Margin="16,0" FontFamily="ArchivoExtraBold" FontSize="26" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
 
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding BuiltInLists}" BindableLayout.ItemTemplate="{StaticResource ListRowTemplate}" Margin="0,14,0,0" />
 
-                <Label Text="YOUR LISTS" Margin="16,28,16,4" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                <Label Text="{x:Static res:AppResources.Lists_Yours}" Margin="16,28,16,4" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding UserLists}" BindableLayout.ItemTemplate="{StaticResource ListRowTemplate}" />
 
                 <Label IsVisible="{Binding ShowUserListsHint}" Margin="16,8,16,0"
-                       Text="Group words however you like: a textbook chapter, a JLPT level, words from a show. Export any list as CSV for Anki or a spreadsheet."
+                       Text="{x:Static res:AppResources.Lists_Hint}"
                        FontFamily="ArchivoRegular" FontSize="14" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
 
                 <HorizontalStackLayout Spacing="10" Padding="16,0" HeightRequest="54" Margin="0,8,0,0">
@@ -74,7 +75,7 @@
                         <TapGestureRecognizer Command="{Binding CreateListCommand}" />
                     </HorizontalStackLayout.GestureRecognizers>
                     <Label Text="{x:Static services:IconGlyphs.Add}" FontFamily="Icons" FontSize="22" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
-                    <Label Text="New list" FontFamily="ArchivoSemiBold" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                    <Label Text="{x:Static res:AppResources.Common_NewList}" FontFamily="ArchivoSemiBold" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
                 </HorizontalStackLayout>
             </VerticalStackLayout>
         </ScrollView>

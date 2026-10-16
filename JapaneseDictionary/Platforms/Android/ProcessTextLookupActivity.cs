@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using JapaneseDictionary.Core.Data;
 using JapaneseDictionary.Core.Models;
 using JapaneseDictionary.Core.Search;
+using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
 
 namespace JapaneseDictionary;
@@ -18,7 +19,7 @@ namespace JapaneseDictionary;
 // deliberately separate, non-Shell-routed Activity (not MainActivity) so a
 // lookup shows as a small floating card over whatever app the user was in,
 // rather than switching to the full app.
-[Activity(Label = "Look Up", Theme = "@style/LookupDialogTheme", Exported = true)]
+[Activity(Label = "@string/lookup_label", Theme = "@style/LookupDialogTheme", Exported = true)]
 [IntentFilter(
     [Android.Content.Intent.ActionProcessText],
     Categories = [Android.Content.Intent.CategoryDefault],
@@ -41,6 +42,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
         glossText = FindViewById<TextView>(Resource.Id.lookupGlosses)!;
         openButton = FindViewById<TextView>(Resource.Id.lookupOpen)!;
         progress = FindViewById<Android.Widget.ProgressBar>(Resource.Id.lookupProgress)!;
+        openButton.Text = AppResources.Lookup_Open;
 
         ShowLoading();
 
@@ -64,7 +66,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
         {
             if (string.IsNullOrEmpty(query))
             {
-                ShowMessage("Nothing selected.");
+                ShowMessage(AppResources.Lookup_NothingSelected);
                 return;
             }
 
@@ -80,7 +82,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
             var entry = FindBestEntry(appDataContext.DictionaryRepository, appDataContext.SearchService, query);
             if (entry is null)
             {
-                ShowMessage($"No entry found for “{query}”.");
+                ShowMessage(UiText.Format(AppResources.Lookup_NotFound, query));
                 return;
             }
 
@@ -90,7 +92,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
         {
             // Deliberately no dedicated error UI here — see
             // docs/process-text-lookup-plan.md §7, open question #4.
-            ShowMessage("Couldn't look this up right now.");
+            ShowMessage(AppResources.Lookup_Failed);
         }
     }
 
@@ -101,7 +103,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
 
     private void ShowEntry(DictionaryEntry entry)
     {
-        var glosses = string.Join(" / ", entry.Senses.SelectMany(s => s.Glosses).Take(3));
+        var glosses = string.Join(" / ", entry.MeaningGlosses.Take(3));
 
         progress.Visibility = ViewStates.Gone;
         wordText.Visibility = ViewStates.Visible;
@@ -110,7 +112,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
 
         wordText.Text = entry.PrimaryText;
         readingText.Text = entry.PrimaryReading;
-        glossText.Text = glosses.Length > 0 ? glosses : "(no glosses)";
+        glossText.Text = glosses.Length > 0 ? glosses : AppResources.Lookup_NoGlosses;
 
         openButton.Visibility = ViewStates.Visible;
         openButton.Click += (_, _) => OpenInApp(entry.Id);
@@ -135,7 +137,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
         readingText.Visibility = ViewStates.Gone;
         glossText.Visibility = ViewStates.Visible;
 
-        wordText.Text = "Look Up";
+        wordText.Text = AppResources.Lookup_Title;
         glossText.Text = message;
     }
 }

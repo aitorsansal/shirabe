@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
 using JapaneseDictionary.Views;
 
@@ -40,7 +41,7 @@ public sealed partial class ListsViewModel : ObservableObject
     [RelayCommand]
     private async Task CreateListAsync()
     {
-        var name = await ListNamePrompt.AskAsync("New list", "Add words to it from any word page.", "Create");
+        var name = await ListNamePrompt.AskAsync(AppResources.Common_NewList, AppResources.Lists_NewPromptMessage, AppResources.Common_Create);
         if (name == null) return;
 
         data.UserDataRepository.CreateList(name);
@@ -57,14 +58,12 @@ public sealed partial class ListsViewModel : ObservableObject
 
         BuiltInLists.Clear();
         foreach (var favourites in lists.Where(l => l.IsSystem))
-            BuiltInLists.Add(new ListSummaryRow(favourites.Id, favourites.Name, CountText(favourites.Count), IconGlyphs.Favorite));
-        BuiltInLists.Add(new ListSummaryRow(ListDetailViewModel.HistoryListId, "History", CountText(repository.HistoryCount), IconGlyphs.History));
+            BuiltInLists.Add(new ListSummaryRow(favourites.Id, UiText.ListName(favourites), UiText.WordCount(favourites.Count), IconGlyphs.Favorite));
+        BuiltInLists.Add(new ListSummaryRow(ListDetailViewModel.HistoryListId, AppResources.Common_History, UiText.WordCount(repository.HistoryCount), IconGlyphs.History));
 
         UserLists.Clear();
         foreach (var list in lists.Where(l => !l.IsSystem))
-            UserLists.Add(new ListSummaryRow(list.Id, list.Name, CountText(list.Count), IconGlyphs.Bookmarks));
+            UserLists.Add(new ListSummaryRow(list.Id, list.Name, UiText.WordCount(list.Count), IconGlyphs.Bookmarks));
         OnPropertyChanged(nameof(ShowUserListsHint));
     }
-
-    private static string CountText(int count) => count == 1 ? "1 word" : $"{count} words";
 }

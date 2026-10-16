@@ -45,6 +45,12 @@ Two easy-to-hit MAUI XAML traps that already bit this codebase once each:
 - `Border` has both `Background` (`Brush`) and `BackgroundColor` (`Color`). The implicit `Border` style sets `Background="Transparent"` (needed so Borders with only a `Stroke` still hit-test across their full bounds for `TapGestureRecognizer`), and that silently wins over any local `BackgroundColor`. Always set `Background`, not `BackgroundColor`, for a Border's visible fill.
 - A `FlexLayout` nested inside another `FlexLayout` doesn't report its own wrapped height back to the outer one, so a second wrapped row silently gets clipped by whatever follows it.
 
+### Localization
+
+UI text is in English, Spanish and Catalan: `Resources/Localization/AppResources.resx` (neutral English) plus `.es.resx` / `.ca.resx`. The `AppResources` class is generated at build time into `obj/` (MSBuild `StronglyTyped*` metadata in the csproj), so there is no checked-in Designer.cs — adding a string means adding it to all three .resx files. XAML uses `{x:Static res:AppResources.Key}`; strings built in code (counts, formatted messages, Core's English conjugation names, the stored "Favourites" list name) go through `Services/UiText.cs`. Don't hardcode user-facing text.
+
+`LanguageService` applies the saved choice (or the system language) as the UI culture at the very start of `MauiProgram`. Because x:Static is read when a page is built, changing language rebuilds the Shell. Only the UI is translated — glosses, gloss search and sentence translations stay English (the bundled JMdict/Tatoeba data is English-only). The Look Up popup's label in other apps' text-selection menu is an Android string resource (`Platforms/Android/Resources/values*/lookup_strings.xml`) and follows the system language.
+
 ### Android / ONNX
 
 Handwriting recognition (`DaKanjiRecognizer`) loads `char_classifier.onnx` via `Microsoft.ML.OnnxRuntime`. Getting `libonnxruntime.so` into the Android APK needs three explicit workarounds in `JapaneseDictionary.csproj` (forcing `AndroidApplication=true` early, explicit `RuntimeIdentifiers` even in Debug, and manually adding the `AndroidLibrary` item from the package's own contents) — read the comments there before touching the OnnxRuntime version or Android target settings.

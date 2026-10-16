@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using JapaneseDictionary.Core.Data;
+using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
 
 namespace JapaneseDictionary.ViewModels;
@@ -57,7 +57,7 @@ public sealed partial class AddToListViewModel : ObservableObject
     [RelayCommand]
     private async Task CreateListAsync()
     {
-        var name = await ListNamePrompt.AskAsync("New list", "Name the list. This word will be added to it.", "Create");
+        var name = await ListNamePrompt.AskAsync(AppResources.Common_NewList, AppResources.Lists_NewPromptFromWord, AppResources.Common_Create);
         if (name == null) return;
 
         var listId = data.UserDataRepository.CreateList(name);
@@ -70,6 +70,6 @@ public sealed partial class AddToListViewModel : ObservableObject
         var memberOf = data.UserDataRepository.GetListIdsContaining(entryId);
         Lists.Clear();
         foreach (var list in data.UserDataRepository.GetLists())
-            Lists.Add(new ListToggleRow { ListId = list.Id, Name = list.Name, IsMember = memberOf.Contains(list.Id) });
+            Lists.Add(new ListToggleRow { ListId = list.Id, Name = UiText.ListName(list), IsMember = memberOf.Contains(list.Id) });
     }
 }

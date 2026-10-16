@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 
 using JapaneseDictionary.Core.Export;
 using JapaneseDictionary.Core.Models;
+using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
 using JapaneseDictionary.Views;
 
@@ -54,11 +55,9 @@ public sealed partial class ListDetailViewModel : ObservableObject
     public bool IsHistory => ListId == HistoryListId;
     public bool CanRemove => !IsHistory;
     public bool CanExport => !IsEmpty;
-    public string Kicker => IsHistory ? "RECENTLY VIEWED" : IsUserList ? "LIST" : "SAVED";
+    public string Kicker => IsHistory ? AppResources.Lists_KickerHistory : IsUserList ? AppResources.Lists_KickerList : AppResources.Lists_KickerSaved;
 
-    public string EmptyText => IsHistory
-        ? "Words you open show up here."
-        : "Nothing here yet. Save words from any word page with the heart or the list button.";
+    public string EmptyText => IsHistory ? AppResources.Lists_EmptyHistory : AppResources.Lists_EmptyList;
 
     public ObservableCollection<SearchResultRow> Rows { get; } = [];
 
@@ -82,12 +81,12 @@ public sealed partial class ListDetailViewModel : ObservableObject
         var repository = data.UserDataRepository;
         if (IsHistory)
         {
-            Title = "History";
+            Title = AppResources.Common_History;
             IsUserList = false;
         }
         else if (repository.GetList(ListId) is { } list)
         {
-            Title = list.Name;
+            Title = UiText.ListName(list);
             IsUserList = !list.IsSystem;
         }
         else
@@ -131,13 +130,13 @@ public sealed partial class ListDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task ShowListMenuAsync()
     {
-        const string rename = "Rename";
-        const string delete = "Delete list";
-        var choice = await Shell.Current.DisplayActionSheetAsync(Title, "Cancel", delete, rename);
+        var rename = AppResources.Lists_Rename;
+        var delete = AppResources.Lists_Delete;
+        var choice = await Shell.Current.DisplayActionSheetAsync(Title, AppResources.Common_Cancel, delete, rename);
 
         if (choice == rename)
         {
-            var name = await ListNamePrompt.AskAsync("Rename list", "", "Rename", Title, ListId);
+            var name = await ListNamePrompt.AskAsync(AppResources.Lists_RenameTitle, "", AppResources.Lists_Rename, Title, ListId);
             if (name == null) return;
             data.UserDataRepository.RenameList(ListId, name);
             Title = name;
@@ -145,7 +144,7 @@ public sealed partial class ListDetailViewModel : ObservableObject
         else if (choice == delete)
         {
             var confirmed = await Shell.Current.DisplayAlertAsync(
-                $"Delete \"{Title}\"?", "The list is removed. The words stay in the dictionary and in any other list.", "Delete", "Cancel");
+                UiText.Format(AppResources.Lists_DeleteTitle, Title), AppResources.Lists_DeleteMessage, AppResources.Lists_DeleteConfirm, AppResources.Common_Cancel);
             if (!confirmed) return;
             data.UserDataRepository.DeleteList(ListId);
             await Shell.Current.GoToAsync("..");
@@ -162,7 +161,7 @@ public sealed partial class ListDetailViewModel : ObservableObject
 
         await Share.Default.RequestAsync(new ShareFileRequest
         {
-            Title = $"Export {Title}",
+            Title = UiText.Format(AppResources.Lists_ExportTitle, Title),
             File = new ShareFile(path, "text/csv"),
         });
     }
@@ -172,7 +171,7 @@ public sealed partial class ListDetailViewModel : ObservableObject
 
     private void UpdateCounts()
     {
-        CountText = Rows.Count == 1 ? "1 word" : $"{Rows.Count} words";
+        CountText = UiText.WordCount(Rows.Count);
         IsEmpty = Rows.Count == 0;
     }
 

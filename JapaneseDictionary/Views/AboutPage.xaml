@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:res="clr-namespace:JapaneseDictionary.Resources.Localization"
     x:DataType="vm:AboutViewModel"
     Shell.NavBarIsVisible="False"
     BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
@@ -13,7 +14,7 @@
         <!--  Header  -->
         <VerticalStackLayout Grid.Row="0" Padding="16,50,16,0" Spacing="0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
             <Button
-                Text="‹  BACK"
+                Text="{x:Static res:AppResources.Common_Back}"
                 Command="{Binding GoBackCommand}"
                 BackgroundColor="Transparent"
                 TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}"

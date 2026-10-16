@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Common_Back" xml:space="preserve"><value>‹  ENRERE</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Cancel·la</value></data>
+  <data name="Common_Done" xml:space="preserve"><value>FET</value></data>
+  <data name="Common_Create" xml:space="preserve"><value>Crea</value></data>
+  <data name="Common_CommonBadge" xml:space="preserve"><value>COMÚ</value></data>
+  <data name="Common_WordCountOne" xml:space="preserve"><value>1 paraula</value></data>
+  <data name="Common_WordCountMany" xml:space="preserve"><value>{0} paraules</value></data>
+  <data name="Common_Lists" xml:space="preserve"><value>Llistes</value></data>
+  <data name="Common_Settings" xml:space="preserve"><value>Configuració</value></data>
+  <data name="Common_Favourites" xml:space="preserve"><value>Preferits</value></data>
+  <data name="Common_History" xml:space="preserve"><value>Historial</value></data>
+  <data name="Common_NewList" xml:space="preserve"><value>Llista nova</value></data>
+  <data name="Search_PreparingTitle" xml:space="preserve"><value>S'està preparant el diccionari…</value></data>
+  <data name="Search_PreparingBody" xml:space="preserve"><value>S'està configurant el diccionari sense connexió al dispositiu. Només passa després d'instal·lar o actualitzar i triga uns segons.</value></data>
+  <data name="Search_Recent" xml:space="preserve"><value>RECENTS</value></data>
+  <data name="Search_Clear" xml:space="preserve"><value>ESBORRA</value></data>
+  <data name="Search_ClearDescription" xml:space="preserve"><value>Esborra les paraules recents</value></data>
+  <data name="Search_Try" xml:space="preserve"><value>PROVA</value></data>
+  <data name="Search_HintType" xml:space="preserve"><value>Escriu </value></data>
+  <data name="Search_HintOr" xml:space="preserve"><value> o </value></data>
+  <data name="Search_HintMiddle" xml:space="preserve"><value> (funcionen el rōmaji i l'anglès), </value></data>
+  <data name="Search_HintEnd" xml:space="preserve"><value> per veure de quina paraula ve, o dibuixa un kanji que no puguis escriure.</value></data>
+  <data name="Search_NoMatches" xml:space="preserve"><value>Cap resultat</value></data>
+  <data name="Search_NoMatchesPrefix" xml:space="preserve"><value>No hi ha res a JMdict per a «</value></data>
+  <data name="Search_NoMatchesSuffix" xml:space="preserve"><value>». Si ho has copiat d'una pàgina, prova de dibuixar-ho.</value></data>
+  <data name="Search_DrawKanji" xml:space="preserve"><value>✎  Dibuixa el kanji</value></data>
+  <data name="Search_EntryCountOne" xml:space="preserve"><value>1 entrada</value></data>
+  <data name="Search_EntryCountMany" xml:space="preserve"><value>{0} entrades</value></data>
+  <data name="Search_LabelMixed" xml:space="preserve"><value>Japonès · Anglès</value></data>
+  <data name="Search_LabelEnglish" xml:space="preserve"><value>Anglès → Japonès</value></data>
+  <data name="Search_LabelJapanese" xml:space="preserve"><value>Japonès → Anglès</value></data>
+  <data name="Search_NoteConjugated" xml:space="preserve"><value>des de la forma conjugada {0} ({1})</value></data>
+  <data name="Search_NoteEnglish" xml:space="preserve"><value>Anglès: {0}</value></data>
+  <data name="Search_NoteRomaji" xml:space="preserve"><value>rōmaji: {0}</value></data>
+  <data name="Word_Results" xml:space="preserve"><value>‹  RESULTATS</value></data>
+  <data name="Word_Speak" xml:space="preserve"><value>Llegeix la paraula en veu alta</value></data>
+  <data name="Word_Favourite" xml:space="preserve"><value>Preferit</value></data>
+  <data name="Word_Unfavourite" xml:space="preserve"><value>Treu dels preferits</value></data>
+  <data name="Word_SaveToList" xml:space="preserve"><value>Desa en una llista</value></data>
+  <data name="Word_TabMeaning" xml:space="preserve"><value>意味 Sentit</value></data>
+  <data name="Word_TabSentences" xml:space="preserve"><value>例文 Frases</value></data>
+  <data name="Word_TabKanji" xml:space="preserve"><value>漢字 Kanji</value></data>
+  <data name="Word_TabConjugation" xml:space="preserve"><value>活用 Conj.</value></data>
+  <data name="Word_OtherForms" xml:space="preserve"><value>ALTRES FORMES</value></data>
+  <data name="Word_Related" xml:space="preserve"><value>RELACIONADES I COMPOSTES</value></data>
+  <data name="Word_AlternateForm" xml:space="preserve"><value>forma alternativa</value></data>
+  <data name="Word_AlternateReading" xml:space="preserve"><value>lectura alternativa</value></data>
+  <data name="Word_SenseOther" xml:space="preserve"><value>Altres</value></data>
+  <data name="Word_SpeakSentence" xml:space="preserve"><value>Llegeix la frase en veu alta</value></data>
+  <data name="Word_TatoebaId" xml:space="preserve"><value>Tatoeba #</value></data>
+  <data name="Word_SentencesNote" xml:space="preserve"><value>Les frases provenen dels índexs enllaçats de Tatoeba; només es mostren les que estan etiquetades amb aquesta entrada.</value></data>
+  <data name="Word_Strokes" xml:space="preserve"><value>{0} traços</value></data>
+  <data name="Word_StrokeStep" xml:space="preserve"><value>traç {0} / {1}</value></data>
+  <data name="Word_Grade" xml:space="preserve"><value>curs {0}</value></data>
+  <data name="Word_Ungraded" xml:space="preserve"><value>sense curs</value></data>
+  <data name="Word_Freq" xml:space="preserve"><value>freq. #{0}</value></data>
+  <data name="Word_FreqNone" xml:space="preserve"><value>freq. —</value></data>
+  <data name="Word_ConjForm" xml:space="preserve"><value>FORMA</value></data>
+  <data name="Word_ConjPlain" xml:space="preserve"><value>INFORMAL</value></data>
+  <data name="Word_ConjPolite" xml:space="preserve"><value>CORTÈS</value></data>
+  <data name="Word_ConjNote" xml:space="preserve"><value>Generada a partir de la categoria de la paraula: {0}.</value></data>
+  <data name="Class_Ichidan" xml:space="preserve"><value>verb ichidan</value></data>
+  <data name="Class_IAdjective" xml:space="preserve"><value>adjectiu -i</value></data>
+  <data name="Class_NaAdjective" xml:space="preserve"><value>adjectiu -na</value></data>
+  <data name="Class_Suru" xml:space="preserve"><value>verb suru</value></data>
+  <data name="Class_Kuru" xml:space="preserve"><value>verb kuru</value></data>
+  <data name="Class_Godan" xml:space="preserve"><value>verb godan</value></data>
+  <data name="Class_Word" xml:space="preserve"><value>paraula</value></data>
+  <data name="Conj_NonPast" xml:space="preserve"><value>Present/futur</value></data>
+  <data name="Conj_Past" xml:space="preserve"><value>Passat</value></data>
+  <data name="Conj_Negative" xml:space="preserve"><value>Negatiu</value></data>
+  <data name="Conj_PastNegative" xml:space="preserve"><value>Passat neg.</value></data>
+  <data name="Conj_TeForm" xml:space="preserve"><value>Forma -te</value></data>
+  <data name="Conj_Potential" xml:space="preserve"><value>Potencial</value></data>
+  <data name="Conj_Passive" xml:space="preserve"><value>Passiva</value></data>
+  <data name="Conj_Causative" xml:space="preserve"><value>Causativa</value></data>
+  <data name="Conj_Volitional" xml:space="preserve"><value>Volitiva</value></data>
+  <data name="Conj_Conditional" xml:space="preserve"><value>Condicional</value></data>
+  <data name="Conj_Imperative" xml:space="preserve"><value>Imperatiu</value></data>
+  <data name="Form_Negative" xml:space="preserve"><value>negativa</value></data>
+  <data name="Form_NegativePast" xml:space="preserve"><value>negativa passada</value></data>
+  <data name="Form_Polite" xml:space="preserve"><value>cortès</value></data>
+  <data name="Form_PoliteNegative" xml:space="preserve"><value>cortès negativa</value></data>
+  <data name="Form_PolitePast" xml:space="preserve"><value>cortès passada</value></data>
+  <data name="Form_PoliteNegativePast" xml:space="preserve"><value>cortès negativa passada</value></data>
+  <data name="Form_WantTo" xml:space="preserve"><value>desig (-tai)</value></data>
+  <data name="Form_ConditionalBa" xml:space="preserve"><value>condicional (-ba)</value></data>
+  <data name="Form_Potential" xml:space="preserve"><value>potencial</value></data>
+  <data name="Form_Volitional" xml:space="preserve"><value>volitiva</value></data>
+  <data name="Form_Passive" xml:space="preserve"><value>passiva</value></data>
+  <data name="Form_Causative" xml:space="preserve"><value>causativa</value></data>
+  <data name="Form_CausativePassive" xml:space="preserve"><value>causativa passiva</value></data>
+  <data name="Form_TeForm" xml:space="preserve"><value>forma -te</value></data>
+  <data name="Form_Past" xml:space="preserve"><value>passat</value></data>
+  <data name="Form_ConditionalTara" xml:space="preserve"><value>condicional (-tara)</value></data>
+  <data name="Form_RepresentativeTari" xml:space="preserve"><value>enumerativa (-tari)</value></data>
+  <data name="Form_Imperative" xml:space="preserve"><value>imperatiu</value></data>
+  <data name="Form_PotentialPassive" xml:space="preserve"><value>potencial/passiva</value></data>
+  <data name="Form_Adverbial" xml:space="preserve"><value>adverbial</value></data>
+  <data name="Form_NegativeConditional" xml:space="preserve"><value>condicional negativa</value></data>
+  <data name="Form_Plain" xml:space="preserve"><value>informal</value></data>
+  <data name="Form_Attributive" xml:space="preserve"><value>atributiva</value></data>
+  <data name="Form_Completed" xml:space="preserve"><value>acció acabada (-te shimau)</value></data>
+  <data name="Form_Conditional" xml:space="preserve"><value>condicional</value></data>
+  <data name="Form_InAdvance" xml:space="preserve"><value>per endavant (-te oku)</value></data>
+  <data name="Form_PassivePotential" xml:space="preserve"><value>passiva/potencial</value></data>
+  <data name="Form_Progressive" xml:space="preserve"><value>progressiva (-te iru)</value></data>
+  <data name="Hand_Kicker" xml:space="preserve"><value>ESCRIPTURA A MÀ</value></data>
+  <data name="Hand_Title" xml:space="preserve"><value>Dibuixa el caràcter</value></data>
+  <data name="Hand_Undo" xml:space="preserve"><value>↶ Desfés</value></data>
+  <data name="Hand_Clear" xml:space="preserve"><value>✕ Esborra</value></data>
+  <data name="Hand_Strokes" xml:space="preserve"><value>TRAÇOS</value></data>
+  <data name="Hand_Placeholder" xml:space="preserve"><value>Dibuixa aquí, traç a traç</value></data>
+  <data name="Hand_Matches" xml:space="preserve"><value>COINCIDÈNCIES</value></data>
+  <data name="Hand_StrokeAbbreviation" xml:space="preserve"><value> tr.</value></data>
+  <data name="Hand_Ranked" xml:space="preserve"><value>Ordenades pel model de reconeixement del dispositiu (DaKanji, ONNX), de més a menys probable.</value></data>
+  <data name="Hand_NoteEmpty" xml:space="preserve"><value>dibuixa per cercar</value></data>
+  <data name="Hand_NoteTop" xml:space="preserve"><value>millors {0}</value></data>
+  <data name="Settings_Appearance" xml:space="preserve"><value>ASPECTE</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Tema</value></data>
+  <data name="Settings_ThemeSystem" xml:space="preserve"><value>SISTEMA</value></data>
+  <data name="Settings_ThemeLight" xml:space="preserve"><value>CLAR</value></data>
+  <data name="Settings_ThemeDark" xml:space="preserve"><value>FOSC</value></data>
+  <data name="Settings_ThemeSystemDescription" xml:space="preserve"><value>Segueix el tema del sistema</value></data>
+  <data name="Settings_ThemeLightDescription" xml:space="preserve"><value>Tema clar</value></data>
+  <data name="Settings_ThemeDarkDescription" xml:space="preserve"><value>Tema fosc</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Settings_LanguageSystem" xml:space="preserve"><value>SISTEMA</value></data>
+  <data name="Settings_LanguageSystemDescription" xml:space="preserve"><value>Segueix l'idioma del sistema</value></data>
+  <data name="Settings_LanguageNote" xml:space="preserve"><value>Els significats, la cerca i les traduccions de les frases continuen en anglès, perquè les dades del diccionari són en anglès.</value></data>
+  <data name="Settings_Audio" xml:space="preserve"><value>ÀUDIO</value></data>
+  <data name="Settings_VoiceReady" xml:space="preserve"><value>Hi ha una veu japonesa instal·lada. Es poden llegir en veu alta les lectures i les frases d'exemple.</value></data>
+  <data name="Settings_VoiceMissing" xml:space="preserve"><value>No s'ha trobat cap veu japonesa. Instal·la'n una a la configuració de síntesi de veu del sistema per sentir les lectures.</value></data>
+  <data name="Settings_VoiceChecking" xml:space="preserve"><value>S'està cercant una veu japonesa…</value></data>
+  <data name="Settings_VoiceEngine" xml:space="preserve"><value>Motor de veu</value></data>
+  <data name="Settings_EngineAutomatic" xml:space="preserve"><value>Automàtic</value></data>
+  <data name="Settings_EngineAutomaticNote" xml:space="preserve"><value>El motor de Google si té japonès; si no, el predeterminat del sistema.</value></data>
+  <data name="Settings_TestVoice" xml:space="preserve"><value>Prova la veu</value></data>
+  <data name="Settings_OpenTts" xml:space="preserve"><value>Obre la configuració de síntesi de veu</value></data>
+  <data name="Settings_Data" xml:space="preserve"><value>DADES</value></data>
+  <data name="Settings_HistoryNone" xml:space="preserve"><value>No hi ha paraules vistes recentment.</value></data>
+  <data name="Settings_HistoryOne" xml:space="preserve"><value>1 paraula vista recentment.</value></data>
+  <data name="Settings_HistoryMany" xml:space="preserve"><value>{0} paraules vistes recentment.</value></data>
+  <data name="Settings_ClearHistory" xml:space="preserve"><value>Esborra l'historial</value></data>
+  <data name="Settings_ClearHistoryTitle" xml:space="preserve"><value>Vols esborrar l'historial?</value></data>
+  <data name="Settings_ClearHistoryMessage" xml:space="preserve"><value>Se suprimiran les paraules vistes recentment. Les teves llistes no canvien.</value></data>
+  <data name="Settings_ClearHistoryConfirm" xml:space="preserve"><value>Esborra</value></data>
+  <data name="Settings_Study" xml:space="preserve"><value>ESTUDI</value></data>
+  <data name="Settings_PracticeDescription" xml:space="preserve"><value>Practica kanji, vocabulari i gramàtica per nivell del JLPT en una app complementària del mateix desenvolupador.</value></data>
+  <data name="Settings_PracticeLinkDescription" xml:space="preserve"><value>Aconsegueix Nihongo no Practise a Google Play</value></data>
+  <data name="Settings_About" xml:space="preserve"><value>QUANT A</value></data>
+  <data name="Settings_Version" xml:space="preserve"><value>Versió {0} ({1})</value></data>
+  <data name="Settings_OfflineNote" xml:space="preserve"><value>Funciona completament sense connexió. Dades del diccionari de JMdict, KANJIDIC2, KanjiVG i Tatoeba.</value></data>
+  <data name="Settings_Licences" xml:space="preserve"><value>Llicències i atribucions</value></data>
+  <data name="Lists_Yours" xml:space="preserve"><value>LES TEVES LLISTES</value></data>
+  <data name="Lists_Hint" xml:space="preserve"><value>Agrupa paraules com vulguis: un tema del llibre, un nivell del JLPT, paraules d'una sèrie. Exporta qualsevol llista com a CSV per a Anki o un full de càlcul.</value></data>
+  <data name="Lists_NewPromptMessage" xml:space="preserve"><value>Afegeix-hi paraules des de qualsevol pàgina de paraula.</value></data>
+  <data name="Lists_NewPromptFromWord" xml:space="preserve"><value>Posa nom a la llista. S'hi afegirà aquesta paraula.</value></data>
+  <data name="Lists_NamePlaceholder" xml:space="preserve"><value>Nom de la llista</value></data>
+  <data name="Lists_NameEmpty" xml:space="preserve"><value>El nom no pot estar buit.</value></data>
+  <data name="Lists_NameTaken" xml:space="preserve"><value>Ja hi ha una llista anomenada «{0}».</value></data>
+  <data name="Lists_Back" xml:space="preserve"><value>‹  LLISTES</value></data>
+  <data name="Lists_ExportDescription" xml:space="preserve"><value>Exporta com a CSV</value></data>
+  <data name="Lists_MenuDescription" xml:space="preserve"><value>Canvia el nom o elimina la llista</value></data>
+  <data name="Lists_KickerHistory" xml:space="preserve"><value>VISTES RECENTMENT</value></data>
+  <data name="Lists_KickerList" xml:space="preserve"><value>LLISTA</value></data>
+  <data name="Lists_KickerSaved" xml:space="preserve"><value>DESADES</value></data>
+  <data name="Lists_SwipeHint" xml:space="preserve"><value>Llisca una paraula cap a l'esquerra per treure-la de la llista.</value></data>
+  <data name="Lists_Remove" xml:space="preserve"><value>Treu</value></data>
+  <data name="Lists_EmptyHistory" xml:space="preserve"><value>Aquí apareixen les paraules que obres.</value></data>
+  <data name="Lists_EmptyList" xml:space="preserve"><value>Encara no hi ha res. Desa paraules des de qualsevol pàgina de paraula amb el cor o el botó de llista.</value></data>
+  <data name="Lists_Rename" xml:space="preserve"><value>Canvia el nom</value></data>
+  <data name="Lists_RenameTitle" xml:space="preserve"><value>Canvia el nom de la llista</value></data>
+  <data name="Lists_Delete" xml:space="preserve"><value>Elimina la llista</value></data>
+  <data name="Lists_DeleteTitle" xml:space="preserve"><value>Vols eliminar «{0}»?</value></data>
+  <data name="Lists_DeleteMessage" xml:space="preserve"><value>S'elimina la llista. Les paraules continuen al diccionari i a les altres llistes.</value></data>
+  <data name="Lists_DeleteConfirm" xml:space="preserve"><value>Elimina</value></data>
+  <data name="Lists_ExportTitle" xml:space="preserve"><value>Exporta {0}</value></data>
+  <data name="Lists_SaveKicker" xml:space="preserve"><value>DESA EN UNA LLISTA</value></data>
+  <data name="About_OpenSourceTitle" xml:space="preserve"><value>CODI OBERT</value></data>
+  <data name="About_OpenSourceBody" xml:space="preserve"><value>Programari lliure i de codi obert, publicat amb la llicència MIT.</value></data>
+  <data name="About_SourceCode" xml:space="preserve"><value>Codi font a GitHub</value></data>
+  <data name="About_MitLicense" xml:space="preserve"><value>Llicència MIT</value></data>
+  <data name="About_DictionaryTitle" xml:space="preserve"><value>DADES DEL DICCIONARI</value></data>
+  <data name="About_DictionaryBody" xml:space="preserve"><value>Aquesta aplicació fa servir els fitxers de diccionari JMdict/EDICT i KANJIDIC. Aquests fitxers són propietat de l'Electronic Dictionary Research and Development Group i s'utilitzen d'acord amb la llicència del grup.</value></data>
+  <data name="About_EdrdgLicence" xml:space="preserve"><value>Llicència de l'EDRDG</value></data>
+  <data name="About_JmdictProject" xml:space="preserve"><value>Projecte JMdict</value></data>
+  <data name="About_KanjidicProject" xml:space="preserve"><value>Projecte KANJIDIC</value></data>
+  <data name="About_StrokeTitle" xml:space="preserve"><value>ORDRE DELS TRAÇOS</value></data>
+  <data name="About_StrokeBody" xml:space="preserve"><value>Les dades d'ordre dels traços provenen de KanjiVG, copyright d'Ulrich Apel, amb llicència CC BY-SA 3.0.</value></data>
+  <data name="About_SentencesTitle" xml:space="preserve"><value>FRASES D'EXEMPLE</value></data>
+  <data name="About_SentencesBody" xml:space="preserve"><value>Les frases d'exemple i les seves traduccions provenen de Tatoeba i els seus col·laboradors, amb llicència CC BY 2.0 FR.</value></data>
+  <data name="About_DatabaseTitle" xml:space="preserve"><value>LLICÈNCIA DE LA BASE DE DADES</value></data>
+  <data name="About_DatabaseBody" xml:space="preserve"><value>La base de dades del diccionari inclosa deriva de les fonts anteriors i es distribueix amb la llicència CC BY-SA 4.0.</value></data>
+  <data name="About_DataLicenseDetails" xml:space="preserve"><value>Detalls de la llicència de les dades</value></data>
+  <data name="About_HandwritingTitle" xml:space="preserve"><value>RECONEIXEMENT D'ESCRIPTURA</value></data>
+  <data name="About_HandwritingBody" xml:space="preserve"><value>Reconeixement de caràcters amb aprenentatge automàtic de Dariyooo (DaAppLab). El model es va entrenar amb l'ETL Character Database (Electrotechnical Laboratory, 1973-1984, distribuïda per AIST) i el conjunt de dades de KanjiVG.</value></data>
+  <data name="About_FontsTitle" xml:space="preserve"><value>TIPUS DE LLETRA I BIBLIOTEQUES</value></data>
+  <data name="About_FontsBody" xml:space="preserve"><value>Archivo i Noto Serif JP s'utilitzen amb la SIL Open Font License 1.1. Les icones de Material Symbols s'utilitzen amb l'Apache License 2.0. ONNX Runtime, CommunityToolkit.Mvvm i sqlite-net s'utilitzen amb la llicència MIT.</value></data>
+  <data name="About_ThirdPartyNotices" xml:space="preserve"><value>Avisos complets de tercers</value></data>
+  <data name="Lookup_Title" xml:space="preserve"><value>Cerca</value></data>
+  <data name="Lookup_NothingSelected" xml:space="preserve"><value>No hi ha res seleccionat.</value></data>
+  <data name="Lookup_NotFound" xml:space="preserve"><value>No s'ha trobat cap entrada per a «{0}».</value></data>
+  <data name="Lookup_Failed" xml:space="preserve"><value>Ara mateix no es pot cercar.</value></data>
+  <data name="Lookup_NoGlosses" xml:space="preserve"><value>(sense significats)</value></data>
+  <data name="Lookup_Open" xml:space="preserve"><value>OBRE A SHIRABE ›</value></data>
+</root>

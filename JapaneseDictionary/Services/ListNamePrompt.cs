@@ -1,3 +1,5 @@
+using JapaneseDictionary.Resources.Localization;
+
 namespace JapaneseDictionary.Services;
 
 /// <summary>
@@ -17,14 +19,18 @@ public static class ListNamePrompt
 
         while (true)
         {
-            var name = await page.DisplayPromptAsync(title, message, accept, "Cancel", "List name", MaxLength, Keyboard.Text, value);
+            var name = await page.DisplayPromptAsync(title, message, accept, AppResources.Common_Cancel, AppResources.Lists_NamePlaceholder, MaxLength, Keyboard.Text, value);
             if (name == null) return null;
 
             name = name.Trim();
-            if (name.Length > 0 && !repository.IsListNameTaken(name, exceptListId))
+            // Favourites is stored under its English name but shown translated, so
+            // both spellings count as taken.
+            var taken = repository.IsListNameTaken(name, exceptListId)
+                || string.Equals(name, AppResources.Common_Favourites, StringComparison.OrdinalIgnoreCase);
+            if (name.Length > 0 && !taken)
                 return name;
 
-            message = name.Length == 0 ? "The name can't be empty." : $"There's already a list called \"{name}\".";
+            message = name.Length == 0 ? AppResources.Lists_NameEmpty : UiText.Format(AppResources.Lists_NameTaken, name);
             value = name;
         }
     }

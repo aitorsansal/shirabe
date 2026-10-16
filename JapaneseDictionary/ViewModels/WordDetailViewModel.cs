@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using JapaneseDictionary.Core.Data;
 using JapaneseDictionary.Core.Models;
 using JapaneseDictionary.Core.Search;
+using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
 using JapaneseDictionary.Views;
 
@@ -214,25 +215,25 @@ public partial class WordDetailViewModel : ObservableObject
             BuildOtherForms(entry),
             BuildCompounds(entry),
             conjugationTable,
-            conjugationTable.Count > 0 ? $"Generated from the entry's word class — {FormatWordClass(primaryClass)}." : "");
+            conjugationTable.Count > 0 ? UiText.Format(AppResources.Word_ConjNote, UiText.WordClassName(primaryClass)) : "");
     }
 
     private static List<EntryBadge> BuildBadges(DictionaryEntry entry, IReadOnlyList<WordClass> wordClasses)
     {
         var badges = new List<EntryBadge>();
         if (entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon))
-            badges.Add(new EntryBadge("common", IsCommon: true, HueIndex: 0));
+            badges.Add(new EntryBadge(AppResources.Common_CommonBadge, IsCommon: true, HueIndex: 0));
 
         var hue = 0;
         foreach (var wc in wordClasses.Distinct())
-            badges.Add(new EntryBadge(FormatWordClass(wc), IsCommon: false, HueIndex: hue++));
+            badges.Add(new EntryBadge(UiText.WordClassName(wc), IsCommon: false, HueIndex: hue++));
         badges.Add(new EntryBadge($"#{entry.Id}", IsCommon: false, HueIndex: hue));
         return badges;
     }
 
     private static List<SenseGroup> BuildSenseGroups(DictionaryEntry entry) =>
         entry.Senses
-            .GroupBy(s => s.PartOfSpeechTags.Count > 0 ? string.Join(", ", s.PartOfSpeechTags) : "Other")
+            .GroupBy(s => s.PartOfSpeechTags.Count > 0 ? string.Join(", ", s.PartOfSpeechTags) : AppResources.Word_SenseOther)
             .Select(g =>
             {
                 var items = new List<SenseItem>();
@@ -254,8 +255,8 @@ public partial class WordDetailViewModel : ObservableObject
         var primaryKanji = entry.KanjiForms.FirstOrDefault(k => k.IsCommon)?.Text ?? entry.KanjiForms.FirstOrDefault()?.Text;
         var primaryReading = entry.Readings.FirstOrDefault(r => r.IsCommon)?.Text ?? entry.Readings.FirstOrDefault()?.Text;
 
-        return entry.KanjiForms.Where(k => k.Text != primaryKanji).Select(k => new FormChip(k.Text, "alternate form"))
-            .Concat(entry.Readings.Where(r => r.Text != primaryReading).Select(r => new FormChip(r.Text, "alternate reading")))
+        return entry.KanjiForms.Where(k => k.Text != primaryKanji).Select(k => new FormChip(k.Text, AppResources.Word_AlternateForm))
+            .Concat(entry.Readings.Where(r => r.Text != primaryReading).Select(r => new FormChip(r.Text, AppResources.Word_AlternateReading)))
             .ToList();
     }
 
@@ -331,8 +332,8 @@ public partial class WordDetailViewModel : ObservableObject
                 Meanings = string.Join(", ", info.Meanings),
                 OnReadings = info.OnReadings.Count > 0 ? string.Join("、", info.OnReadings) : "—",
                 KunReadings = info.KunReadings.Count > 0 ? string.Join("、", info.KunReadings) : "—",
-                GradeLabel = info.Grade is { } g ? $"grade {g}" : "ungraded",
-                FreqLabel = info.FrequencyRank is { } f ? $"freq #{f}" : "freq —",
+                GradeLabel = info.Grade is { } g ? UiText.Format(AppResources.Word_Grade, g) : AppResources.Word_Ungraded,
+                FreqLabel = info.FrequencyRank is { } f ? UiText.Format(AppResources.Word_Freq, f) : AppResources.Word_FreqNone,
                 StrokePaths = strokes,
             });
         }
@@ -350,17 +351,4 @@ public partial class WordDetailViewModel : ObservableObject
     }
 
     private static bool IsKanji(char c) => c is >= '一' and <= '鿿';
-
-    private static string FormatWordClass(WordClass wc) => wc switch
-    {
-        WordClass.IchidanVerb => "ichidan verb",
-        WordClass.IAdjective => "i-adjective",
-        WordClass.NaAdjective => "na-adjective",
-        WordClass.SuruVerb => "suru verb",
-        WordClass.KuruVerb => "kuru verb",
-        WordClass.GodanVerbU or WordClass.GodanVerbKu or WordClass.GodanVerbGu or WordClass.GodanVerbSu
-            or WordClass.GodanVerbTsu or WordClass.GodanVerbNu or WordClass.GodanVerbBu or WordClass.GodanVerbMu
-            or WordClass.GodanVerbRu or WordClass.GodanVerbIkuYuku => "godan verb",
-        _ => "word",
-    };
 }

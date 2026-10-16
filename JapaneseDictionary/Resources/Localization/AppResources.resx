@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Common_Back" xml:space="preserve"><value>‹  BACK</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Common_Done" xml:space="preserve"><value>DONE</value></data>
+  <data name="Common_Create" xml:space="preserve"><value>Create</value></data>
+  <data name="Common_CommonBadge" xml:space="preserve"><value>COMMON</value></data>
+  <data name="Common_WordCountOne" xml:space="preserve"><value>1 word</value></data>
+  <data name="Common_WordCountMany" xml:space="preserve"><value>{0} words</value></data>
+  <data name="Common_Lists" xml:space="preserve"><value>Lists</value></data>
+  <data name="Common_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Common_Favourites" xml:space="preserve"><value>Favourites</value></data>
+  <data name="Common_History" xml:space="preserve"><value>History</value></data>
+  <data name="Common_NewList" xml:space="preserve"><value>New list</value></data>
+  <data name="Search_PreparingTitle" xml:space="preserve"><value>Preparing the dictionary…</value></data>
+  <data name="Search_PreparingBody" xml:space="preserve"><value>Setting up the offline dictionary on your device. This only happens after installing or updating, and takes a few seconds.</value></data>
+  <data name="Search_Recent" xml:space="preserve"><value>RECENT</value></data>
+  <data name="Search_Clear" xml:space="preserve"><value>CLEAR</value></data>
+  <data name="Search_ClearDescription" xml:space="preserve"><value>Clear recent words</value></data>
+  <data name="Search_Try" xml:space="preserve"><value>TRY</value></data>
+  <data name="Search_HintType" xml:space="preserve"><value>Type </value></data>
+  <data name="Search_HintOr" xml:space="preserve"><value> or </value></data>
+  <data name="Search_HintMiddle" xml:space="preserve"><value> (rōmaji and English both work), </value></data>
+  <data name="Search_HintEnd" xml:space="preserve"><value> to see de-inflection, or draw a kanji you can't type.</value></data>
+  <data name="Search_NoMatches" xml:space="preserve"><value>No matches</value></data>
+  <data name="Search_NoMatchesPrefix" xml:space="preserve"><value>Nothing in JMdict for “</value></data>
+  <data name="Search_NoMatchesSuffix" xml:space="preserve"><value>”. If you copied it from a page, try drawing it instead.</value></data>
+  <data name="Search_DrawKanji" xml:space="preserve"><value>✎  Draw the kanji</value></data>
+  <data name="Search_EntryCountOne" xml:space="preserve"><value>1 entry</value></data>
+  <data name="Search_EntryCountMany" xml:space="preserve"><value>{0} entries</value></data>
+  <data name="Search_LabelMixed" xml:space="preserve"><value>Japanese · English</value></data>
+  <data name="Search_LabelEnglish" xml:space="preserve"><value>English → Japanese</value></data>
+  <data name="Search_LabelJapanese" xml:space="preserve"><value>Japanese → English</value></data>
+  <data name="Search_NoteConjugated" xml:space="preserve"><value>de-inflected from {0} ({1})</value></data>
+  <data name="Search_NoteEnglish" xml:space="preserve"><value>English: {0}</value></data>
+  <data name="Search_NoteRomaji" xml:space="preserve"><value>romaji: {0}</value></data>
+  <data name="Word_Results" xml:space="preserve"><value>‹  RESULTS</value></data>
+  <data name="Word_Speak" xml:space="preserve"><value>Read the word aloud</value></data>
+  <data name="Word_Favourite" xml:space="preserve"><value>Favourite</value></data>
+  <data name="Word_Unfavourite" xml:space="preserve"><value>Remove from favourites</value></data>
+  <data name="Word_SaveToList" xml:space="preserve"><value>Save to a list</value></data>
+  <data name="Word_TabMeaning" xml:space="preserve"><value>意味 Meaning</value></data>
+  <data name="Word_TabSentences" xml:space="preserve"><value>例文 Sentences</value></data>
+  <data name="Word_TabKanji" xml:space="preserve"><value>漢字 Kanji</value></data>
+  <data name="Word_TabConjugation" xml:space="preserve"><value>活用 Conj.</value></data>
+  <data name="Word_OtherForms" xml:space="preserve"><value>OTHER FORMS</value></data>
+  <data name="Word_Related" xml:space="preserve"><value>RELATED &amp; COMPOUNDS</value></data>
+  <data name="Word_AlternateForm" xml:space="preserve"><value>alternate form</value></data>
+  <data name="Word_AlternateReading" xml:space="preserve"><value>alternate reading</value></data>
+  <data name="Word_SenseOther" xml:space="preserve"><value>Other</value></data>
+  <data name="Word_SpeakSentence" xml:space="preserve"><value>Read the sentence aloud</value></data>
+  <data name="Word_TatoebaId" xml:space="preserve"><value>Tatoeba #</value></data>
+  <data name="Word_SentencesNote" xml:space="preserve"><value>Sentences come from the linked Tatoeba indices — only pairs tagged to this entry are shown.</value></data>
+  <data name="Word_Strokes" xml:space="preserve"><value>{0} strokes</value></data>
+  <data name="Word_StrokeStep" xml:space="preserve"><value>stroke {0} / {1}</value></data>
+  <data name="Word_Grade" xml:space="preserve"><value>grade {0}</value></data>
+  <data name="Word_Ungraded" xml:space="preserve"><value>ungraded</value></data>
+  <data name="Word_Freq" xml:space="preserve"><value>freq #{0}</value></data>
+  <data name="Word_FreqNone" xml:space="preserve"><value>freq —</value></data>
+  <data name="Word_ConjForm" xml:space="preserve"><value>FORM</value></data>
+  <data name="Word_ConjPlain" xml:space="preserve"><value>PLAIN</value></data>
+  <data name="Word_ConjPolite" xml:space="preserve"><value>POLITE</value></data>
+  <data name="Word_ConjNote" xml:space="preserve"><value>Generated from the entry's word class — {0}.</value></data>
+  <data name="Class_Ichidan" xml:space="preserve"><value>ichidan verb</value></data>
+  <data name="Class_IAdjective" xml:space="preserve"><value>i-adjective</value></data>
+  <data name="Class_NaAdjective" xml:space="preserve"><value>na-adjective</value></data>
+  <data name="Class_Suru" xml:space="preserve"><value>suru verb</value></data>
+  <data name="Class_Kuru" xml:space="preserve"><value>kuru verb</value></data>
+  <data name="Class_Godan" xml:space="preserve"><value>godan verb</value></data>
+  <data name="Class_Word" xml:space="preserve"><value>word</value></data>
+  <data name="Conj_NonPast" xml:space="preserve"><value>Non-past</value></data>
+  <data name="Conj_Past" xml:space="preserve"><value>Past</value></data>
+  <data name="Conj_Negative" xml:space="preserve"><value>Negative</value></data>
+  <data name="Conj_PastNegative" xml:space="preserve"><value>Past neg.</value></data>
+  <data name="Conj_TeForm" xml:space="preserve"><value>Te-form</value></data>
+  <data name="Conj_Potential" xml:space="preserve"><value>Potential</value></data>
+  <data name="Conj_Passive" xml:space="preserve"><value>Passive</value></data>
+  <data name="Conj_Causative" xml:space="preserve"><value>Causative</value></data>
+  <data name="Conj_Volitional" xml:space="preserve"><value>Volitional</value></data>
+  <data name="Conj_Conditional" xml:space="preserve"><value>Conditional</value></data>
+  <data name="Conj_Imperative" xml:space="preserve"><value>Imperative</value></data>
+  <data name="Form_Negative" xml:space="preserve"><value>negative</value></data>
+  <data name="Form_NegativePast" xml:space="preserve"><value>negative past</value></data>
+  <data name="Form_Polite" xml:space="preserve"><value>polite</value></data>
+  <data name="Form_PoliteNegative" xml:space="preserve"><value>polite negative</value></data>
+  <data name="Form_PolitePast" xml:space="preserve"><value>polite past</value></data>
+  <data name="Form_PoliteNegativePast" xml:space="preserve"><value>polite negative past</value></data>
+  <data name="Form_WantTo" xml:space="preserve"><value>want to</value></data>
+  <data name="Form_ConditionalBa" xml:space="preserve"><value>conditional (ba)</value></data>
+  <data name="Form_Potential" xml:space="preserve"><value>potential</value></data>
+  <data name="Form_Volitional" xml:space="preserve"><value>volitional</value></data>
+  <data name="Form_Passive" xml:space="preserve"><value>passive</value></data>
+  <data name="Form_Causative" xml:space="preserve"><value>causative</value></data>
+  <data name="Form_CausativePassive" xml:space="preserve"><value>causative passive</value></data>
+  <data name="Form_TeForm" xml:space="preserve"><value>te-form</value></data>
+  <data name="Form_Past" xml:space="preserve"><value>past</value></data>
+  <data name="Form_ConditionalTara" xml:space="preserve"><value>conditional (tara)</value></data>
+  <data name="Form_RepresentativeTari" xml:space="preserve"><value>representative (tari)</value></data>
+  <data name="Form_Imperative" xml:space="preserve"><value>imperative</value></data>
+  <data name="Form_PotentialPassive" xml:space="preserve"><value>potential/passive</value></data>
+  <data name="Form_Adverbial" xml:space="preserve"><value>adverbial</value></data>
+  <data name="Form_NegativeConditional" xml:space="preserve"><value>negative conditional</value></data>
+  <data name="Form_Plain" xml:space="preserve"><value>plain</value></data>
+  <data name="Form_Attributive" xml:space="preserve"><value>attributive</value></data>
+  <data name="Form_Completed" xml:space="preserve"><value>completed</value></data>
+  <data name="Form_Conditional" xml:space="preserve"><value>conditional</value></data>
+  <data name="Form_InAdvance" xml:space="preserve"><value>in advance</value></data>
+  <data name="Form_PassivePotential" xml:space="preserve"><value>passive/potential</value></data>
+  <data name="Form_Progressive" xml:space="preserve"><value>progressive</value></data>
+  <data name="Hand_Kicker" xml:space="preserve"><value>HANDWRITING</value></data>
+  <data name="Hand_Title" xml:space="preserve"><value>Draw the character</value></data>
+  <data name="Hand_Undo" xml:space="preserve"><value>↶ Undo</value></data>
+  <data name="Hand_Clear" xml:space="preserve"><value>✕ Clear</value></data>
+  <data name="Hand_Strokes" xml:space="preserve"><value>STROKES</value></data>
+  <data name="Hand_Placeholder" xml:space="preserve"><value>Draw here — stroke by stroke</value></data>
+  <data name="Hand_Matches" xml:space="preserve"><value>CLOSEST MATCHES</value></data>
+  <data name="Hand_StrokeAbbreviation" xml:space="preserve"><value> str</value></data>
+  <data name="Hand_Ranked" xml:space="preserve"><value>Ranked by the on-device ONNX handwriting model (DaKanji), most confident first.</value></data>
+  <data name="Hand_NoteEmpty" xml:space="preserve"><value>draw to search</value></data>
+  <data name="Hand_NoteTop" xml:space="preserve"><value>top {0}</value></data>
+  <data name="Settings_Appearance" xml:space="preserve"><value>APPEARANCE</value></data>
+  <data name="Settings_Theme" xml:space="preserve"><value>Theme</value></data>
+  <data name="Settings_ThemeSystem" xml:space="preserve"><value>SYSTEM</value></data>
+  <data name="Settings_ThemeLight" xml:space="preserve"><value>LIGHT</value></data>
+  <data name="Settings_ThemeDark" xml:space="preserve"><value>DARK</value></data>
+  <data name="Settings_ThemeSystemDescription" xml:space="preserve"><value>Follow the system theme</value></data>
+  <data name="Settings_ThemeLightDescription" xml:space="preserve"><value>Light theme</value></data>
+  <data name="Settings_ThemeDarkDescription" xml:space="preserve"><value>Dark theme</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Settings_LanguageSystem" xml:space="preserve"><value>SYSTEM</value></data>
+  <data name="Settings_LanguageSystemDescription" xml:space="preserve"><value>Follow the system language</value></data>
+  <data name="Settings_LanguageNote" xml:space="preserve"><value>Meanings, search and sentence translations stay in English: the dictionary data is English.</value></data>
+  <data name="Settings_Audio" xml:space="preserve"><value>AUDIO</value></data>
+  <data name="Settings_VoiceReady" xml:space="preserve"><value>A Japanese voice is installed. Word readings and example sentences can be read aloud.</value></data>
+  <data name="Settings_VoiceMissing" xml:space="preserve"><value>No Japanese voice found. Install one in the system text-to-speech settings to hear readings.</value></data>
+  <data name="Settings_VoiceChecking" xml:space="preserve"><value>Checking for a Japanese voice…</value></data>
+  <data name="Settings_VoiceEngine" xml:space="preserve"><value>Voice engine</value></data>
+  <data name="Settings_EngineAutomatic" xml:space="preserve"><value>Automatic</value></data>
+  <data name="Settings_EngineAutomaticNote" xml:space="preserve"><value>Google's engine when it has Japanese, otherwise the system default.</value></data>
+  <data name="Settings_TestVoice" xml:space="preserve"><value>Test the voice</value></data>
+  <data name="Settings_OpenTts" xml:space="preserve"><value>Open text-to-speech settings</value></data>
+  <data name="Settings_Data" xml:space="preserve"><value>DATA</value></data>
+  <data name="Settings_HistoryNone" xml:space="preserve"><value>No recently viewed words.</value></data>
+  <data name="Settings_HistoryOne" xml:space="preserve"><value>1 recently viewed word.</value></data>
+  <data name="Settings_HistoryMany" xml:space="preserve"><value>{0} recently viewed words.</value></data>
+  <data name="Settings_ClearHistory" xml:space="preserve"><value>Clear history</value></data>
+  <data name="Settings_ClearHistoryTitle" xml:space="preserve"><value>Clear history?</value></data>
+  <data name="Settings_ClearHistoryMessage" xml:space="preserve"><value>Recently viewed words will be removed. Your lists stay as they are.</value></data>
+  <data name="Settings_ClearHistoryConfirm" xml:space="preserve"><value>Clear</value></data>
+  <data name="Settings_Study" xml:space="preserve"><value>STUDY</value></data>
+  <data name="Settings_PracticeDescription" xml:space="preserve"><value>Practise kanji, vocabulary and grammar by JLPT level in a companion app by the same developer.</value></data>
+  <data name="Settings_PracticeLinkDescription" xml:space="preserve"><value>Get Nihongo no Practise on Google Play</value></data>
+  <data name="Settings_About" xml:space="preserve"><value>ABOUT</value></data>
+  <data name="Settings_Version" xml:space="preserve"><value>Version {0} ({1})</value></data>
+  <data name="Settings_OfflineNote" xml:space="preserve"><value>Works fully offline. Dictionary data from JMdict, KANJIDIC2, KanjiVG and Tatoeba.</value></data>
+  <data name="Settings_Licences" xml:space="preserve"><value>Licences and attributions</value></data>
+  <data name="Lists_Yours" xml:space="preserve"><value>YOUR LISTS</value></data>
+  <data name="Lists_Hint" xml:space="preserve"><value>Group words however you like: a textbook chapter, a JLPT level, words from a show. Export any list as CSV for Anki or a spreadsheet.</value></data>
+  <data name="Lists_NewPromptMessage" xml:space="preserve"><value>Add words to it from any word page.</value></data>
+  <data name="Lists_NewPromptFromWord" xml:space="preserve"><value>Name the list. This word will be added to it.</value></data>
+  <data name="Lists_NamePlaceholder" xml:space="preserve"><value>List name</value></data>
+  <data name="Lists_NameEmpty" xml:space="preserve"><value>The name can't be empty.</value></data>
+  <data name="Lists_NameTaken" xml:space="preserve"><value>There's already a list called “{0}”.</value></data>
+  <data name="Lists_Back" xml:space="preserve"><value>‹  LISTS</value></data>
+  <data name="Lists_ExportDescription" xml:space="preserve"><value>Export as CSV</value></data>
+  <data name="Lists_MenuDescription" xml:space="preserve"><value>Rename or delete the list</value></data>
+  <data name="Lists_KickerHistory" xml:space="preserve"><value>RECENTLY VIEWED</value></data>
+  <data name="Lists_KickerList" xml:space="preserve"><value>LIST</value></data>
+  <data name="Lists_KickerSaved" xml:space="preserve"><value>SAVED</value></data>
+  <data name="Lists_SwipeHint" xml:space="preserve"><value>Swipe a word left to remove it from the list.</value></data>
+  <data name="Lists_Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Lists_EmptyHistory" xml:space="preserve"><value>Words you open show up here.</value></data>
+  <data name="Lists_EmptyList" xml:space="preserve"><value>Nothing here yet. Save words from any word page with the heart or the list button.</value></data>
+  <data name="Lists_Rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="Lists_RenameTitle" xml:space="preserve"><value>Rename list</value></data>
+  <data name="Lists_Delete" xml:space="preserve"><value>Delete list</value></data>
+  <data name="Lists_DeleteTitle" xml:space="preserve"><value>Delete “{0}”?</value></data>
+  <data name="Lists_DeleteMessage" xml:space="preserve"><value>The list is removed. The words stay in the dictionary and in any other list.</value></data>
+  <data name="Lists_DeleteConfirm" xml:space="preserve"><value>Delete</value></data>
+  <data name="Lists_ExportTitle" xml:space="preserve"><value>Export {0}</value></data>
+  <data name="Lists_SaveKicker" xml:space="preserve"><value>SAVE TO LIST</value></data>
+  <data name="About_OpenSourceTitle" xml:space="preserve"><value>OPEN SOURCE</value></data>
+  <data name="About_OpenSourceBody" xml:space="preserve"><value>Free and open source software, released under the MIT license.</value></data>
+  <data name="About_SourceCode" xml:space="preserve"><value>Source code on GitHub</value></data>
+  <data name="About_MitLicense" xml:space="preserve"><value>MIT license</value></data>
+  <data name="About_DictionaryTitle" xml:space="preserve"><value>DICTIONARY DATA</value></data>
+  <data name="About_DictionaryBody" xml:space="preserve"><value>This application uses the JMdict/EDICT and KANJIDIC dictionary files. These files are the property of the Electronic Dictionary Research and Development Group, and are used in conformance with the Group's licence.</value></data>
+  <data name="About_EdrdgLicence" xml:space="preserve"><value>EDRDG licence</value></data>
+  <data name="About_JmdictProject" xml:space="preserve"><value>JMdict project</value></data>
+  <data name="About_KanjidicProject" xml:space="preserve"><value>KANJIDIC project</value></data>
+  <data name="About_StrokeTitle" xml:space="preserve"><value>STROKE ORDER</value></data>
+  <data name="About_StrokeBody" xml:space="preserve"><value>Stroke order data comes from KanjiVG, copyright Ulrich Apel, licensed under CC BY-SA 3.0.</value></data>
+  <data name="About_SentencesTitle" xml:space="preserve"><value>EXAMPLE SENTENCES</value></data>
+  <data name="About_SentencesBody" xml:space="preserve"><value>Example sentences and their translations come from Tatoeba and its contributors, licensed under CC BY 2.0 FR.</value></data>
+  <data name="About_DatabaseTitle" xml:space="preserve"><value>DATABASE LICENSE</value></data>
+  <data name="About_DatabaseBody" xml:space="preserve"><value>The bundled dictionary database is derived from the sources above and is distributed under CC BY-SA 4.0.</value></data>
+  <data name="About_DataLicenseDetails" xml:space="preserve"><value>Data license details</value></data>
+  <data name="About_HandwritingTitle" xml:space="preserve"><value>HANDWRITING RECOGNITION</value></data>
+  <data name="About_HandwritingBody" xml:space="preserve"><value>Character recognition powered by machine learning from Dariyooo (DaAppLab). The model was trained on the ETL Character Database (Electrotechnical Laboratory, 1973-1984, distributed by AIST) and the KanjiVG dataset.</value></data>
+  <data name="About_FontsTitle" xml:space="preserve"><value>FONTS AND LIBRARIES</value></data>
+  <data name="About_FontsBody" xml:space="preserve"><value>Archivo and Noto Serif JP are used under the SIL Open Font License 1.1. Material Symbols icons are used under the Apache License 2.0. ONNX Runtime, CommunityToolkit.Mvvm and sqlite-net are used under the MIT license.</value></data>
+  <data name="About_ThirdPartyNotices" xml:space="preserve"><value>Full third-party notices</value></data>
+  <data name="Lookup_Title" xml:space="preserve"><value>Look Up</value></data>
+  <data name="Lookup_NothingSelected" xml:space="preserve"><value>Nothing selected.</value></data>
+  <data name="Lookup_NotFound" xml:space="preserve"><value>No entry found for “{0}”.</value></data>
+  <data name="Lookup_Failed" xml:space="preserve"><value>Couldn't look this up right now.</value></data>
+  <data name="Lookup_NoGlosses" xml:space="preserve"><value>(no glosses)</value></data>
+  <data name="Lookup_Open" xml:space="preserve"><value>OPEN IN SHIRABE ›</value></data>
+</root>

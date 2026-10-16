@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:res="clr-namespace:JapaneseDictionary.Resources.Localization"
     xmlns:services="clr-namespace:JapaneseDictionary.Services"
     x:DataType="vm:AddToListViewModel"
     Shell.NavBarIsVisible="False"
@@ -21,10 +22,10 @@
 
             <Grid ColumnDefinitions="*,Auto" Padding="16,14,16,12">
                 <VerticalStackLayout Grid.Column="0" Spacing="3">
-                    <Label Text="SAVE TO LIST" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.4" TextColor="{AppThemeBinding Light={StaticResource KickerAccentLight}, Dark={StaticResource KickerAccentDark}}" />
+                    <Label Text="{x:Static res:AppResources.Lists_SaveKicker}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.4" TextColor="{AppThemeBinding Light={StaticResource KickerAccentLight}, Dark={StaticResource KickerAccentDark}}" />
                     <Label Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                 </VerticalStackLayout>
-                <Button Grid.Column="1" Text="DONE" Clicked="OnDoneClicked" Style="{StaticResource SheetChromeButtonStyle}" VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="{x:Static res:AppResources.Common_Done}" Clicked="OnDoneClicked" Style="{StaticResource SheetChromeButtonStyle}" VerticalOptions="Center" />
             </Grid>
 
             <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
@@ -65,7 +66,7 @@
                 </Border.GestureRecognizers>
                 <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                     <Label Text="{x:Static services:IconGlyphs.Add}" FontFamily="Icons" FontSize="22" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
-                    <Label Text="New list" FontFamily="ArchivoSemiBold" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                    <Label Text="{x:Static res:AppResources.Common_NewList}" FontFamily="ArchivoSemiBold" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
                 </HorizontalStackLayout>
             </Border>
         </VerticalStackLayout>

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using JapaneseDictionary.Core.Search;
+using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
 using JapaneseDictionary.Views;
 
@@ -45,7 +46,7 @@ public partial class SearchViewModel : ObservableObject
     public bool ShowRecents => !HasQuery && !IsPreparingDictionary;
     public bool IsEmpty => HasQuery && !IsLoading && !IsPreparingDictionary && Results.Count == 0;
     public string Placeholder => "食べる · taberu · to eat";
-    public string ResultCountText => Results.Count == 1 ? "1 entry" : $"{Results.Count} entries";
+    public string ResultCountText => UiText.EntryCount(Results.Count);
 
     public async Task OnAppearingAsync()
     {
@@ -186,9 +187,9 @@ public partial class SearchViewModel : ObservableObject
             rows.Add(SearchResultRow.FromEntry(entry, MatchNote(match, query, isMixed)));
         }
 
-        var label = isMixed ? "Japanese · English"
-            : hasEnglish ? "English → Japanese"
-            : "Japanese → English";
+        var label = isMixed ? AppResources.Search_LabelMixed
+            : hasEnglish ? AppResources.Search_LabelEnglish
+            : AppResources.Search_LabelJapanese;
         return (rows, label);
     }
 
@@ -196,9 +197,9 @@ public partial class SearchViewModel : ObservableObject
     // each row says which reading of the query found it.
     private static string? MatchNote(SearchResult match, string query, bool isMixed) => match.Kind switch
     {
-        SearchMatchKind.Conjugated => $"de-inflected from {match.MatchedText ?? query} ({match.ConjugationForm})",
-        SearchMatchKind.Gloss when isMixed => $"English: {match.MatchedText}",
-        _ when isMixed && match.MatchedText is { } kana && kana != query => $"romaji: {kana}",
+        SearchMatchKind.Conjugated => UiText.Format(AppResources.Search_NoteConjugated, match.MatchedText ?? query, UiText.FormName(match.ConjugationForm)),
+        SearchMatchKind.Gloss when isMixed => UiText.Format(AppResources.Search_NoteEnglish, match.MatchedText ?? ""),
+        _ when isMixed && match.MatchedText is { } kana && kana != query => UiText.Format(AppResources.Search_NoteRomaji, kana),
         _ => null,
     };
 

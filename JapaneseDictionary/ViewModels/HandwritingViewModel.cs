@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using JapaneseDictionary.Core.Recognition;
+using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
 
 namespace JapaneseDictionary.ViewModels;
@@ -30,7 +31,9 @@ public partial class HandwritingViewModel : ObservableObject
     public ObservableCollection<CandidateTile> Candidates { get; } = [];
 
     public bool CanvasEmpty => StrokeCount == 0;
-    public string CandidateNote => StrokeCount == 0 ? "draw to search" : $"top {Candidates.Count}";
+    public string CandidateNote => StrokeCount == 0
+        ? AppResources.Hand_NoteEmpty
+        : UiText.Format(AppResources.Hand_NoteTop, Candidates.Count);
 
     /// <summary>Raised when the user taps a candidate. Only
     /// <see cref="Views.HandwritingSheetPage"/> subscribes to this — it owns

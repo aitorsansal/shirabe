@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using JapaneseDictionary.Core.Search;
+using JapaneseDictionary.Resources.Localization;
+using JapaneseDictionary.Services;
 
 namespace JapaneseDictionary.ViewModels;
 
@@ -39,8 +41,8 @@ public partial class KanjiCard : ObservableObject
     private int currentStep;
 
     public int TotalStrokes => StrokePaths.Count;
-    public string StrokeLabel => $"{TotalStrokes} strokes";
-    public string StepLabel => CurrentStep == 0 ? StrokeLabel : $"stroke {CurrentStep} / {TotalStrokes}";
+    public string StrokeLabel => UiText.Format(AppResources.Word_Strokes, TotalStrokes);
+    public string StepLabel => CurrentStep == 0 ? StrokeLabel : UiText.Format(AppResources.Word_StrokeStep, CurrentStep, TotalStrokes);
     public double ProgressFraction => TotalStrokes == 0 ? 0 : (double)CurrentStep / TotalStrokes;
     public IReadOnlyList<string> VisiblePaths => CurrentStep == 0 ? [] : StrokePaths.Take(CurrentStep).ToList();
 
@@ -78,7 +80,7 @@ public sealed record ConjugationTableRow(string Label, string PlainStem, string 
     {
         var (plainStem, plainEnding) = Split(row.Plain, stem);
         var (politeStem, politeEnding) = Split(row.Polite, stem);
-        return new ConjugationTableRow(row.Label, plainStem, plainEnding, politeStem, politeEnding);
+        return new ConjugationTableRow(UiText.ConjugationLabel(row.Label), plainStem, plainEnding, politeStem, politeEnding);
     }
 
     private static (string Stem, string Ending) Split(string form, string stem) =>

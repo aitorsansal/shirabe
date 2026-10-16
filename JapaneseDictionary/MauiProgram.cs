@@ -10,6 +10,8 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        LanguageService.ApplyAtStartup();
+
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
@@ -44,6 +46,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppDataContext>();
         builder.Services.AddSingleton<ThemeService>();
         builder.Services.AddSingleton<JapaneseTtsService>();
+        builder.Services.AddSingleton<LanguageService>();
 
         builder.Services.AddTransient<SearchViewModel>();
         builder.Services.AddTransient<WordDetailViewModel>();

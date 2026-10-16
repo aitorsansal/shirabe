@@ -1,6 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using JapaneseDictionary.Resources.Localization;
+using JapaneseDictionary.Services;
+
 namespace JapaneseDictionary.ViewModels;
 
 public sealed record AboutLink(string Label, string Url);
@@ -20,57 +23,60 @@ public sealed partial class AboutViewModel : ObservableObject
 
     public string AppName => AppInfo.Current.Name;
 
-    public string VersionText => $"Version {AppInfo.Current.VersionString} ({AppInfo.Current.BuildString})";
+    public string VersionText => UiText.Format(AppResources.Settings_Version, AppInfo.Current.VersionString, AppInfo.Current.BuildString);
 
+    // Instance (not static) so a language change, which rebuilds the pages and
+    // with them this transient view model, picks up the new strings. Project and
+    // licence names that are proper nouns stay untranslated.
     public IReadOnlyList<AboutSection> Sections { get; } =
     [
-        new("OPEN SOURCE",
-            "Free and open source software, released under the MIT license.",
+        new(AppResources.About_OpenSourceTitle,
+            AppResources.About_OpenSourceBody,
             [
-                new("Source code on GitHub", RepoUrl),
-                new("MIT license", $"{RepoUrl}/blob/main/LICENSE"),
+                new(AppResources.About_SourceCode, RepoUrl),
+                new(AppResources.About_MitLicense, $"{RepoUrl}/blob/main/LICENSE"),
             ]),
 
-        new("DICTIONARY DATA",
-            "This application uses the JMdict/EDICT and KANJIDIC dictionary files. These files are the property of the Electronic Dictionary Research and Development Group, and are used in conformance with the Group's licence.",
+        new(AppResources.About_DictionaryTitle,
+            AppResources.About_DictionaryBody,
             [
-                new("EDRDG licence", "https://www.edrdg.org/edrdg/licence.html"),
-                new("JMdict project", "https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project"),
-                new("KANJIDIC project", "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"),
+                new(AppResources.About_EdrdgLicence, "https://www.edrdg.org/edrdg/licence.html"),
+                new(AppResources.About_JmdictProject, "https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project"),
+                new(AppResources.About_KanjidicProject, "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"),
             ]),
 
-        new("STROKE ORDER",
-            "Stroke order data comes from KanjiVG, copyright Ulrich Apel, licensed under CC BY-SA 3.0.",
+        new(AppResources.About_StrokeTitle,
+            AppResources.About_StrokeBody,
             [
                 new("KanjiVG", "https://kanjivg.tagaini.net/"),
                 new("CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0/"),
             ]),
 
-        new("EXAMPLE SENTENCES",
-            "Example sentences and their translations come from Tatoeba and its contributors, licensed under CC BY 2.0 FR.",
+        new(AppResources.About_SentencesTitle,
+            AppResources.About_SentencesBody,
             [
                 new("Tatoeba", "https://tatoeba.org/"),
                 new("CC BY 2.0 FR", "https://creativecommons.org/licenses/by/2.0/fr/"),
             ]),
 
-        new("DATABASE LICENSE",
-            "The bundled dictionary database is derived from the sources above and is distributed under CC BY-SA 4.0.",
+        new(AppResources.About_DatabaseTitle,
+            AppResources.About_DatabaseBody,
             [
                 new("CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0/"),
-                new("Data license details", $"{RepoUrl}/blob/main/DATA-LICENSE.md"),
+                new(AppResources.About_DataLicenseDetails, $"{RepoUrl}/blob/main/DATA-LICENSE.md"),
             ]),
 
-        new("HANDWRITING RECOGNITION",
-            "Character recognition powered by machine learning from Dariyooo (DaAppLab). The model was trained on the ETL Character Database (Electrotechnical Laboratory, 1973-1984, distributed by AIST) and the KanjiVG dataset.",
+        new(AppResources.About_HandwritingTitle,
+            AppResources.About_HandwritingBody,
             [
                 new("DaKanji Single Kanji Recognition", "https://github.com/CaptainDario/DaKanji-Single-Kanji-Recognition"),
                 new("ETL Character Database", "https://etlcdb.db.aist.go.jp/"),
             ]),
 
-        new("FONTS AND LIBRARIES",
-            "Archivo and Noto Serif JP are used under the SIL Open Font License 1.1. Material Symbols icons are used under the Apache License 2.0. ONNX Runtime, CommunityToolkit.Mvvm and sqlite-net are used under the MIT license.",
+        new(AppResources.About_FontsTitle,
+            AppResources.About_FontsBody,
             [
-                new("Full third-party notices", $"{RepoUrl}/blob/main/THIRD-PARTY-NOTICES.md"),
+                new(AppResources.About_ThirdPartyNotices, $"{RepoUrl}/blob/main/THIRD-PARTY-NOTICES.md"),
             ]),
     ];
 
