@@ -102,6 +102,16 @@
         <Setter Property="MinimumHeightRequest" Value="40" />
     </Style>
 
+    <!--  Bottom rule under a list row. Border.StrokeThickness is a single double, so
+          "0,0,0,1" doesn't mean bottom-only; it draws a full box. Put the row and this
+          rule in the same single-cell Grid instead.  -->
+    <Style x:Key="RowRuleStyle" TargetType="BoxView">
+        <Setter Property="HeightRequest" Value="1" />
+        <Setter Property="VerticalOptions" Value="End" />
+        <Setter Property="InputTransparent" Value="True" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
+    </Style>
+
     <!--  Material Symbols glyph button (Services/IconGlyphs.cs); 44 wide for touch targets  -->
     <Style x:Key="IconButtonStyle" TargetType="Button" BasedOn="{StaticResource IconGlyphButtonStyle}">
         <Setter Property="FontFamily" Value="Icons" />

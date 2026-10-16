@@ -180,16 +180,7 @@ public partial class SearchViewModel : ObservableObject
             var entry = data.DictionaryRepository.GetEntry(match.EntryId);
             if (entry == null) continue;
 
-            var firstSense = entry.Senses.FirstOrDefault();
-            var tags = firstSense?.PartOfSpeechTags.Take(2)
-                .Select((tag, i) => new TagChip(tag, i))
-                .ToList() ?? [];
-            var gloss = string.Join(" · ", entry.Senses.SelectMany(s => s.Glosses).Take(3));
-
-            rows.Add(new SearchResultRow(
-                entry.Id, entry.PrimaryReading, entry.PrimaryText,
-                entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon),
-                tags, gloss, MatchNote(match, query, isMixed)));
+            rows.Add(SearchResultRow.FromEntry(entry, MatchNote(match, query, isMixed)));
         }
 
         var label = isMixed ? "Japanese · English"

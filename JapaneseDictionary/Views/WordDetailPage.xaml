@@ -167,16 +167,19 @@
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Compounds}" Spacing="0">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="vm:CompoundRow">
-                                    <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="0,12" MinimumHeightRequest="44">
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WordDetailViewModel}}, Path=OpenCompoundCommand}" CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
-                                            <Label Grid.Column="0" Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" VerticalOptions="Center" />
-                                            <Label Grid.Column="1" Text="{Binding Reading}" FontFamily="ArchivoRegular" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" VerticalOptions="Center" />
-                                            <Label Grid.Column="2" Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" HorizontalTextAlignment="End" HorizontalOptions="End" VerticalOptions="Center" />
-                                        </Grid>
-                                    </Border>
+                                    <Grid>
+                                        <Border StrokeThickness="0" Padding="0,12" MinimumHeightRequest="44">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WordDetailViewModel}}, Path=OpenCompoundCommand}" CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
+                                                <Label Grid.Column="0" Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" VerticalOptions="Center" />
+                                                <Label Grid.Column="1" Text="{Binding Reading}" FontFamily="ArchivoRegular" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" VerticalOptions="Center" />
+                                                <Label Grid.Column="2" Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" HorizontalTextAlignment="End" HorizontalOptions="End" VerticalOptions="Center" />
+                                            </Grid>
+                                        </Border>
+                                        <BoxView Style="{StaticResource RowRuleStyle}" />
+                                    </Grid>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
@@ -189,8 +192,8 @@
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:ExampleCard">
                                 <VerticalStackLayout Padding="16" Spacing="8">
-                                    <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="0,0,0,8">
-                                        <VerticalStackLayout Spacing="8">
+                                    <Grid>
+                                        <VerticalStackLayout Spacing="8" Padding="0,0,0,8">
                                             <Label FontFamily="NotoSerifJPRegular" LineHeight="1.1" FontSize="19" LineBreakMode="WordWrap">
                                                 <Label.FormattedText>
                                                     <FormattedString>
@@ -210,7 +213,8 @@
                                                 </Label.FormattedText>
                                             </Label>
                                         </VerticalStackLayout>
-                                    </Border>
+                                        <BoxView Style="{StaticResource RowRuleStyle}" />
+                                    </Grid>
                                 </VerticalStackLayout>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -223,8 +227,8 @@
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding KanjiCards}" Spacing="0">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:KanjiCard">
-                                <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="16">
-                                    <VerticalStackLayout Spacing="14">
+                                <Grid>
+                                    <VerticalStackLayout Spacing="14" Padding="16">
                                         <Grid ColumnDefinitions="88,*" ColumnSpacing="14">
                                             <Border Grid.Column="0" WidthRequest="88" HeightRequest="88" VerticalOptions="Start" StrokeThickness="1"
                                                     Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}"
@@ -292,7 +296,8 @@
                                                      BackgroundColor="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" HeightRequest="4" />
                                         <Label Text="{Binding StepLabel}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.2" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" HorizontalOptions="Center" />
                                     </VerticalStackLayout>
-                                </Border>
+                                    <BoxView Style="{StaticResource RowRuleStyle}" />
+                                </Grid>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
@@ -310,8 +315,8 @@
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding ConjugationRows}" Spacing="0">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:ConjugationTableRow">
-                                <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="16,11">
-                                    <Grid ColumnDefinitions="1.1*,1*,1*">
+                                <Grid>
+                                    <Grid ColumnDefinitions="1.1*,1*,1*" Padding="16,11">
                                         <Label Grid.Column="0" Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="0.6" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" VerticalOptions="Center" />
                                         <Label Grid.Column="1" FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" VerticalOptions="Center">
                                             <Label.FormattedText>
@@ -330,7 +335,8 @@
                                             </Label.FormattedText>
                                         </Label>
                                     </Grid>
-                                </Border>
+                                    <BoxView Style="{StaticResource RowRuleStyle}" />
+                                </Grid>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>

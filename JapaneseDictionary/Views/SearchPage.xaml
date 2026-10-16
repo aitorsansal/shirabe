@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
     xmlns:services="clr-namespace:JapaneseDictionary.Services"
+    xmlns:controls="clr-namespace:JapaneseDictionary.Controls"
     x:DataType="vm:SearchViewModel"
     Shell.NavBarIsVisible="False"
     BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
@@ -124,54 +125,7 @@
             </CollectionView.Header>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:SearchResultRow">
-                    <Border StrokeThickness="0,0,0,1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Padding="16,14" BackgroundColor="Transparent">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=OpenResultCommand}" CommandParameter="{Binding EntryId}" />
-                        </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                            <VerticalStackLayout Grid.Column="0" Spacing="6">
-                                <Label Text="{Binding Reading}" FontFamily="ArchivoRegular" FontSize="12" CharacterSpacing="0.3" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" LineHeight="0.85" FontSize="27" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
-                                    <Border IsVisible="{Binding IsCommon}" StrokeThickness="0" Padding="5,4" VerticalOptions="Center"
-                                            Background="{AppThemeBinding Light={StaticResource CommonBadgeFillLight}, Dark={StaticResource CommonBadgeFillDark}}">
-                                        <Label Text="COMMON" FontFamily="ArchivoExtraBold" FontSize="9" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
-                                    </Border>
-                                </HorizontalStackLayout>
-                                <FlexLayout BindableLayout.ItemsSource="{Binding Tags}" Wrap="Wrap">
-                                    <BindableLayout.ItemTemplate>
-                                        <DataTemplate x:DataType="vm:TagChip">
-                                            <Border StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0">
-                                                <Border.Stroke>
-                                                    <MultiBinding Converter="{StaticResource HueBorderConverter}">
-                                                        <Binding Path="HueIndex" />
-                                                        <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                                                    </MultiBinding>
-                                                </Border.Stroke>
-                                                <Border.Background>
-                                                    <MultiBinding Converter="{StaticResource HueFillConverter}">
-                                                        <Binding Path="HueIndex" />
-                                                        <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                                                    </MultiBinding>
-                                                </Border.Background>
-                                                <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="10" CharacterSpacing="0.6" TextTransform="Uppercase">
-                                                    <Label.TextColor>
-                                                        <MultiBinding Converter="{StaticResource HueTextConverter}">
-                                                            <Binding Path="HueIndex" />
-                                                            <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                                                        </MultiBinding>
-                                                    </Label.TextColor>
-                                                </Label>
-                                            </Border>
-                                        </DataTemplate>
-                                    </BindableLayout.ItemTemplate>
-                                </FlexLayout>
-                                <Label Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" LineBreakMode="WordWrap" />
-                                <Label Text="{Binding ViaNote}" IsVisible="{Binding ViaNote, Converter={StaticResource StringNotEmptyConverter}}" FontFamily="ArchivoSemiBold" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
-                            </VerticalStackLayout>
-                            <Label Grid.Column="1" Text="›" FontFamily="ArchivoBold" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" VerticalOptions="Start" Margin="0,18,0,0" />
-                        </Grid>
-                    </Border>
+                    <controls:EntryRowView Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=OpenResultCommand}" />
                 </DataTemplate>
             </CollectionView.ItemTemplate>
             <CollectionView.Footer>

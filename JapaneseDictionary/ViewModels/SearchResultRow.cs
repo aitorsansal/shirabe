@@ -1,7 +1,9 @@
+using JapaneseDictionary.Core.Models;
+
 namespace JapaneseDictionary.ViewModels;
 
-/// <summary>One row in the search results list — display-ready, already
-/// hydrated from the matching <see cref="Core.Models.DictionaryEntry"/>.</summary>
+/// <summary>One entry row (search results, list contents) — display-ready,
+/// already hydrated from the matching <see cref="DictionaryEntry"/>.</summary>
 public sealed record SearchResultRow(
     int EntryId,
     string Reading,
@@ -9,7 +11,22 @@ public sealed record SearchResultRow(
     bool IsCommon,
     IReadOnlyList<TagChip> Tags,
     string Gloss,
-    string? ViaNote);
+    string? ViaNote)
+{
+    public static SearchResultRow FromEntry(DictionaryEntry entry, string? viaNote = null)
+    {
+        var firstSense = entry.Senses.FirstOrDefault();
+        var tags = firstSense?.PartOfSpeechTags.Take(2)
+            .Select((tag, i) => new TagChip(tag, i))
+            .ToList() ?? [];
+        var gloss = string.Join(" · ", entry.Senses.SelectMany(s => s.Glosses).Take(3));
+
+        return new SearchResultRow(
+            entry.Id, entry.PrimaryReading, entry.PrimaryText,
+            entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon),
+            tags, gloss, viaNote);
+    }
+}
 
 /// <summary>One part-of-speech tag chip, colored by cycling through the
 /// five-hue accent palette by index (see HueConverters.cs).</summary>
