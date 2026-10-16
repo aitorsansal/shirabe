@@ -46,3 +46,6 @@ JapaneseDictionary/keystore.local.props
 JapaneseDictionary/keystore/
 *.keystore
 *.jks
+
+# Wrangler's local cache (account ID, deploy state) from deploying web/.
+.wrangler/
