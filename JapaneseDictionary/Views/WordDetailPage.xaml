@@ -319,8 +319,17 @@
                                                         MinimumHeightRequest="56"
                                                         CornerRadius="0" />
                                                 <Grid Grid.Column="1" WidthRequest="120" HeightRequest="120" Padding="10" HorizontalOptions="Center">
-                                                    <Label Text="{Binding Character}" FontFamily="NotoSerifJPRegular" FontSize="100" TextColor="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.5" />
-                                                    <!--  KanjiVG's viewBox is 109x109; scaled down to roughly fit the 100x100 box.  -->
+                                                    <!--  KanjiVG's viewBox is 109x109; scaled down to roughly fit the 100x100 box.
+                                                          The faint guide is drawn from the same paths (not a font glyph) so it lines up exactly with the animated strokes.  -->
+                                                    <Grid WidthRequest="109" HeightRequest="109" Scale="0.92" HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.5"
+                                                          BindableLayout.ItemsSource="{Binding StrokePaths}">
+                                                        <BindableLayout.ItemTemplate>
+                                                            <DataTemplate x:DataType="x:String">
+                                                                <Path Data="{Binding ., Converter={StaticResource SvgPathToGeometryConverter}}" StrokeThickness="3.4" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent"
+                                                                      Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
+                                                            </DataTemplate>
+                                                        </BindableLayout.ItemTemplate>
+                                                    </Grid>
                                                     <Grid WidthRequest="109" HeightRequest="109" Scale="0.92" HorizontalOptions="Center" VerticalOptions="Center"
                                                           BindableLayout.ItemsSource="{Binding VisiblePaths}">
                                                         <BindableLayout.ItemTemplate>
