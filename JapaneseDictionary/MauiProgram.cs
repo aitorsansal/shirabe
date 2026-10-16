@@ -51,11 +51,15 @@ public static class MauiProgram
         builder.Services.AddTransient<AboutViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddTransient<AddToListViewModel>();
+        builder.Services.AddTransient<ListsViewModel>();
+        builder.Services.AddTransient<ListDetailViewModel>();
 
         builder.Services.AddTransient<SearchPage>();
         builder.Services.AddTransient<WordDetailPage>();
         builder.Services.AddTransient<AboutPage>();
         builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<ListsPage>();
+        builder.Services.AddTransient<ListDetailPage>();
         builder.Services.AddTransient<HandwritingSheetPage>();
         builder.Services.AddTransient<AddToListSheetPage>();
 

@@ -91,6 +91,9 @@ public partial class SearchViewModel : ObservableObject
     private static Task OpenSettingsAsync() => Shell.Current.GoToAsync(nameof(SettingsPage));
 
     [RelayCommand]
+    private static Task OpenListsAsync() => Shell.Current.GoToAsync(nameof(ListsPage));
+
+    [RelayCommand]
     private Task OpenResultAsync(int entryId) => OpenEntryAsync(entryId);
 
     [RelayCommand]
