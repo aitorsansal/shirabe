@@ -1,0 +1,2 @@
+# 302, not 301: browsers cache 301s permanently, so keep the target easy to change.
+/ https://play.google.com/store/apps/details?id=com.aitorsansal.japanesedictionary 302
