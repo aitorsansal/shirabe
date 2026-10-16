@@ -183,6 +183,9 @@
   <data name="Lists_DeleteConfirm" xml:space="preserve"><value>Delete</value></data>
   <data name="Lists_ExportTitle" xml:space="preserve"><value>Export {0}</value></data>
   <data name="Lists_SaveKicker" xml:space="preserve"><value>SAVE TO LIST</value></data>
+  <data name="About_PrivacyTitle" xml:space="preserve"><value>PRIVACY</value></data>
+  <data name="About_PrivacyBody" xml:space="preserve"><value>Shirabe works offline and doesn't collect any data. Your history, favourites and lists stay on your device.</value></data>
+  <data name="About_PrivacyPolicy" xml:space="preserve"><value>Privacy policy</value></data>
   <data name="About_OpenSourceTitle" xml:space="preserve"><value>OPEN SOURCE</value></data>
   <data name="About_OpenSourceBody" xml:space="preserve"><value>Free and open source software, released under the MIT license.</value></data>
   <data name="About_SourceCode" xml:space="preserve"><value>Source code on GitHub</value></data>

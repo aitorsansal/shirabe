@@ -21,6 +21,9 @@ public sealed partial class AboutViewModel : ObservableObject
 {
     private const string RepoUrl = "https://github.com/aitorsansal/JapaneseDictionary";
 
+    // Also the URL given to the Play Console. Source lives in web/public/privacy/.
+    private const string PrivacyPolicyUrl = "https://shirabe.aitorsansal.com/privacy/";
+
     public string AppName => AppInfo.Current.Name;
 
     public string VersionText => UiText.Format(AppResources.Settings_Version, AppInfo.Current.VersionString, AppInfo.Current.BuildString);
@@ -30,6 +33,12 @@ public sealed partial class AboutViewModel : ObservableObject
     // licence names that are proper nouns stay untranslated.
     public IReadOnlyList<AboutSection> Sections { get; } =
     [
+        new(AppResources.About_PrivacyTitle,
+            AppResources.About_PrivacyBody,
+            [
+                new(AppResources.About_PrivacyPolicy, PrivacyPolicyUrl),
+            ]),
+
         new(AppResources.About_OpenSourceTitle,
             AppResources.About_OpenSourceBody,
             [

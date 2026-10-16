@@ -183,6 +183,9 @@
   <data name="Lists_DeleteConfirm" xml:space="preserve"><value>Elimina</value></data>
   <data name="Lists_ExportTitle" xml:space="preserve"><value>Exporta {0}</value></data>
   <data name="Lists_SaveKicker" xml:space="preserve"><value>DESA EN UNA LLISTA</value></data>
+  <data name="About_PrivacyTitle" xml:space="preserve"><value>PRIVADESA</value></data>
+  <data name="About_PrivacyBody" xml:space="preserve"><value>Shirabe funciona sense connexió i no recull cap dada. El teu historial, preferits i llistes es queden al teu dispositiu.</value></data>
+  <data name="About_PrivacyPolicy" xml:space="preserve"><value>Política de privadesa</value></data>
   <data name="About_OpenSourceTitle" xml:space="preserve"><value>CODI OBERT</value></data>
   <data name="About_OpenSourceBody" xml:space="preserve"><value>Programari lliure i de codi obert, publicat amb la llicència MIT.</value></data>
   <data name="About_SourceCode" xml:space="preserve"><value>Codi font a GitHub</value></data>

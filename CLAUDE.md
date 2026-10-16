@@ -13,6 +13,8 @@ The app's product name is **Shirabe** (launcher label, About page, header wordma
 - Run a single test: `dotnet test JapaneseDictionary.Tests/JapaneseDictionary.Tests.csproj --filter "FullyQualifiedName~ClassName.MethodName"`
 - Regenerate the bundled dictionary database (only needed after touching a parser/writer in `JapaneseDictionary.DataBuilder`, or after updating the source corpora): from `JapaneseDictionary.DataBuilder/`, run `dotnet run`. Requires `RawData/` to be populated first (JMdict, KANJIDIC2, KanjiVG, and Tatoeba's `jpn_indices.csv` + `sentences.csv`) — these are **not** checked into git (gitignored, ~1.5GB of downloadable public corpora, and several individual files exceed GitHub's 100MB limit anyway). The tool writes to `../JapaneseDictionary/Resources/Raw/dictionary.db3` (tracked via **Git LFS** — run `git lfs install` once after cloning, or you'll get a pointer file instead of the real database).
 
+- Publish the privacy policy site (`web/public/privacy/index.html`, served at `shirabe.aitorsansal.com/privacy/` — the URL in the Play Console and on the About page): from `web/`, run `npx wrangler deploy`. Keep the policy's claims in sync with the app (no internet permission, what's in Android backup per `data_extraction_rules.xml`) and update it in all three languages.
+
 ## Architecture
 
 ### Solution layout

@@ -1,0 +1,10 @@
+{
+  // Deployed with "npx wrangler deploy" from this directory (web/).
+  // Served from public/ (not ".") so this config file isn't itself a public URL.
+  // Custom domain: shirabe.aitorsansal.com (set on the Worker in the Cloudflare dashboard).
+  "name": "shirabe",
+  "compatibility_date": "2026-10-16",
+  "assets": {
+    "directory": "./public"
+  }
+}

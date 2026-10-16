@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shirabe — Privacy Policy</title>
+<style>
+  /* Same tokens as the app's Resources/Styles/Colors.xaml. System fonts only, so
+     opening this page doesn't contact any font host. */
+  :root {
+    --bg: #f3f2f2;
+    --card: #ffffff;
+    --text: #201e1d;
+    --body: #444141;
+    --muted: #605d5d;
+    --accent: #6b3aa8;
+    --rule-major: rgba(32, 30, 29, 0.4);
+    --rule-minor: rgba(32, 30, 29, 0.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17191c;
+      --card: #232527;
+      --text: #f0eeec;
+      --body: #d8d5d3;
+      --muted: #b7b3b1;
+      --accent: #c9a8f0;
+      --rule-major: rgba(255, 255, 255, 0.35);
+      --rule-minor: rgba(255, 255, 255, 0.14);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+  .brand { display: flex; align-items: baseline; gap: 12px; padding-bottom: 14px; border-bottom: 2px solid var(--rule-major); margin-bottom: 20px; }
+  .mark { font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif; font-weight: 700; font-size: 34px; line-height: 1; }
+  .name { font-weight: 800; font-size: 0.8rem; letter-spacing: 0.12em; color: var(--muted); }
+  .lang { display: flex; gap: 8px; margin: 0 0 32px; }
+  .lang a {
+    color: var(--muted); text-decoration: none; font-size: 0.85rem;
+    border: 1px solid var(--rule-major); padding: 3px 12px;
+  }
+  .lang a:hover, .lang a:focus-visible { color: var(--text); border-color: var(--accent); }
+  h1 { font-size: 1.7rem; margin: 0 0 4px; }
+  .updated { color: var(--muted); font-size: 0.85rem; margin: 0 0 24px; }
+  h2 { font-size: 1.15rem; margin: 40px 0 12px; }
+  p, li { color: var(--body); font-size: 0.95rem; }
+  ul { padding-left: 20px; }
+  li + li { margin-top: 8px; }
+  a { color: var(--accent); }
+  .card {
+    background: var(--card); border: 1px solid var(--rule-minor);
+    padding: 18px 20px; margin: 24px 0;
+  }
+  .card p { margin: 0; }
+  section + section { margin-top: 72px; padding-top: 40px; border-top: 1px solid var(--rule-major); }
+  footer {
+    margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--rule-minor);
+    color: var(--muted); font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand" aria-hidden="true"><span class="mark">辞書</span><span class="name">SHIRABE</span></div>
+    <nav class="lang" aria-label="Language">
+      <a href="#en">English</a>
+      <a href="#es">Español</a>
+      <a href="#ca">Català</a>
+    </nav>
+
+    <section id="en" lang="en">
+      <h1>Privacy Policy</h1>
+      <p class="updated">Last updated: October 2026</p>
+
+      <p>Shirabe is a free, open-source Japanese–English dictionary for Android, made by an
+      individual developer, not a company. It works fully offline: it has no accounts, no ads,
+      no analytics and no crash reporting.</p>
+
+      <div class="card">
+        <p><strong>Shirabe does not collect any data.</strong> The app doesn't even have
+        Android's internet permission, so it has no way of sending anything anywhere.</p>
+      </div>
+
+      <h2>What stays on your device</h2>
+      <p>The dictionary is bundled with the app. What you do in the app is stored only on your
+      phone, in the app's private storage: the words you've viewed recently, your favourites and
+      lists, and your settings (theme, language and voice engine).</p>
+
+      <h2>When other apps or services are involved</h2>
+      <p>A few features hand something to another part of your phone. None of them send data to
+      us.</p>
+      <ul>
+        <li><strong>Android backup.</strong> If backup is turned on for your device, Android
+        includes Shirabe's history, favourites, lists and settings in your device backup, so they
+        come back when you set up a new phone. This is done by Android and stored in your Google
+        account under Google's terms; the dictionary itself isn't included. You can turn backup
+        off in Android's settings.</li>
+        <li><strong>Look up from other apps.</strong> When you select text in another app and
+        choose Shirabe, the selected text is searched on your device, like any other search.</li>
+        <li><strong>Handwriting.</strong> Kanji you draw are recognised on your device by a model
+        bundled with the app. Drawings aren't saved.</li>
+        <li><strong>Reading aloud.</strong> Words and sentences are read by the text-to-speech
+        engine installed on your phone, which you can choose in Shirabe's settings. That engine
+        belongs to its own provider (usually Google), and its privacy policy applies to it.</li>
+        <li><strong>CSV export.</strong> A list is only exported when you ask for it, and the file
+        goes wherever you choose to share it.</li>
+        <li><strong>Links.</strong> Links in the app, such as the Play Store page or the
+        attributions on the About screen, open in your browser or the Play Store.</li>
+      </ul>
+
+      <h2>Permissions</h2>
+      <p>Shirabe asks for no permissions and has no internet access.</p>
+
+      <h2>Deleting your data</h2>
+      <p>Clear your recently viewed words in <strong>Settings → Data → Clear history</strong>, and
+      delete any list from the <strong>Lists</strong> screen. Uninstalling the app removes
+      everything from your device. Device backups are managed from your Google account.</p>
+
+      <h2>Children</h2>
+      <p>The app is suitable for all ages. It collects no personal information from anyone,
+      children included.</p>
+
+      <h2>Open source</h2>
+      <p>You don't have to take our word for it: the full source code is on
+      <a href="https://github.com/aitorsansal/JapaneseDictionary" target="_blank" rel="noopener">GitHub</a>.</p>
+
+      <h2>Changes to this policy</h2>
+      <p>If this policy changes, the "Last updated" date above will change too.</p>
+
+      <h2>Contact</h2>
+      <p><a href="mailto:contact.aitorsansal@gmail.com">contact.aitorsansal@gmail.com</a></p>
+    </section>
+
+    <section id="es" lang="es">
+      <h1>Política de privacidad</h1>
+      <p class="updated">Última actualización: octubre de 2026</p>
+
+      <p>Shirabe es un diccionario japonés–inglés gratuito y de código abierto para Android,
+      creado por un desarrollador independiente, no por una empresa. Funciona totalmente sin
+      conexión: no tiene cuentas, ni anuncios, ni analíticas, ni informes de errores.</p>
+
+      <div class="card">
+        <p><strong>Shirabe no recoge ningún dato.</strong> La app ni siquiera tiene el permiso de
+        Internet de Android, así que no tiene forma de enviar nada a ningún sitio.</p>
+      </div>
+
+      <h2>Lo que se queda en tu dispositivo</h2>
+      <p>El diccionario viene incluido en la app. Lo que haces en ella se guarda solo en tu
+      móvil, en el almacenamiento privado de la app: las palabras que has visto recientemente,
+      tus favoritos y listas, y tus ajustes (tema, idioma y motor de voz).</p>
+
+      <h2>Cuando intervienen otras apps o servicios</h2>
+      <p>Algunas funciones pasan algo a otra parte de tu móvil. Ninguna nos envía datos.</p>
+      <ul>
+        <li><strong>Copia de seguridad de Android.</strong> Si la copia de seguridad está activada
+        en tu dispositivo, Android incluye en ella el historial, los favoritos, las listas y los
+        ajustes de Shirabe, para que los recuperes al configurar un móvil nuevo. Lo hace Android
+        y se guarda en tu cuenta de Google según las condiciones de Google; el diccionario en sí
+        no se incluye. Puedes desactivar la copia en los ajustes de Android.</li>
+        <li><strong>Buscar desde otras apps.</strong> Cuando seleccionas texto en otra app y eliges
+        Shirabe, el texto seleccionado se busca en tu dispositivo, como cualquier otra
+        búsqueda.</li>
+        <li><strong>Escritura a mano.</strong> Los kanji que dibujas se reconocen en tu
+        dispositivo con un modelo incluido en la app. Los dibujos no se guardan.</li>
+        <li><strong>Lectura en voz alta.</strong> Las palabras y frases las lee el motor de
+        síntesis de voz instalado en tu móvil, que puedes elegir en los ajustes de Shirabe. Ese
+        motor pertenece a su propio proveedor (normalmente Google) y se rige por su política de
+        privacidad.</li>
+        <li><strong>Exportar a CSV.</strong> Una lista solo se exporta cuando tú lo pides, y el
+        archivo va adonde decidas compartirlo.</li>
+        <li><strong>Enlaces.</strong> Los enlaces de la app, como la página de Play Store o las
+        atribuciones de la pantalla Acerca de, se abren en tu navegador o en Play Store.</li>
+      </ul>
+
+      <h2>Permisos</h2>
+      <p>Shirabe no pide ningún permiso y no tiene acceso a Internet.</p>
+
+      <h2>Borrar tus datos</h2>
+      <p>Borra las palabras vistas recientemente en <strong>Ajustes → Datos → Borrar el
+      historial</strong>, y elimina cualquier lista desde la pantalla <strong>Listas</strong>. Al
+      desinstalar la app se borra todo de tu dispositivo. Las copias de seguridad se gestionan
+      desde tu cuenta de Google.</p>
+
+      <h2>Menores</h2>
+      <p>La app es apta para todas las edades. No recoge información personal de nadie, menores
+      incluidos.</p>
+
+      <h2>Código abierto</h2>
+      <p>No hace falta que te fíes de nuestra palabra: el código fuente completo está en
+      <a href="https://github.com/aitorsansal/JapaneseDictionary" target="_blank" rel="noopener">GitHub</a>.</p>
+
+      <h2>Cambios en esta política</h2>
+      <p>Si esta política cambia, también cambiará la fecha de "Última actualización".</p>
+
+      <h2>Contacto</h2>
+      <p><a href="mailto:contact.aitorsansal@gmail.com">contact.aitorsansal@gmail.com</a></p>
+    </section>
+
+    <section id="ca" lang="ca">
+      <h1>Política de privadesa</h1>
+      <p class="updated">Darrera actualització: octubre de 2026</p>
+
+      <p>Shirabe és un diccionari japonès–anglès gratuït i de codi obert per a Android, creat per
+      un desenvolupador independent, no per una empresa. Funciona totalment sense connexió: no
+      té comptes, ni anuncis, ni analítiques, ni informes d'errors.</p>
+
+      <div class="card">
+        <p><strong>Shirabe no recull cap dada.</strong> L'app ni tan sols té el permís d'Internet
+        d'Android, així que no té cap manera d'enviar res enlloc.</p>
+      </div>
+
+      <h2>El que es queda al teu dispositiu</h2>
+      <p>El diccionari ve inclòs a l'app. El que hi fas es desa només al teu mòbil, a
+      l'emmagatzematge privat de l'app: les paraules que has vist recentment, els teus preferits
+      i llistes, i la teva configuració (tema, idioma i motor de veu).</p>
+
+      <h2>Quan hi intervenen altres apps o serveis</h2>
+      <p>Algunes funcions passen alguna cosa a una altra part del teu mòbil. Cap no ens envia
+      dades.</p>
+      <ul>
+        <li><strong>Còpia de seguretat d'Android.</strong> Si la còpia de seguretat està activada
+        al teu dispositiu, Android hi inclou l'historial, els preferits, les llistes i la
+        configuració de Shirabe, perquè els recuperis quan configuris un mòbil nou. Ho fa Android
+        i es desa al teu compte de Google segons les condicions de Google; el diccionari en si no
+        s'hi inclou. Pots desactivar la còpia a la configuració d'Android.</li>
+        <li><strong>Cercar des d'altres apps.</strong> Quan selecciones text en una altra app i
+        tries Shirabe, el text seleccionat es cerca al teu dispositiu, com qualsevol altra
+        cerca.</li>
+        <li><strong>Escriptura a mà.</strong> Els kanji que dibuixes es reconeixen al teu
+        dispositiu amb un model inclòs a l'app. Els dibuixos no es desen.</li>
+        <li><strong>Lectura en veu alta.</strong> Les paraules i frases les llegeix el motor de
+        síntesi de veu instal·lat al teu mòbil, que pots triar a la configuració de Shirabe.
+        Aquest motor pertany al seu propi proveïdor (normalment Google) i es regeix per la seva
+        política de privadesa.</li>
+        <li><strong>Exportar a CSV.</strong> Una llista només s'exporta quan tu ho demanes, i el
+        fitxer va on decideixis compartir-lo.</li>
+        <li><strong>Enllaços.</strong> Els enllaços de l'app, com la pàgina de Play Store o les
+        atribucions de la pantalla Quant a, s'obren al navegador o a Play Store.</li>
+      </ul>
+
+      <h2>Permisos</h2>
+      <p>Shirabe no demana cap permís i no té accés a Internet.</p>
+
+      <h2>Esborrar les teves dades</h2>
+      <p>Esborra les paraules vistes recentment a <strong>Configuració → Dades → Esborra
+      l'historial</strong>, i elimina qualsevol llista des de la pantalla <strong>Llistes</strong>.
+      En desinstal·lar l'app s'esborra tot del teu dispositiu. Les còpies de seguretat es
+      gestionen des del teu compte de Google.</p>
+
+      <h2>Menors</h2>
+      <p>L'app és apta per a totes les edats. No recull informació personal de ningú, menors
+      inclosos.</p>
+
+      <h2>Codi obert</h2>
+      <p>No cal que et refiïs de la nostra paraula: el codi font complet és a
+      <a href="https://github.com/aitorsansal/JapaneseDictionary" target="_blank" rel="noopener">GitHub</a>.</p>
+
+      <h2>Canvis en aquesta política</h2>
+      <p>Si aquesta política canvia, també canviarà la data de "Darrera actualització".</p>
+
+      <h2>Contacte</h2>
+      <p><a href="mailto:contact.aitorsansal@gmail.com">contact.aitorsansal@gmail.com</a></p>
+    </section>
+
+    <footer>Shirabe · aitorsansal</footer>
+  </div>
+</body>
+</html>
