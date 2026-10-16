@@ -45,7 +45,7 @@
     <Grid RowDefinitions="Auto,*">
 
         <!--  Header  -->
-        <VerticalStackLayout Grid.Row="0" Padding="16,50,16,0" Spacing="0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
+        <VerticalStackLayout Grid.Row="0" Padding="16,12,16,0" Spacing="0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
             <Button
                 Text="{x:Static res:AppResources.Common_Back}"
                 Command="{Binding GoBackCommand}"
