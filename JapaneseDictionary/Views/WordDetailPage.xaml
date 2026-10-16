@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:services="clr-namespace:JapaneseDictionary.Services"
     x:DataType="vm:WordDetailViewModel"
     Shell.NavBarIsVisible="False"
     BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
@@ -12,17 +13,44 @@
 
         <!--  Header  -->
         <VerticalStackLayout Grid.Row="0" Padding="16,50,16,0" Spacing="0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
-            <Button
-                Text="‹  RESULTS"
-                Command="{Binding GoBackCommand}"
-                BackgroundColor="Transparent"
-                TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}"
-                FontFamily="ArchivoExtraBold"
-                FontSize="11"
-                CharacterSpacing="1"
-                HorizontalOptions="Start"
-                Padding="0,6"
-                MinimumHeightRequest="36" />
+            <Grid ColumnDefinitions="*,Auto">
+                <Button
+                    Grid.Column="0"
+                    Text="‹  RESULTS"
+                    Command="{Binding GoBackCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}"
+                    FontFamily="ArchivoExtraBold"
+                    FontSize="11"
+                    CharacterSpacing="1"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"
+                    Padding="0,6"
+                    MinimumHeightRequest="36" />
+                <HorizontalStackLayout Grid.Column="1" Spacing="2" Margin="0,0,-10,0" VerticalOptions="Center">
+                    <Button Text="{x:Static services:IconGlyphs.VolumeUp}"
+                            Command="{Binding SpeakWordCommand}"
+                            IsVisible="{Binding CanSpeak}"
+                            SemanticProperties.Description="Read the word aloud"
+                            Style="{StaticResource IconButtonStyle}" />
+                    <Button Text="{x:Static services:IconGlyphs.Favorite}"
+                            Command="{Binding ToggleFavoriteCommand}"
+                            SemanticProperties.Description="Favourite"
+                            Style="{StaticResource IconButtonStyle}">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsFavorite}" Value="True">
+                                <Setter Property="FontFamily" Value="IconsFilled" />
+                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                <Setter Property="SemanticProperties.Description" Value="Remove from favourites" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="{x:Static services:IconGlyphs.PlaylistAdd}"
+                            Command="{Binding OpenAddToListCommand}"
+                            SemanticProperties.Description="Save to a list"
+                            Style="{StaticResource IconButtonStyle}" />
+                </HorizontalStackLayout>
+            </Grid>
             <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
         </VerticalStackLayout>
 
@@ -204,14 +232,25 @@
                                                 </Label.FormattedText>
                                             </Label>
                                             <Label Text="{Binding English}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" LineBreakMode="WordWrap" />
-                                            <Label FontFamily="ArchivoSemiBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" TextTransform="Uppercase">
-                                                <Label.FormattedText>
-                                                    <FormattedString>
-                                                        <Span Text="Tatoeba #" />
-                                                        <Span Text="{Binding Id}" />
-                                                    </FormattedString>
-                                                </Label.FormattedText>
-                                            </Label>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <Label Grid.Column="0" FontFamily="ArchivoSemiBold" FontSize="10" CharacterSpacing="1" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" TextTransform="Uppercase">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="Tatoeba #" />
+                                                            <Span Text="{Binding Id}" />
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                                <Button Grid.Column="1"
+                                                        Text="{x:Static services:IconGlyphs.VolumeUp}"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WordDetailViewModel}}, Path=SpeakSentenceCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        IsVisible="{Binding Source={RelativeSource AncestorType={x:Type vm:WordDetailViewModel}}, Path=CanSpeak}"
+                                                        SemanticProperties.Description="Read the sentence aloud"
+                                                        Style="{StaticResource IconButtonStyle}"
+                                                        FontSize="20"
+                                                        Margin="0,-10,-10,-10" />
+                                            </Grid>
                                         </VerticalStackLayout>
                                         <BoxView Style="{StaticResource RowRuleStyle}" />
                                     </Grid>

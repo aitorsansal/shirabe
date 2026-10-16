@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="JapaneseDictionary.Views.AddToListSheetPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:services="clr-namespace:JapaneseDictionary.Services"
+    x:DataType="vm:AddToListViewModel"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="{AppThemeBinding Light={StaticResource ModalBackdropLight}, Dark={StaticResource ModalBackdropDark}}">
+
+    <Grid RowDefinitions="*,Auto">
+        <!--  Tapping the backdrop above the sheet closes it, like DONE.  -->
+        <BoxView Grid.Row="0" Color="Transparent">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnDoneClicked" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <VerticalStackLayout Grid.Row="1" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}" Spacing="0" Padding="0,0,0,24">
+
+            <Grid ColumnDefinitions="*,Auto" Padding="16,14,16,12">
+                <VerticalStackLayout Grid.Column="0" Spacing="3">
+                    <Label Text="SAVE TO LIST" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.4" TextColor="{AppThemeBinding Light={StaticResource KickerAccentLight}, Dark={StaticResource KickerAccentDark}}" />
+                    <Label Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="DONE" Clicked="OnDoneClicked" Style="{StaticResource SheetChromeButtonStyle}" VerticalOptions="Center" />
+            </Grid>
+
+            <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
+
+            <ScrollView MaximumHeightRequest="380">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Lists}" Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ListToggleRow">
+                            <Grid HeightRequest="54" Background="Transparent">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddToListViewModel}}, Path=ToggleCommand}" CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Padding="16,0">
+                                    <Label Grid.Column="0" Text="{Binding Name}" FontFamily="ArchivoSemiBold" FontSize="16" VerticalOptions="Center" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                    <!--  Square check box drawn from a Border, matching the app's flat, square chrome.  -->
+                                    <Border Grid.Column="1" WidthRequest="22" HeightRequest="22" StrokeThickness="2" Padding="0" VerticalOptions="Center"
+                                            Stroke="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsMember}" Value="True">
+                                                <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Label Text="{x:Static services:IconGlyphs.Check}" FontFamily="Icons" FontSize="18" IsVisible="{Binding IsMember}" HorizontalOptions="Center" VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}" />
+                                    </Border>
+                                </Grid>
+                                <BoxView Style="{StaticResource RowRuleStyle}" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <Border StrokeThickness="0" Padding="16,0" HeightRequest="54">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CreateListCommand}" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="{x:Static services:IconGlyphs.Add}" FontFamily="Icons" FontSize="22" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                    <Label Text="New list" FontFamily="ArchivoSemiBold" FontSize="16" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                </HorizontalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

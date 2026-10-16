@@ -18,11 +18,19 @@ public partial class WordDetailViewModel : ObservableObject
     private const int ExamplesLimit = 20;
 
     private readonly AppDataContext data;
+    private readonly JapaneseTtsService tts;
 
-    public WordDetailViewModel(AppDataContext data)
+    public WordDetailViewModel(AppDataContext data, JapaneseTtsService tts)
     {
         this.data = data;
+        this.tts = tts;
     }
+
+    [ObservableProperty]
+    private bool isFavorite;
+
+    [ObservableProperty]
+    private bool canSpeak;
 
     [ObservableProperty]
     private int entryId;
@@ -103,6 +111,35 @@ public partial class WordDetailViewModel : ObservableObject
     [RelayCommand]
     private static void StepStroke(KanjiCard card) => card.Step();
 
+    // The kana reading, not the headword: TTS engines misread kanji often
+    // enough (rare readings, jukujikun) that the reading is the safer input.
+    [RelayCommand]
+    private Task SpeakWordAsync() => tts.SpeakAsync(EntryReading);
+
+    [RelayCommand]
+    private Task SpeakSentenceAsync(ExampleCard example) => tts.SpeakAsync(example.Japanese);
+
+    [RelayCommand]
+    private void ToggleFavorite()
+    {
+        if (loadedEntry == null) return;
+        if (IsFavorite) data.UserDataRepository.RemoveFavorite(EntryId);
+        else data.UserDataRepository.AddFavorite(EntryId);
+        IsFavorite = !IsFavorite;
+    }
+
+    [RelayCommand]
+    private async Task OpenAddToListAsync()
+    {
+        if (loadedEntry == null) return;
+        var sheet = App.Services.GetRequiredService<AddToListSheetPage>();
+        await sheet.LoadAsync(EntryId, EntryWord);
+        sheet.Closed = () => IsFavorite = data.UserDataRepository.IsFavorite(EntryId);
+        await Shell.Current.Navigation.PushModalAsync(sheet);
+    }
+
+    public void OnDisappearing() => tts.Stop();
+
     [RelayCommand]
     private static async Task GoBackAsync() => await Shell.Current.GoToAsync("..");
 
@@ -117,6 +154,8 @@ public partial class WordDetailViewModel : ObservableObject
         loadedEntry = content.Entry;
         EntryWord = content.Entry.PrimaryText;
         EntryReading = content.Entry.PrimaryReading;
+        IsFavorite = data.UserDataRepository.IsFavorite(entryId);
+        CanSpeak = await tts.IsAvailableAsync();
         Fill(Badges, content.Badges);
         Fill(SenseGroups, content.SenseGroups);
         Fill(OtherForms, content.OtherForms);

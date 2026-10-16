@@ -50,12 +50,14 @@ public static class MauiProgram
         builder.Services.AddTransient<HandwritingViewModel>();
         builder.Services.AddTransient<AboutViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<AddToListViewModel>();
 
         builder.Services.AddTransient<SearchPage>();
         builder.Services.AddTransient<WordDetailPage>();
         builder.Services.AddTransient<AboutPage>();
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<HandwritingSheetPage>();
+        builder.Services.AddTransient<AddToListSheetPage>();
 
         return builder.Build();
     }

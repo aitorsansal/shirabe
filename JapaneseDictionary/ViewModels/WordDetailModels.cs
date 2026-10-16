@@ -19,7 +19,10 @@ public sealed record FormChip(string Word, string Note);
 
 public sealed record CompoundRow(int? EntryId, string Word, string Reading, string Gloss);
 
-public sealed record ExampleCard(long Id, string Pre, string Hit, string Post, string English);
+public sealed record ExampleCard(long Id, string Pre, string Hit, string Post, string English)
+{
+    public string Japanese => Pre + Hit + Post;
+}
 
 public partial class KanjiCard : ObservableObject
 {
