@@ -87,7 +87,7 @@
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#201e1d" />
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#F2F2F2" />
 
         <!-- Splash Screen: the icon's foreground glyph on the icon's own background colour -->
         <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" Color="#201e1d" BaseSize="128,128" />
