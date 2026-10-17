@@ -25,6 +25,15 @@ public sealed partial class SettingsViewModel : ObservableObject
 {
     private const string PracticeAppPackage = "com.aitorsansal.nihongonopractise";
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PracticePromotionChevron))]
+    private bool isPracticePromotionExpanded;
+
+    public string PracticePromotionChevron => IsPracticePromotionExpanded ? "⌃" : "⌄";
+
+    [RelayCommand]
+    private void TogglePracticePromotion() => IsPracticePromotionExpanded = !IsPracticePromotionExpanded;
+
     private readonly ThemeService theme;
     private readonly JapaneseTtsService tts;
     private readonly AppDataContext data;

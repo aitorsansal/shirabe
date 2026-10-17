@@ -65,6 +65,28 @@
 
                 <Label Text="{x:Static res:AppResources.Common_Settings}" FontFamily="ArchivoExtraBold" FontSize="26" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
 
+                <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Padding="14,12" Margin="0,18,0,0">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="0,4" MinimumHeightRequest="48">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TogglePracticePromotionCommand}" />
+                            </Grid.GestureRecognizers>
+                            <Image Source="nnp_icon.png" WidthRequest="48" HeightRequest="48" Aspect="AspectFit" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                <Label Text="Nihongo no Practise" FontFamily="ArchivoExtraBold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                <Label Text="{x:Static res:AppResources.Settings_PracticeSummary}" Style="{StaticResource BodyStyle}" FontSize="13" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{Binding PracticePromotionChevron}" FontSize="20" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
+                        </Grid>
+                        <VerticalStackLayout IsVisible="{Binding IsPracticePromotionExpanded}" Spacing="10" Margin="0,12,0,0">
+                            <Label Text="{x:Static res:AppResources.Settings_PracticeDescription}" Style="{StaticResource BodyStyle}" FontSize="13" />
+                            <Button Text="{x:Static res:AppResources.Settings_PracticeLinkDescription}" Command="{Binding OpenPracticeAppCommand}"
+                                    FontFamily="ArchivoSemiBold" FontSize="14"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
                 <!--  Appearance  -->
                 <VerticalStackLayout Spacing="8" Margin="0,24,0,0">
                     <Label Text="{x:Static res:AppResources.Settings_Appearance}" Style="{StaticResource SectionTitleStyle}" />
@@ -251,24 +273,6 @@
                             <TapGestureRecognizer Command="{Binding ClearHistoryCommand}" />
                         </Label.GestureRecognizers>
                     </Label>
-                </VerticalStackLayout>
-
-                <!--  Study  -->
-                <VerticalStackLayout Spacing="8" Margin="0,20,0,0">
-                    <Label Text="{x:Static res:AppResources.Settings_Study}" Style="{StaticResource SectionTitleStyle}" />
-                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
-                    <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Padding="14,12" Margin="0,6,0,0" SemanticProperties.Description="{x:Static res:AppResources.Settings_PracticeLinkDescription}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding OpenPracticeAppCommand}" />
-                        </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                <Label Text="Nihongo no Practise" FontFamily="ArchivoExtraBold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
-                                <Label Text="{x:Static res:AppResources.Settings_PracticeDescription}" Style="{StaticResource BodyStyle}" FontSize="13" />
-                            </VerticalStackLayout>
-                            <Label Grid.Column="1" Text="›" FontFamily="ArchivoBold" FontSize="20" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
-                        </Grid>
-                    </Border>
                 </VerticalStackLayout>
 
                 <!--  About  -->

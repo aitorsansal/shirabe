@@ -213,4 +213,5 @@
   <data name="Lookup_Failed" xml:space="preserve"><value>Couldn't look this up right now.</value></data>
   <data name="Lookup_NoGlosses" xml:space="preserve"><value>(no glosses)</value></data>
   <data name="Lookup_Open" xml:space="preserve"><value>OPEN IN SHIRABE ›</value></data>
+  <data name="Settings_PracticeSummary" xml:space="preserve"><value>Practise kanji, vocabulary and grammar</value></data>
 </root>

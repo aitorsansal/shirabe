@@ -213,4 +213,5 @@
   <data name="Lookup_Failed" xml:space="preserve"><value>Ahora mismo no se puede buscar.</value></data>
   <data name="Lookup_NoGlosses" xml:space="preserve"><value>(sin significados)</value></data>
   <data name="Lookup_Open" xml:space="preserve"><value>ABRIR EN SHIRABE ›</value></data>
+  <data name="Settings_PracticeSummary" xml:space="preserve"><value>Practica kanji, vocabulario y gramática</value></data>
 </root>
