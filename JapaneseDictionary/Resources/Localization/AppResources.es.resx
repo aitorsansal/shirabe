@@ -214,4 +214,6 @@
   <data name="Lookup_NoGlosses" xml:space="preserve"><value>(sin significados)</value></data>
   <data name="Lookup_Open" xml:space="preserve"><value>ABRIR EN SHIRABE ›</value></data>
   <data name="Settings_PracticeSummary" xml:space="preserve"><value>Practica kanji, vocabulario y gramática</value></data>
+  <data name="Settings_ShowRomaji" xml:space="preserve"><value>Mostrar romaji</value></data>
+  <data name="Settings_ShowRomajiNote" xml:space="preserve"><value>Mostrar la lectura de las palabras con letras latinas.</value></data>
 </root>

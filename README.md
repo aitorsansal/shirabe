@@ -7,6 +7,7 @@ Shirabe (調べ, "looking something up") is an offline Japanese-English dictiona
 - **Search** by Japanese (kanji or kana), romaji or English. Romaji is converted to kana automatically, and conjugated forms are resolved back to their dictionary form (for example, a past-tense verb finds its base entry).
 - **Handwriting input**: draw a character and pick it from the recognition candidates.
 - **Word detail**: senses and word classes, example sentences, a per-kanji breakdown with readings, meanings and stroke counts, and a conjugation table.
+- **Romaji word readings** in results, word details and system-wide lookup, enabled by default and switchable in Settings. Converted offline from dictionary kana readings, with kana-spelled long vowels (for example, `gakkou` and `koohii`). Example sentence readings are not included.
 - **System-wide lookup**: select text in any Android app and choose "Look Up" in the selection toolbar to see a quick result popup without leaving the app.
 - **Light and dark themes**, switchable in the app.
 - Recent searches are stored locally on the device.

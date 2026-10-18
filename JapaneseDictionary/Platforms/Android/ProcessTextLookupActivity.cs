@@ -111,7 +111,8 @@ public class ProcessTextLookupActivity : Android.App.Activity
         glossText.Visibility = ViewStates.Visible;
 
         wordText.Text = entry.PrimaryText;
-        readingText.Text = entry.PrimaryReading;
+        readingText.Text = entry.PrimaryReading + (JapaneseDictionary.Services.ReadingPreferences.Instance.ShowRomaji
+            ? "\n" + JapaneseDictionary.Core.Search.RomajiConverter.ToRomaji(entry.PrimaryReading) : "");
         glossText.Text = glosses.Length > 0 ? glosses : AppResources.Lookup_NoGlosses;
 
         openButton.Visibility = ViewStates.Visible;

@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:services="clr-namespace:JapaneseDictionary.Services"
     xmlns:res="clr-namespace:JapaneseDictionary.Resources.Localization"
     x:DataType="vm:SearchResultRow">
 
@@ -11,6 +12,7 @@
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Padding="16,14">
             <VerticalStackLayout Grid.Column="0" Spacing="6">
                 <Label Text="{Binding Reading}" FontFamily="ArchivoRegular" FontSize="12" CharacterSpacing="0.3" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                <Label Text="{Binding Romaji}" IsVisible="{Binding ShowRomaji, Source={x:Static services:ReadingPreferences.Instance}, x:DataType=services:ReadingPreferences}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
                 <HorizontalStackLayout Spacing="8">
                     <Label Text="{Binding Word}" FontFamily="NotoSerifJPSemiBold" LineHeight="0.85" FontSize="27" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     <Border IsVisible="{Binding IsCommon}" StrokeThickness="0" Padding="5,4" VerticalOptions="Center"

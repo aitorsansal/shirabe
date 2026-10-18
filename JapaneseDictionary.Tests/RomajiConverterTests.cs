@@ -5,6 +5,26 @@ namespace JapaneseDictionary.Tests;
 public class RomajiConverterTests
 {
     [Theory]
+    [InlineData("たべる", "taberu")]
+    [InlineData("しんぶん", "shinbun")]
+    [InlineData("がっこう", "gakkou")]
+    [InlineData("まっちゃ", "matcha")]
+    [InlineData("しゅっちょう", "shutchou")]
+    [InlineData("きょう", "kyou")]
+    [InlineData("コーヒー", "koohii")]
+    [InlineData("ｺｰﾋｰ", "koohii")]
+    [InlineData("こんや", "kon'ya")]
+    [InlineData("しんい", "shin'i")]
+    [InlineData("ファイル", "fairu")]
+    [InlineData("パーティー", "paatii")]
+    [InlineData("ヴァイオリン", "vaiorin")]
+    [InlineData("", "")]
+    public void ToRomaji_ConvertsWordReadings(string kana, string expected)
+    {
+        Assert.Equal(expected, RomajiConverter.ToRomaji(kana));
+    }
+
+    [Theory]
     [InlineData("tabeta", "たべた")]
     [InlineData("nihongo", "にほんご")]
     [InlineData("konnichiha", "こんにちは")]

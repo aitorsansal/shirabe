@@ -69,6 +69,7 @@
                           second wrapped row silently gets clipped by whatever follows (the
                           tab bar, here). The "common" badge is just another item in Badges
                           (IsCommon flag), not a separate static child, for the same reason.  -->
+                <Label Text="{Binding EntryRomaji}" IsVisible="{Binding ShowRomaji, Source={x:Static services:ReadingPreferences.Instance}, x:DataType=services:ReadingPreferences}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
                     <FlexLayout Wrap="Wrap" BindableLayout.ItemsSource="{Binding Badges}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:EntryBadge">

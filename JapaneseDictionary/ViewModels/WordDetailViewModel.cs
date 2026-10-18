@@ -40,7 +40,10 @@ public partial class WordDetailViewModel : ObservableObject
     private string entryWord = "";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EntryRomaji))]
     private string entryReading = "";
+
+    public string EntryRomaji => RomajiConverter.ToRomaji(EntryReading);
 
     [ObservableProperty]
     private DetailTab selectedTab = DetailTab.Meaning;

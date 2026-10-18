@@ -47,6 +47,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         this.language = language;
     }
 
+    public ReadingPreferences ReadingPreferences => ReadingPreferences.Instance;
+
     public bool IsThemeSystem => theme.Preference == ThemePreference.System;
     public bool IsThemeLight => theme.Preference == ThemePreference.Light;
     public bool IsThemeDark => theme.Preference == ThemePreference.Dark;

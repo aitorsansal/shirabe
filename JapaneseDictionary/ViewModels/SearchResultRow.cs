@@ -13,6 +13,8 @@ public sealed record SearchResultRow(
     string Gloss,
     string? ViaNote)
 {
+    public string Romaji => Core.Search.RomajiConverter.ToRomaji(Reading);
+
     public static SearchResultRow FromEntry(DictionaryEntry entry, string? viaNote = null)
     {
         var firstSense = entry.Senses.FirstOrDefault();

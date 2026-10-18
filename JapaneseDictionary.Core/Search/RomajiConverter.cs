@@ -10,6 +10,67 @@ namespace JapaneseDictionary.Core.Search;
 /// </summary>
 public static class RomajiConverter
 {
+    public static string ToRomaji(string kana)
+    {
+        var input = new string(kana.Normalize(NormalizationForm.FormKC)
+            .Select(c => c is >= 'ァ' and <= 'ヶ' ? (char)(c - 0x60) : c).ToArray());
+        var output = new StringBuilder();
+        for (var i = 0; i < input.Length;)
+        {
+            if (input[i] == 'ー' && output.Length > 0 && IsVowel(output[^1]))
+            {
+                output.Append(output[^1]);
+                i++;
+                continue;
+            }
+            var geminate = input[i] == 'っ';
+            if (geminate && i + 1 < input.Length) i++;
+            string? syllable = null;
+            var length = 0;
+            for (var size = Math.Min(2, input.Length - i); size > 0; size--)
+            {
+                if (!Romanization.TryGetValue(input.Substring(i, size), out syllable)) continue;
+                length = size;
+                break;
+            }
+            if (length == 0)
+            {
+                if (geminate && input[i] != 'っ') output.Append('っ');
+                output.Append(input[i++]);
+                continue;
+            }
+            if (geminate && syllable![0] is not ('a' or 'i' or 'u' or 'e' or 'o' or 'n'))
+                output.Append(syllable.StartsWith("ch", StringComparison.Ordinal) ? 't' : syllable[0]);
+            if (syllable == "n" && i + length < input.Length &&
+                ("あいうえおやゆよ".Contains(input[i + length]))) syllable = "n'";
+            output.Append(syllable);
+            i += length;
+        }
+        return output.ToString();
+    }
+
+    private static readonly IReadOnlyDictionary<string, string> Romanization = BuildRomanization();
+
+    private static Dictionary<string, string> BuildRomanization()
+    {
+        var result = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var pair in BuildTable(false)) result[pair.Value] = pair.Key;
+        foreach (var pair in new Dictionary<string, string>
+        {
+            ["ぢ"] = "ji", ["づ"] = "zu", ["を"] = "o", ["ゔ"] = "vu",
+            ["ぁ"] = "a", ["ぃ"] = "i", ["ぅ"] = "u", ["ぇ"] = "e", ["ぉ"] = "o",
+            ["ゃ"] = "ya", ["ゅ"] = "yu", ["ょ"] = "yo", ["ゎ"] = "wa",
+            ["ゐ"] = "i", ["ゑ"] = "e", ["っ"] = "tsu",
+            ["ふぁ"] = "fa", ["ふぃ"] = "fi", ["ふぇ"] = "fe", ["ふぉ"] = "fo",
+            ["てぃ"] = "ti", ["でぃ"] = "di", ["とぅ"] = "tu", ["どぅ"] = "du",
+            ["しぇ"] = "she", ["じぇ"] = "je", ["ちぇ"] = "che",
+            ["うぃ"] = "wi", ["うぇ"] = "we", ["うぉ"] = "wo",
+            ["ゔぁ"] = "va", ["ゔぃ"] = "vi", ["ゔぇ"] = "ve", ["ゔぉ"] = "vo",
+            ["てゅ"] = "tyu", ["でゅ"] = "dyu", ["ふゅ"] = "fyu", ["いぇ"] = "ye",
+        }) result[pair.Key] = pair.Value;
+        return result;
+    }
+
     public static string ToHiragana(string romaji) => Convert(romaji, Hiragana);
     public static string ToKatakana(string romaji) => Convert(romaji, Katakana);
 

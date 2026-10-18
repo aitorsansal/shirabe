@@ -214,4 +214,6 @@
   <data name="Lookup_NoGlosses" xml:space="preserve"><value>(sense significats)</value></data>
   <data name="Lookup_Open" xml:space="preserve"><value>OBRE A SHIRABE ›</value></data>
   <data name="Settings_PracticeSummary" xml:space="preserve"><value>Practica kanji, vocabulari i gramàtica</value></data>
+  <data name="Settings_ShowRomaji" xml:space="preserve"><value>Mostra el romaji</value></data>
+  <data name="Settings_ShowRomajiNote" xml:space="preserve"><value>Mostra la lectura de les paraules amb lletres llatines.</value></data>
 </root>

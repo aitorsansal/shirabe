@@ -89,6 +89,13 @@
                 </Border>
                 <!--  Appearance  -->
                 <VerticalStackLayout Spacing="8" Margin="0,24,0,0">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Margin="0,0,0,16">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{x:Static res:AppResources.Settings_ShowRomaji}" Style="{StaticResource BodyStyle}" />
+                            <Label Text="{x:Static res:AppResources.Settings_ShowRomajiNote}" Style="{StaticResource BodyStyle}" FontSize="12" />
+                        </VerticalStackLayout>
+                        <Switch Grid.Column="1" IsToggled="{Binding ReadingPreferences.ShowRomaji, Mode=TwoWay}" SemanticProperties.Description="{x:Static res:AppResources.Settings_ShowRomaji}" />
+                    </Grid>
                     <Label Text="{x:Static res:AppResources.Settings_Appearance}" Style="{StaticResource SectionTitleStyle}" />
                     <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
                     <Label Text="{x:Static res:AppResources.Settings_Theme}" Style="{StaticResource BodyStyle}" Margin="0,4,0,2" />
