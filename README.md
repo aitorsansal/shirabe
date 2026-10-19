@@ -61,6 +61,8 @@ Then run `dotnet run` from `JapaneseDictionary.DataBuilder/`. It writes `Japanes
 
 ## Credits and licenses
 
+The source code is MIT licensed (`LICENSE`). The MIT license does not cover the dictionary database, which is CC BY-SA 4.0 (`DATA-LICENSE.md`), or the third-party components in `THIRD-PARTY-NOTICES.md`.
+
 The dictionary data is not mine. It comes from the projects below, which are used under their respective licenses. The bundled `dictionary.db3` is derived from them and stays under their terms.
 
 **Dictionary and kanji data**
