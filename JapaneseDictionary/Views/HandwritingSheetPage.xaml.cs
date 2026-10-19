@@ -29,6 +29,38 @@ public partial class HandwritingSheetPage : ContentPage
         _ = CloseAsync();
     }
 
+    // Portrait canvas height; in landscape it shrinks to fit what's left of the
+    // page after the header, the button row, the sheet's bottom padding and the
+    // system bars (the reported page height includes them, ~55dp on the test
+    // phone, but the sheet can't draw under them).
+    private const double PortraitCanvasHeight = 230;
+    private const double LandscapeChromeHeight = 210;
+    private const double MinCanvasHeight = 120;
+
+    private bool? isLandscape;
+
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height);
+        if (width <= 0 || height <= 0) return;
+
+        var landscape = width > height;
+        if (landscape != isLandscape)
+        {
+            isLandscape = landscape;
+            Body.ColumnDefinitions = landscape
+                ? new ColumnDefinitionCollection { new(GridLength.Star), new(GridLength.Star) }
+                : new ColumnDefinitionCollection { new(GridLength.Star) };
+            MatchesRule.IsVisible = !landscape;
+            Grid.SetColumn(MatchesSection, landscape ? 1 : 0);
+            Grid.SetRow(MatchesSection, landscape ? 0 : 2);
+        }
+
+        CanvasHost.HeightRequest = landscape
+            ? Math.Clamp(height - LandscapeChromeHeight, MinCanvasHeight, PortraitCanvasHeight)
+            : PortraitCanvasHeight;
+    }
+
     protected override void OnAppearing()
     {
         base.OnAppearing();

@@ -356,35 +356,36 @@
                 <!--  Conjugation tab  -->
                 <VerticalStackLayout IsVisible="{Binding IsConjugationTab}" Spacing="0" Padding="0,0,0,40">
                     <Label Text="{Binding ConjugationNote}" Padding="16,16,16,8" FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" LineBreakMode="WordWrap" />
-                    <Grid ColumnDefinitions="1.1*,1*,1*" Padding="16,0,16,8">
-                        <Label Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjForm}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
-                        <Label Grid.Column="1" Text="{x:Static res:AppResources.Word_ConjPlain}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
-                        <Label Grid.Column="2" Text="{x:Static res:AppResources.Word_ConjPolite}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
-                    </Grid>
                     <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Margin="16,0" />
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding ConjugationRows}" Spacing="0">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:ConjugationTableRow">
                                 <Grid>
-                                    <Grid ColumnDefinitions="1.1*,1*,1*" Padding="16,11">
-                                        <Label Grid.Column="0" Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="0.6" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" VerticalOptions="Center" />
-                                        <Label Grid.Column="1" FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" VerticalOptions="Center">
-                                            <Label.FormattedText>
-                                                <FormattedString>
-                                                    <Span Text="{Binding PlainStem}" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
-                                                    <Span Text="{Binding PlainEnding}" />
-                                                </FormattedString>
-                                            </Label.FormattedText>
-                                        </Label>
-                                        <Label Grid.Column="2" FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" VerticalOptions="Center">
-                                            <Label.FormattedText>
-                                                <FormattedString>
-                                                    <Span Text="{Binding PoliteStem}" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
-                                                    <Span Text="{Binding PoliteEnding}" />
-                                                </FormattedString>
-                                            </Label.FormattedText>
-                                        </Label>
-                                    </Grid>
+                                    <VerticalStackLayout Padding="16,11" Spacing="6">
+                                        <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="0.6" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" />
+                                        <Grid ColumnDefinitions="64,*">
+                                            <Label Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjPlain}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" VerticalOptions="Center">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding PlainStem}" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                                        <Span Text="{Binding PlainEnding}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </Grid>
+                                        <Grid ColumnDefinitions="64,*">
+                                            <Label Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjPolite}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" VerticalOptions="Center">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding PoliteStem}" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                                        <Span Text="{Binding PoliteEnding}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </Grid>
+                                    </VerticalStackLayout>
                                     <BoxView Style="{StaticResource RowRuleStyle}" />
                                 </Grid>
                             </DataTemplate>

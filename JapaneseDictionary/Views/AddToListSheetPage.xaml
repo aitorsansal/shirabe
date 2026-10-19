@@ -30,7 +30,7 @@
 
             <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
 
-            <ScrollView MaximumHeightRequest="380">
+            <ScrollView x:Name="ListScroll" MaximumHeightRequest="380">
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Lists}" Spacing="0">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="vm:ListToggleRow">

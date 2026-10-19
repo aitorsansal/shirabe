@@ -21,6 +21,19 @@ public partial class AddToListSheetPage : ContentPage
 
     public Task LoadAsync(int entryId, string word) => viewModel.LoadAsync(entryId, word);
 
+    // Header, rules, "new list" footer, bottom padding, and a strip of backdrop
+    // to tap to dismiss: what the list can't use of the page height.
+    private const double SheetChromeHeight = 190;
+    private const double MaxListHeight = 380;
+    private const double MinListHeight = 108;
+
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height);
+        if (height <= 0) return;
+        ListScroll.MaximumHeightRequest = Math.Clamp(height - SheetChromeHeight, MinListHeight, MaxListHeight);
+    }
+
     protected override void OnDisappearing()
     {
         base.OnDisappearing();

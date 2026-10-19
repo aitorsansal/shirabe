@@ -21,9 +21,12 @@
                 <Button Grid.Column="1" Text="{x:Static res:AppResources.Common_Done}" Clicked="OnDoneClicked" Style="{StaticResource SheetChromeButtonStyle}" VerticalOptions="Center" />
             </Grid>
 
-            <VerticalStackLayout Padding="16,0">
+            <!--  Portrait: draw section, rule, matches stacked. Landscape (see
+                  OnSizeAllocated): draw section left, matches right, rule hidden.  -->
+            <Grid x:Name="Body" ColumnDefinitions="*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="0">
+            <VerticalStackLayout x:Name="DrawSection" Grid.Row="0" Padding="16,0">
                 <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="0">
-                    <Grid HeightRequest="230">
+                    <Grid x:Name="CanvasHost" HeightRequest="230">
                         <BoxView WidthRequest="1" Color="{AppThemeBinding Light={StaticResource CanvasGuideDashLight}, Dark={StaticResource CanvasGuideDashDark}}" HorizontalOptions="Center" VerticalOptions="Fill" />
                         <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource CanvasGuideDashLight}, Dark={StaticResource CanvasGuideDashDark}}" HorizontalOptions="Fill" VerticalOptions="Center" />
                         <controls:KanjiDrawPad x:Name="DrawPad" StrokeThickness="9" StrokeCompleted="OnStrokeCompleted"
@@ -45,9 +48,9 @@
                 </Grid>
             </VerticalStackLayout>
 
-            <BoxView HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Margin="0,14,0,0" />
+            <BoxView x:Name="MatchesRule" Grid.Row="1" HeightRequest="2" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Margin="0,14,0,0" />
 
-            <VerticalStackLayout Padding="16,12,16,0">
+            <VerticalStackLayout x:Name="MatchesSection" Grid.Row="2" Padding="16,12,16,0">
                 <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
                     <Label Grid.Column="0" Text="{x:Static res:AppResources.Hand_Matches}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.4" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
                     <Label Grid.Column="1" Text="{Binding CandidateNote}" FontFamily="ArchivoSemiBold" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
@@ -92,6 +95,7 @@
                       candidates ScrollView above already had to work around.  -->
                 <ActivityIndicator IsRunning="{Binding IsRecognizing}" HeightRequest="24" />
             </VerticalStackLayout>
+            </Grid>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>
