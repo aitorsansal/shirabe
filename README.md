@@ -23,14 +23,20 @@ Shirabe (調べ, "looking something up") is an offline Japanese-English dictiona
 
 The app is called Shirabe; the solution, project and namespace names keep the original working title, `JapaneseDictionary`. `CLAUDE.md` has a more detailed architecture walkthrough, and `design/` holds the UI design reference.
 
+## Install
+
+Shirabe is free on Google Play (search for "Shirabe", package `com.aitorsansal.japanesedictionary`). There is no sideloadable APK on GitHub: a locally signed APK would not be updatable over the Play version.
+
 ## Building
 
-Requirements: .NET 10 SDK with the MAUI Android workload, and [Git LFS](https://git-lfs.com/).
+Requirements: .NET 10 SDK with the MAUI Android workload.
 
 ```
-git lfs install
-git clone https://github.com/aitorsansal/JapaneseDictionary.git
-cd JapaneseDictionary
+git clone https://github.com/aitorsansal/shirabe.git
+cd shirabe
+
+# the dictionary database is a GitHub Release asset, not in git
+powershell -File scripts/fetch-database.ps1   # or: sh scripts/fetch-database.sh
 
 dotnet build JapaneseDictionary/JapaneseDictionary.csproj -f net10.0-android
 dotnet test JapaneseDictionary.Tests/JapaneseDictionary.Tests.csproj
@@ -38,11 +44,11 @@ dotnet test JapaneseDictionary.Tests/JapaneseDictionary.Tests.csproj
 
 To build and deploy to a connected device or emulator, add `-t:Run` to the build command.
 
-`dictionary.db3` is stored with Git LFS. If you clone without LFS installed you will get a small pointer file instead of the database, and the app will not start.
+`dictionary.db3` (about 130 MB) is not tracked in git. `scripts/fetch-database.*` downloads it from the GitHub Release named in `database-release.txt` and verifies its SHA-256; the build fails with that hint if the file is missing.
 
 ### Regenerating the dictionary database
 
-The committed `dictionary.db3` is ready to use. You only need to rebuild it after changing a parser or the writer, or to refresh the data. Put the source files in `JapaneseDictionary.DataBuilder/RawData/` (this folder is gitignored because the files are large):
+The downloaded `dictionary.db3` is ready to use. You only need to rebuild it after changing a parser or the writer, or to refresh the data. Put the source files in `JapaneseDictionary.DataBuilder/RawData/` (this folder is gitignored because the files are large):
 
 | File | Source |
 |---|---|

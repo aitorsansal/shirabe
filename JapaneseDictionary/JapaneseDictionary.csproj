@@ -26,8 +26,8 @@
         <ApplicationId>com.aitorsansal.japanesedictionary</ApplicationId>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0.1</ApplicationDisplayVersion>
+        <ApplicationVersion>2</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
 
@@ -101,6 +101,13 @@
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
+
+    <!-- dictionary.db3 is not in git (it ships as a GitHub Release asset), so a fresh clone
+         has no database. Fail early with the fix instead of building an APK that can't start. -->
+    <Target Name="CheckDictionaryDatabase" BeforeTargets="PrepareForBuild">
+        <Error Condition="!Exists('$(MSBuildProjectDirectory)\Resources\Raw\dictionary.db3')"
+               Text="Resources\Raw\dictionary.db3 is missing. Run scripts/fetch-database.ps1 (or .sh) to download it, or build it with JapaneseDictionary.DataBuilder." />
+    </Target>
 
     <!-- UI strings. The AppResources class is generated at build time (into obj/)
          instead of a checked-in Designer.cs, so adding a string is a .resx edit only.

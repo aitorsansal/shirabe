@@ -40,11 +40,11 @@ The model was trained on the ETL Character Database and the KanjiVG dataset (cre
 
 ## Fonts
 
-| Font | License |
-|---|---|
-| [Archivo](https://github.com/Omnibus-Type/Archivo) | SIL Open Font License 1.1 |
-| [Noto Serif JP](https://fonts.google.com/noto/specimen/Noto+Serif+JP) (the Bold weight is subset to the 辞書 wordmark) | SIL Open Font License 1.1 |
-| [Material Symbols Sharp](https://github.com/google/material-design-icons) (static instances, subset to the icons the app uses) | Apache License 2.0 |
+| Font | Copyright | License |
+|---|---|---|
+| [Archivo](https://github.com/Omnibus-Type/Archivo) | 2020 The Archivo Project Authors | SIL Open Font License 1.1, [`licenses/OFL-Archivo.txt`](licenses/OFL-Archivo.txt) |
+| [Noto Serif JP](https://fonts.google.com/noto/specimen/Noto+Serif+JP) (the Bold weight is subset to the 辞書 wordmark) | 2017-2024 Adobe | SIL Open Font License 1.1, [`licenses/OFL-NotoSerifJP.txt`](licenses/OFL-NotoSerifJP.txt) |
+| [Material Symbols Sharp](https://github.com/google/material-design-icons) (static instances, subset to the icons the app uses) | 2026 Google LLC | Apache License 2.0, [`licenses/Apache-2.0.txt`](licenses/Apache-2.0.txt) |
 
 ## Libraries
 
@@ -53,5 +53,5 @@ The model was trained on the ETL Character Database and the KanjiVG dataset (cre
 | [Microsoft.ML.OnnxRuntime](https://github.com/microsoft/onnxruntime) | MIT |
 | [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) | MIT |
 | [sqlite-net-pcl](https://github.com/praeclarum/sqlite-net) | MIT |
-| [SQLitePCLRaw](https://github.com/ericsink/SQLitePCL.raw) | Apache License 2.0 |
+| [SQLitePCLRaw](https://github.com/ericsink/SQLitePCL.raw) | Apache License 2.0, [`licenses/Apache-2.0.txt`](licenses/Apache-2.0.txt) |
 | [.NET MAUI](https://github.com/dotnet/maui) | MIT |

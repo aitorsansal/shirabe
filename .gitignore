@@ -49,3 +49,7 @@ JapaneseDictionary/keystore/
 
 # Wrangler's local cache (account ID, deploy state) from deploying web/.
 .wrangler/
+
+# Bundled dictionary database: ~130 MB, distributed as a GitHub Release asset
+# (scripts/fetch-database.*), not tracked in git.
+JapaneseDictionary/Resources/Raw/dictionary.db3

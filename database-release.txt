@@ -1,0 +1,4 @@
+# Release that carries the bundled dictionary database (read by scripts/fetch-database.*).
+# Update both lines whenever dictionary.db3 is regenerated and re-attached to a release.
+tag=v1.0.1
+sha256=d4503d08dadf8f21bd0cab8b9746f091777aaaee39e157fd04e8e4609147b965

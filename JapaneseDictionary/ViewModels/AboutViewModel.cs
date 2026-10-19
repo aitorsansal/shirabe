@@ -19,7 +19,7 @@ public sealed record AboutSection(string Title, string Body, IReadOnlyList<About
 /// </summary>
 public sealed partial class AboutViewModel : ObservableObject
 {
-    private const string RepoUrl = "https://github.com/aitorsansal/JapaneseDictionary";
+    private const string RepoUrl = "https://github.com/aitorsansal/shirabe";
 
     // Also the URL given to the Play Console. Source lives in web/public/privacy/.
     private const string PrivacyPolicyUrl = "https://shirabe.aitorsansal.com/privacy/";
