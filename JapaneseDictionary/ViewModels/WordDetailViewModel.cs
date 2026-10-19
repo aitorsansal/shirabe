@@ -113,6 +113,13 @@ public partial class WordDetailViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private static Task OpenKanjiWordsAsync(string character) =>
+        Shell.Current.GoToAsync($"{nameof(KanjiWordsPage)}?kanji={Uri.EscapeDataString(character)}");
+
+    [RelayCommand]
+    private static Task CopyTextAsync(string? text) => ClipboardCopy.CopyAsync(text);
+
+    [RelayCommand]
     private static void StepStroke(KanjiCard card) => card.Step();
 
     // The kana reading, not the headword: TTS engines misread kanji often

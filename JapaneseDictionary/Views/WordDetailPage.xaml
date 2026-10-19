@@ -6,6 +6,7 @@
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
     xmlns:res="clr-namespace:JapaneseDictionary.Resources.Localization"
     xmlns:services="clr-namespace:JapaneseDictionary.Services"
+    xmlns:controls="clr-namespace:JapaneseDictionary.Controls"
     x:DataType="vm:WordDetailViewModel"
     Shell.NavBarIsVisible="False"
     BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
@@ -59,11 +60,11 @@
             <VerticalStackLayout Spacing="0">
 
                 <VerticalStackLayout Padding="16,18,16,14" Spacing="4">
-                    <Label Text="{Binding EntryReading}" FontFamily="ArchivoRegular" FontSize="14" CharacterSpacing="0.4" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                    <Label Text="{Binding EntryReading}" controls:LongPress.Command="{Binding CopyTextCommand}" controls:LongPress.CommandParameter="{Binding EntryReading}" FontFamily="ArchivoRegular" FontSize="14" CharacterSpacing="0.4" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
                     <!--  Noto Serif JP's large baked-in ascent shows up as visible "phantom"
                           space above the glyph whenever it follows another element — pulled
                           up to compensate rather than relying on Spacing/Margin alone.  -->
-                    <Label Text="{Binding EntryWord}" FontFamily="NotoSerifJPSemiBold" FontSize="46" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    <Label Text="{Binding EntryWord}" controls:LongPress.Command="{Binding CopyTextCommand}" controls:LongPress.CommandParameter="{Binding EntryWord}" FontFamily="NotoSerifJPSemiBold" FontSize="46" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     <!--  Single flat FlexLayout — a FlexLayout nested inside another one
                           doesn't report its own wrapped height back to the outer one, so a
                           second wrapped row silently gets clipped by whatever follows (the
@@ -273,7 +274,13 @@
                                         <Grid ColumnDefinitions="88,*" ColumnSpacing="14">
                                             <Border Grid.Column="0" WidthRequest="88" HeightRequest="88" VerticalOptions="Start" StrokeThickness="1"
                                                     Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}"
-                                                    Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="0">
+                                                    Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="0"
+                                                    controls:LongPress.Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WordDetailViewModel}}, Path=CopyTextCommand}"
+                                                    controls:LongPress.CommandParameter="{Binding Character}"
+                                                    SemanticProperties.Hint="{x:Static res:AppResources.Word_KanjiTapHint}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WordDetailViewModel}}, Path=OpenKanjiWordsCommand}" CommandParameter="{Binding Character}" />
+                                                </Border.GestureRecognizers>
                                                 <Label Text="{Binding Character}" FontFamily="NotoSerifJPSemiBold" FontSize="54" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalOptions="Center" VerticalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                                             </Border>
                                             <VerticalStackLayout Grid.Column="1" Spacing="7">
@@ -306,6 +313,7 @@
                                                                TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=2}" />
                                                     </Border>
                                                 </FlexLayout>
+                                                <Label Text="{x:Static res:AppResources.Word_KanjiTapHint}" FontFamily="ArchivoRegular" FontSize="11" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" />
                                             </VerticalStackLayout>
                                         </Grid>
 

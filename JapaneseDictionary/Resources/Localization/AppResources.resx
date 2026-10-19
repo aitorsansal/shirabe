@@ -216,4 +216,8 @@
   <data name="Settings_PracticeSummary" xml:space="preserve"><value>Practise kanji, vocabulary and grammar</value></data>
   <data name="Settings_ShowRomaji" xml:space="preserve"><value>Show romaji</value></data>
   <data name="Settings_ShowRomajiNote" xml:space="preserve"><value>Show word readings using Latin letters.</value></data>
+  <data name="KanjiWords_Kicker" xml:space="preserve"><value>WORDS WITH</value></data>
+  <data name="KanjiWords_Empty" xml:space="preserve"><value>No words contain this kanji.</value></data>
+  <data name="Common_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Word_KanjiTapHint" xml:space="preserve"><value>Tap the kanji to see words that use it.</value></data>
 </root>

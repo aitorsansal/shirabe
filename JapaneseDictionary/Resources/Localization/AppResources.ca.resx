@@ -216,4 +216,8 @@
   <data name="Settings_PracticeSummary" xml:space="preserve"><value>Practica kanji, vocabulari i gramàtica</value></data>
   <data name="Settings_ShowRomaji" xml:space="preserve"><value>Mostra el romaji</value></data>
   <data name="Settings_ShowRomajiNote" xml:space="preserve"><value>Mostra la lectura de les paraules amb lletres llatines.</value></data>
+  <data name="KanjiWords_Kicker" xml:space="preserve"><value>PARAULES AMB</value></data>
+  <data name="KanjiWords_Empty" xml:space="preserve"><value>Cap paraula conté aquest kanji.</value></data>
+  <data name="Common_Copied" xml:space="preserve"><value>Copiat</value></data>
+  <data name="Word_KanjiTapHint" xml:space="preserve"><value>Toca el kanji per veure les paraules que l'usen.</value></data>
 </root>

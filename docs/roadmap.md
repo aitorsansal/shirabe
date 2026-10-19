@@ -9,10 +9,14 @@ Order: 1.1a, 1.1b, 1.1c, then 1.2. Cut 1.2 only after closed-test feedback is in
 - **Landscape audit.** Check every page with the phone rotated (a wider/higher screen than that is assumed to work if the phone does). Fix clipping and cramped layouts.
 - **Kana forms wrapping mid-word in the Conj. tab** on narrow screens (e.g. たべなかっ|た).
 
-## 1.1b: uses data already in the DB
+## 1.1b: uses data already in the DB (done)
 
-- **Kanji filters and sorting** by JLPT level, school grade and frequency rank (all already stored from KANJIDIC2).
-- **Share button on the word page.**
+- **Search finds compounds.** A 1-2 kanji query (行, 食堂) also lists headwords that contain it (銀行), after the exact and prefix matches; `SearchMatchKind.Contains`, `DictionaryRepository.FindCompoundsByKanji`.
+- **Chained kanji search.** Tapping a kanji tile on the word page's Kanji tab opens `KanjiWordsPage` (the search for that kanji as a pushed page); Back returns to the word.
+- **Long-press to copy** the headword, the reading and the kanji tile character (`Controls/LongPress`, `Services/ClipboardCopy`).
+- **Share button on the word page: dropped** (little real use without entry links; long-press copy covers the common case).
+
+(No kanji filters or sorting: a JLPT chip on the kanji tab is enough. Grade and frequency chips already exist. The JLPT chip moved to 1.2 because KANJIDIC2's `jlpt` is the old 4-level scale, which does not map cleanly to N5-N1.)
 
 ## 1.1c: NNP link (undecided, blocked on NNP)
 
@@ -26,6 +30,7 @@ Per-list CSV export (`Word,Reading,Meanings`, via `WordListCsv`) already exists.
 
 - **Language model change (Spanish content).** Settings language only changes the UI. Dictionary content always shows English and Spanish side by side (Takoboto-style); when there is no Spanish translation, show English only, never an empty section. Needs: es glosses from full JMdict, es Tatoeba translations, es kanji meanings, accent-insensitive Spanish search. Measured coverage: es glosses on 70% of common JMdict words, 19% of kanji, 17% of used Tatoeba sentences.
 - **Frequency bands.** JMdict nf01-nf48 for ranking search and related words.
+- **JLPT N5-N1 chip** on the kanji tab (and later on words). Source: community per-level lists (e.g. Tanos), since the JLPT has published no official lists since 2010; label as unofficial and add to the notices. KANJIDIC2's old 4-level `jlpt` field is not used.
 - **Kanji search by components.** KRADFILE (EDRDG licence, add to notices). Multi-select grid of components grouped by stroke count; results are kanji containing all selected components; components that would yield zero results are disabled.
 - **Word of the day** (needs the common/frequency flag): deterministic by date, same for everyone, no storage, shown on the empty search state. No notification or widget at first.
 

@@ -50,6 +50,7 @@ public static class MauiProgram
 
         builder.Services.AddTransient<SearchViewModel>();
         builder.Services.AddTransient<WordDetailViewModel>();
+        builder.Services.AddTransient<KanjiWordsViewModel>();
         builder.Services.AddTransient<HandwritingViewModel>();
         builder.Services.AddTransient<AboutViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
@@ -59,6 +60,7 @@ public static class MauiProgram
 
         builder.Services.AddTransient<SearchPage>();
         builder.Services.AddTransient<WordDetailPage>();
+        builder.Services.AddTransient<KanjiWordsPage>();
         builder.Services.AddTransient<AboutPage>();
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<ListsPage>();
