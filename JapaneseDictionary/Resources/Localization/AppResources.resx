@@ -220,4 +220,60 @@
   <data name="KanjiWords_Empty" xml:space="preserve"><value>No words contain this kanji.</value></data>
   <data name="Common_Copied" xml:space="preserve"><value>Copied</value></data>
   <data name="Word_KanjiTapHint" xml:space="preserve"><value>Tap the kanji to see words that use it.</value></data>
+  <data name="Pos_n" xml:space="preserve"><value>noun</value></data>
+  <data name="Pos_vs" xml:space="preserve"><value>noun that takes する (to do)</value></data>
+  <data name="Pos_exp" xml:space="preserve"><value>expression</value></data>
+  <data name="Pos_vt" xml:space="preserve"><value>transitive verb</value></data>
+  <data name="Pos_vi" xml:space="preserve"><value>intransitive verb</value></data>
+  <data name="Pos_adj_no" xml:space="preserve"><value>noun that takes の to modify other nouns</value></data>
+  <data name="Pos_adj_na" xml:space="preserve"><value>な-adjective (adjectival noun)</value></data>
+  <data name="Pos_v1" xml:space="preserve"><value>ichidan verb</value></data>
+  <data name="Pos_adv" xml:space="preserve"><value>adverb</value></data>
+  <data name="Pos_v5r" xml:space="preserve"><value>godan verb ending in る</value></data>
+  <data name="Pos_v5s" xml:space="preserve"><value>godan verb ending in す</value></data>
+  <data name="Pos_v5k" xml:space="preserve"><value>godan verb ending in く</value></data>
+  <data name="Pos_v5u" xml:space="preserve"><value>godan verb ending in う</value></data>
+  <data name="Pos_v5m" xml:space="preserve"><value>godan verb ending in む</value></data>
+  <data name="Pos_v5t" xml:space="preserve"><value>godan verb ending in つ</value></data>
+  <data name="Pos_v5g" xml:space="preserve"><value>godan verb ending in ぐ</value></data>
+  <data name="Pos_v5b" xml:space="preserve"><value>godan verb ending in ぶ</value></data>
+  <data name="Pos_v5n" xml:space="preserve"><value>godan verb ending in ぬ</value></data>
+  <data name="Pos_adj_i" xml:space="preserve"><value>い-adjective</value></data>
+  <data name="Pos_adv_to" xml:space="preserve"><value>adverb taking the と particle</value></data>
+  <data name="Pos_adj_f" xml:space="preserve"><value>noun or verb acting before a noun</value></data>
+  <data name="Pos_n_suf" xml:space="preserve"><value>noun used as a suffix</value></data>
+  <data name="Pos_int" xml:space="preserve"><value>interjection</value></data>
+  <data name="Pos_suf" xml:space="preserve"><value>suffix</value></data>
+  <data name="Pos_adj_t" xml:space="preserve"><value>たる-adjective (archaic)</value></data>
+  <data name="Pos_vs_s" xml:space="preserve"><value>suru verb, special class</value></data>
+  <data name="Pos_pn" xml:space="preserve"><value>pronoun</value></data>
+  <data name="Pos_prt" xml:space="preserve"><value>particle</value></data>
+  <data name="Pos_pref" xml:space="preserve"><value>prefix</value></data>
+  <data name="Pos_vs_i" xml:space="preserve"><value>suru verb, included in the word</value></data>
+  <data name="Pos_conj" xml:space="preserve"><value>conjunction</value></data>
+  <data name="Pos_ctr" xml:space="preserve"><value>counter</value></data>
+  <data name="Pos_adj_pn" xml:space="preserve"><value>pre-noun adjectival (連体詞)</value></data>
+  <data name="Pos_n_pref" xml:space="preserve"><value>noun used as a prefix</value></data>
+  <data name="Pos_aux_v" xml:space="preserve"><value>auxiliary verb</value></data>
+  <data name="Pos_vz" xml:space="preserve"><value>ichidan verb, ずる special class</value></data>
+  <data name="Pos_adj_ix" xml:space="preserve"><value>い-adjective, よい/いい class</value></data>
+  <data name="Pos_num" xml:space="preserve"><value>numeral</value></data>
+  <data name="Pos_v5r_i" xml:space="preserve"><value>godan verb ending in る, irregular</value></data>
+  <data name="Pos_vs_c" xml:space="preserve"><value>su verb, precursor of the modern する</value></data>
+  <data name="Pos_v5k_s" xml:space="preserve"><value>godan verb, 行く/ゆく special class</value></data>
+  <data name="Pos_aux" xml:space="preserve"><value>auxiliary</value></data>
+  <data name="Pos_vk" xml:space="preserve"><value>kuru verb, special class</value></data>
+  <data name="Pos_adj_ku" xml:space="preserve"><value>く-adjective (archaic)</value></data>
+  <data name="Pos_adj_nari" xml:space="preserve"><value>archaic form of the な-adjective</value></data>
+  <data name="Pos_unc" xml:space="preserve"><value>unclassified</value></data>
+  <data name="Pos_cop" xml:space="preserve"><value>copula</value></data>
+  <data name="Pos_v5u_s" xml:space="preserve"><value>godan verb ending in う, special class</value></data>
+  <data name="Pos_vr" xml:space="preserve"><value>irregular ru verb</value></data>
+  <data name="Pos_aux_adj" xml:space="preserve"><value>auxiliary adjective</value></data>
+  <data name="Pos_adj_shiku" xml:space="preserve"><value>しく-adjective (archaic)</value></data>
+  <data name="Pos_v5aru" xml:space="preserve"><value>godan verb ending in -aru, special class</value></data>
+  <data name="Pos_vn" xml:space="preserve"><value>irregular nu verb</value></data>
+  <data name="Pos_v1_s" xml:space="preserve"><value>ichidan verb, くれる special class</value></data>
+  <data name="Pos_v_unspec" xml:space="preserve"><value>verb, unspecified</value></data>
+  <data name="Pos__archaicVerb" xml:space="preserve"><value>archaic verb class (nidan/yodan)</value></data>
 </root>

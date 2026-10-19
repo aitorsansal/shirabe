@@ -156,7 +156,8 @@
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:SenseGroup">
                                 <VerticalStackLayout Padding="16" Spacing="9">
-                                    <Label Text="{Binding PartOfSpeech}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.2" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                    <controls:TagChipsView Tags="{Binding Tags}" IsVisible="{Binding HasTags}" />
+                                    <Label Text="{Binding FallbackTitle}" IsVisible="{Binding HasNoTags}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.2" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="9">
                                         <BindableLayout.ItemTemplate>
                                             <DataTemplate x:DataType="vm:SenseItem">

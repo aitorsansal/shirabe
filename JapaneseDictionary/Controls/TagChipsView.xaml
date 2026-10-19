@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    x:Class="JapaneseDictionary.Controls.TagChipsView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
+    xmlns:services="clr-namespace:JapaneseDictionary.Services">
+
+    <!--  Part-of-speech chips, colored by tag family; tapping one explains its code.  -->
+    <FlexLayout x:Name="Chips" Wrap="Wrap">
+        <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="vm:TagChip">
+                <Border StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{x:Static services:TagInfo.ShowCommand}" CommandParameter="{Binding .}" />
+                    </Border.GestureRecognizers>
+                    <Border.Stroke>
+                        <MultiBinding Converter="{StaticResource HueBorderConverter}">
+                            <Binding Path="HueIndex" />
+                            <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                        </MultiBinding>
+                    </Border.Stroke>
+                    <Border.Background>
+                        <MultiBinding Converter="{StaticResource HueFillConverter}">
+                            <Binding Path="HueIndex" />
+                            <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                        </MultiBinding>
+                    </Border.Background>
+                    <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="10" CharacterSpacing="0.6" TextTransform="Uppercase">
+                        <Label.TextColor>
+                            <MultiBinding Converter="{StaticResource HueTextConverter}">
+                                <Binding Path="HueIndex" />
+                                <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                            </MultiBinding>
+                        </Label.TextColor>
+                    </Label>
+                </Border>
+            </DataTemplate>
+        </BindableLayout.ItemTemplate>
+    </FlexLayout>
+</ContentView>

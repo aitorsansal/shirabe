@@ -220,4 +220,60 @@
   <data name="KanjiWords_Empty" xml:space="preserve"><value>Ninguna palabra contiene este kanji.</value></data>
   <data name="Common_Copied" xml:space="preserve"><value>Copiado</value></data>
   <data name="Word_KanjiTapHint" xml:space="preserve"><value>Toca el kanji para ver las palabras que lo usan.</value></data>
+  <data name="Pos_n" xml:space="preserve"><value>sustantivo</value></data>
+  <data name="Pos_vs" xml:space="preserve"><value>sustantivo que admite する (hacer)</value></data>
+  <data name="Pos_exp" xml:space="preserve"><value>expresión</value></data>
+  <data name="Pos_vt" xml:space="preserve"><value>verbo transitivo</value></data>
+  <data name="Pos_vi" xml:space="preserve"><value>verbo intransitivo</value></data>
+  <data name="Pos_adj_no" xml:space="preserve"><value>sustantivo que usa の para modificar a otros</value></data>
+  <data name="Pos_adj_na" xml:space="preserve"><value>adjetivo en な (sustantivo adjetival)</value></data>
+  <data name="Pos_v1" xml:space="preserve"><value>verbo ichidan</value></data>
+  <data name="Pos_adv" xml:space="preserve"><value>adverbio</value></data>
+  <data name="Pos_v5r" xml:space="preserve"><value>verbo godan terminado en る</value></data>
+  <data name="Pos_v5s" xml:space="preserve"><value>verbo godan terminado en す</value></data>
+  <data name="Pos_v5k" xml:space="preserve"><value>verbo godan terminado en く</value></data>
+  <data name="Pos_v5u" xml:space="preserve"><value>verbo godan terminado en う</value></data>
+  <data name="Pos_v5m" xml:space="preserve"><value>verbo godan terminado en む</value></data>
+  <data name="Pos_v5t" xml:space="preserve"><value>verbo godan terminado en つ</value></data>
+  <data name="Pos_v5g" xml:space="preserve"><value>verbo godan terminado en ぐ</value></data>
+  <data name="Pos_v5b" xml:space="preserve"><value>verbo godan terminado en ぶ</value></data>
+  <data name="Pos_v5n" xml:space="preserve"><value>verbo godan terminado en ぬ</value></data>
+  <data name="Pos_adj_i" xml:space="preserve"><value>adjetivo en い</value></data>
+  <data name="Pos_adv_to" xml:space="preserve"><value>adverbio con la partícula と</value></data>
+  <data name="Pos_adj_f" xml:space="preserve"><value>sustantivo o verbo que precede a otro sustantivo</value></data>
+  <data name="Pos_n_suf" xml:space="preserve"><value>sustantivo usado como sufijo</value></data>
+  <data name="Pos_int" xml:space="preserve"><value>interjección</value></data>
+  <data name="Pos_suf" xml:space="preserve"><value>sufijo</value></data>
+  <data name="Pos_adj_t" xml:space="preserve"><value>adjetivo en たる (arcaico)</value></data>
+  <data name="Pos_vs_s" xml:space="preserve"><value>verbo suru, clase especial</value></data>
+  <data name="Pos_pn" xml:space="preserve"><value>pronombre</value></data>
+  <data name="Pos_prt" xml:space="preserve"><value>partícula</value></data>
+  <data name="Pos_pref" xml:space="preserve"><value>prefijo</value></data>
+  <data name="Pos_vs_i" xml:space="preserve"><value>verbo suru incluido en la palabra</value></data>
+  <data name="Pos_conj" xml:space="preserve"><value>conjunción</value></data>
+  <data name="Pos_ctr" xml:space="preserve"><value>contador</value></data>
+  <data name="Pos_adj_pn" xml:space="preserve"><value>adjetivo prenominal (連体詞)</value></data>
+  <data name="Pos_n_pref" xml:space="preserve"><value>sustantivo usado como prefijo</value></data>
+  <data name="Pos_aux_v" xml:space="preserve"><value>verbo auxiliar</value></data>
+  <data name="Pos_vz" xml:space="preserve"><value>verbo ichidan, clase especial ずる</value></data>
+  <data name="Pos_adj_ix" xml:space="preserve"><value>adjetivo en い, clase よい/いい</value></data>
+  <data name="Pos_num" xml:space="preserve"><value>numeral</value></data>
+  <data name="Pos_v5r_i" xml:space="preserve"><value>verbo godan terminado en る, irregular</value></data>
+  <data name="Pos_vs_c" xml:space="preserve"><value>verbo su, precursor del する moderno</value></data>
+  <data name="Pos_v5k_s" xml:space="preserve"><value>verbo godan, clase especial 行く/ゆく</value></data>
+  <data name="Pos_aux" xml:space="preserve"><value>auxiliar</value></data>
+  <data name="Pos_vk" xml:space="preserve"><value>verbo kuru, clase especial</value></data>
+  <data name="Pos_adj_ku" xml:space="preserve"><value>adjetivo en く (arcaico)</value></data>
+  <data name="Pos_adj_nari" xml:space="preserve"><value>forma arcaica del adjetivo en な</value></data>
+  <data name="Pos_unc" xml:space="preserve"><value>sin clasificar</value></data>
+  <data name="Pos_cop" xml:space="preserve"><value>cópula</value></data>
+  <data name="Pos_v5u_s" xml:space="preserve"><value>verbo godan terminado en う, clase especial</value></data>
+  <data name="Pos_vr" xml:space="preserve"><value>verbo ru irregular</value></data>
+  <data name="Pos_aux_adj" xml:space="preserve"><value>adjetivo auxiliar</value></data>
+  <data name="Pos_adj_shiku" xml:space="preserve"><value>adjetivo en しく (arcaico)</value></data>
+  <data name="Pos_v5aru" xml:space="preserve"><value>verbo godan terminado en -aru, clase especial</value></data>
+  <data name="Pos_vn" xml:space="preserve"><value>verbo nu irregular</value></data>
+  <data name="Pos_v1_s" xml:space="preserve"><value>verbo ichidan, clase especial くれる</value></data>
+  <data name="Pos_v_unspec" xml:space="preserve"><value>verbo, sin especificar</value></data>
+  <data name="Pos__archaicVerb" xml:space="preserve"><value>clase verbal arcaica (nidan/yodan)</value></data>
 </root>

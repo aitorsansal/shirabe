@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:JapaneseDictionary.ViewModels"
     xmlns:services="clr-namespace:JapaneseDictionary.Services"
+    xmlns:controls="clr-namespace:JapaneseDictionary.Controls"
     xmlns:res="clr-namespace:JapaneseDictionary.Resources.Localization"
     x:DataType="vm:SearchResultRow">
 
@@ -20,34 +21,7 @@
                         <Label Text="{x:Static res:AppResources.Common_CommonBadge}" FontFamily="ArchivoExtraBold" FontSize="9" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     </Border>
                 </HorizontalStackLayout>
-                <FlexLayout BindableLayout.ItemsSource="{Binding Tags}" Wrap="Wrap">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="vm:TagChip">
-                            <Border StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0">
-                                <Border.Stroke>
-                                    <MultiBinding Converter="{StaticResource HueBorderConverter}">
-                                        <Binding Path="HueIndex" />
-                                        <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                                    </MultiBinding>
-                                </Border.Stroke>
-                                <Border.Background>
-                                    <MultiBinding Converter="{StaticResource HueFillConverter}">
-                                        <Binding Path="HueIndex" />
-                                        <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                                    </MultiBinding>
-                                </Border.Background>
-                                <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="10" CharacterSpacing="0.6" TextTransform="Uppercase">
-                                    <Label.TextColor>
-                                        <MultiBinding Converter="{StaticResource HueTextConverter}">
-                                            <Binding Path="HueIndex" />
-                                            <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
-                                        </MultiBinding>
-                                    </Label.TextColor>
-                                </Label>
-                            </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </FlexLayout>
+                <controls:TagChipsView x:Name="TagChips" Tags="{Binding Tags}" />
                 <Label Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" LineBreakMode="WordWrap" />
                 <Label Text="{Binding ViaNote}" IsVisible="{Binding ViaNote, Converter={StaticResource StringNotEmptyConverter}}" FontFamily="ArchivoSemiBold" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
             </VerticalStackLayout>

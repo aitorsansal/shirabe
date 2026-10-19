@@ -19,7 +19,7 @@ public sealed record SearchResultRow(
     {
         var firstSense = entry.Senses.FirstOrDefault();
         var tags = firstSense?.PartOfSpeechTags.Take(2)
-            .Select((tag, i) => new TagChip(tag, i))
+            .Select(TagChip.For)
             .ToList() ?? [];
         var gloss = string.Join(" · ", entry.MeaningGlosses.Take(3));
 
@@ -30,9 +30,24 @@ public sealed record SearchResultRow(
     }
 }
 
-/// <summary>One part-of-speech tag chip, colored by cycling through the
-/// five-hue accent palette by index (see HueConverters.cs).</summary>
-public sealed record TagChip(string Label, int HueIndex);
+/// <summary>One part-of-speech tag chip. Its color comes from the tag's family
+/// (noun, verb, adjective, adverb, other), through the five-hue accent palette
+/// (see HueConverters.cs).</summary>
+public sealed record TagChip(string Label, int HueIndex)
+{
+    public static TagChip For(string tag) => new(tag, HueOf(PartOfSpeech.GroupOf(tag)));
+
+    // Hue0..Hue4 = green, lime, yellow, blue, purple.
+    private static int HueOf(PartOfSpeechGroup group) => group switch
+    {
+        PartOfSpeechGroup.Verb => 0,
+        PartOfSpeechGroup.Other => 1,
+        PartOfSpeechGroup.Adjective => 2,
+        PartOfSpeechGroup.Noun => 3,
+        PartOfSpeechGroup.Adverb => 4,
+        _ => 1,
+    };
+}
 
 /// <summary>One recent-word pill on the search screen.</summary>
 public sealed record RecentWordChip(int EntryId, string Word);

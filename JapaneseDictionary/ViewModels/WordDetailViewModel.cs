@@ -243,7 +243,7 @@ public partial class WordDetailViewModel : ObservableObject
 
     private static List<SenseGroup> BuildSenseGroups(DictionaryEntry entry) =>
         entry.Senses
-            .GroupBy(s => s.PartOfSpeechTags.Count > 0 ? string.Join(", ", s.PartOfSpeechTags) : AppResources.Word_SenseOther)
+            .GroupBy(s => string.Join(", ", s.PartOfSpeechTags))
             .Select(g =>
             {
                 var items = new List<SenseItem>();
@@ -256,7 +256,8 @@ public partial class WordDetailViewModel : ObservableObject
                     }
                 }
 
-                return new SenseGroup(g.Key.ToUpperInvariant(), items);
+                var tags = g.First().PartOfSpeechTags.Select(TagChip.For).ToList();
+                return new SenseGroup(tags, AppResources.Word_SenseOther.ToUpperInvariant(), items);
             })
             .ToList();
 

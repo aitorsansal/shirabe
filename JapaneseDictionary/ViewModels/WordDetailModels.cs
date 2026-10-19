@@ -15,7 +15,13 @@ public sealed record EntryBadge(string Label, bool IsCommon, int HueIndex);
 
 public sealed record SenseItem(int Number, string Gloss, string? Note);
 
-public sealed record SenseGroup(string PartOfSpeech, IReadOnlyList<SenseItem> Items);
+/// <param name="Tags">The part-of-speech chips the group's senses share; empty
+/// for senses without any, which show <paramref name="FallbackTitle"/> instead.</param>
+public sealed record SenseGroup(IReadOnlyList<TagChip> Tags, string FallbackTitle, IReadOnlyList<SenseItem> Items)
+{
+    public bool HasTags => Tags.Count > 0;
+    public bool HasNoTags => Tags.Count == 0;
+}
 
 public sealed record FormChip(string Word, string Note);
 

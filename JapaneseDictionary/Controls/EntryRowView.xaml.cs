@@ -30,8 +30,12 @@ public partial class EntryRowView : ContentView
             (Color)Application.Current!.Resources["ScreenBackgroundDark"]);
 
         var tap = new TapGestureRecognizer();
-        tap.Tapped += (_, _) =>
+        tap.Tapped += (_, e) =>
         {
+            // The row's recognizer swallows taps meant for the chips inside it,
+            // so route them by position.
+            if (TagChips.TryShowTagAt(e.GetPosition(TagChips))) return;
+
             if (BindingContext is SearchResultRow row && Command?.CanExecute(row.EntryId) == true)
                 Command.Execute(row.EntryId);
         };

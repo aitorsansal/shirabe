@@ -51,6 +51,15 @@ public static class UiText
     public static string ConjugationLabel(string coreLabel) =>
         ConjugationKeys.TryGetValue(coreLabel, out var key) ? Lookup(key, coreLabel) : coreLabel;
 
+    /// <summary>Plain-language name of a JMdict part-of-speech tag ("vs" → "noun
+    /// that takes する"). Archaic verb classes share one description; an unknown
+    /// tag is returned as is.</summary>
+    public static string PartOfSpeechName(string tag) =>
+        AppResources.ResourceManager.GetString($"Pos_{tag.Replace('-', '_')}", LanguageService.Culture)
+        ?? (tag.Length > 1 && tag[0] == 'v' && tag[1] is '2' or '4'
+            ? AppResources.Pos__archaicVerb
+            : tag);
+
     private static string Lookup(string key, string fallback) =>
         AppResources.ResourceManager.GetString(key, LanguageService.Culture) ?? fallback;
 

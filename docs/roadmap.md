@@ -14,6 +14,7 @@ Order: 1.1a, 1.1b, 1.1c, then 1.2. Cut 1.2 only after closed-test feedback is in
 - **Search finds compounds.** A 1-2 kanji query (行, 食堂) also lists headwords that contain it (銀行), after the exact and prefix matches; `SearchMatchKind.Contains`, `DictionaryRepository.FindCompoundsByKanji`.
 - **Chained kanji search.** Tapping a kanji tile on the word page's Kanji tab opens `KanjiWordsPage` (the search for that kanji as a pushed page); Back returns to the word.
 - **Long-press to copy** the headword, the reading and the kanji tile character (`Controls/LongPress`, `Services/ClipboardCopy`).
+- **Part-of-speech chips** are colored by family (verb green, noun blue, adjective yellow, adverb purple, other lime; `PartOfSpeech.GroupOf`) instead of by position, and tapping one explains its code (`TagInfo`, `Pos_*` strings in en/es/ca). Same chips replace the plain-text headers on the Meaning tab. Inside list rows the row's own tap swallows the chip's, so `EntryRowView` routes taps by position.
 - **Share button on the word page: dropped** (little real use without entry links; long-press copy covers the common case).
 
 (No kanji filters or sorting: a JLPT chip on the kanji tab is enough. Grade and frequency chips already exist. The JLPT chip moved to 1.2 because KANJIDIC2's `jlpt` is the old 4-level scale, which does not map cleanly to N5-N1.)
