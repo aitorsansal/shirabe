@@ -11,6 +11,8 @@ public enum SearchMatchKind
     Prefix,
     Conjugated,
     Gloss,
+    /// <summary>A short kanji query found inside a longer headword (行 in 銀行).</summary>
+    Contains,
 }
 
 /// <param name="ConjugationForm">For conjugated matches, the forms undone, innermost
@@ -44,6 +46,15 @@ public sealed partial class SearchService
     /// is inside tens of thousands of glosses ("good", "ago"), which is slow to
     /// rank and useless to show.</summary>
     private const int MaxWholeWordOnlyLength = 3;
+
+    /// <summary>Longest kanji-only query that also searches for words containing
+    /// it. Longer ones are specific enough that a containing match is noise
+    /// (食堂 would otherwise list every 食堂車 and 学生食堂 ahead of the rest).</summary>
+    private const int MaxCompoundQueryLength = 2;
+
+    /// <summary>Slots the prefix tier keeps even when the exact tier already filled
+    /// some, so compounds never squeeze it out entirely.</summary>
+    private const int MinPrefixSlots = 5;
 
     // Loaded on first use; a race between two first searches only means
     // building the same small dictionary twice.
@@ -84,11 +95,19 @@ public sealed partial class SearchService
 
         // Kanji forms and readings are Japanese, so the raw Latin text never
         // prefixes one; skipping it saves two table scans per keystroke.
+        // A bare kanji or kanji pair ("行", "食堂") also finds compounds that merely
+        // contain it (銀行). Common kanji have hundreds of prefix matches that would
+        // fill the whole list first, so those leave room for the compounds.
+        var findsCompounds = IsShortKanjiQuery(query);
         foreach (var form in japaneseForms.Where(ContainsJapanese))
         {
             if (results.Count >= limit) break;
-            Add(repo.FindByPrefix(form, limit - results.Count).Select(id => new SearchResult(id, SearchMatchKind.Prefix, null, form)));
+            var prefixLimit = findsCompounds ? Math.Max(results.Count + MinPrefixSlots, limit / 2) : limit;
+            Add(repo.FindByPrefix(form, prefixLimit - results.Count).Select(id => new SearchResult(id, SearchMatchKind.Prefix, null, form)));
         }
+
+        if (findsCompounds)
+            Add(repo.FindCompoundsByKanji(query, limit).Select(id => new SearchResult(id, SearchMatchKind.Contains, null, query)));
 
         Add(glosses.Where(g => g.MatchRank == 2).Select(g => GlossResult(g).Result));
 
@@ -232,6 +251,9 @@ public sealed partial class SearchService
     };
 
     private static bool LooksLikeRomaji(string text) => RomajiOnly().IsMatch(text);
+
+    private static bool IsShortKanjiQuery(string text) =>
+        text.Length <= MaxCompoundQueryLength && text.All(c => c is >= '一' and <= '鿿');
 
     private static bool ContainsJapanese(string text) =>
         text.Any(c => c is >= '぀' and <= 'ヿ' or >= '一' and <= '鿿');

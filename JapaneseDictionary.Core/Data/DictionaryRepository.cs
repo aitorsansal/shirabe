@@ -71,6 +71,19 @@ public sealed class DictionaryRepository : IDisposable
             LIMIT ?
             """, $"%{kanji}%", excludeEntryId, $"{kanji}%", limit);
 
+    /// <summary>Entries whose headword contains <paramref name="kanji"/> somewhere
+    /// after its first character (銀行 for 行), common words first, then shortest.
+    /// Headwords that start with it are left to <see cref="FindByPrefix"/>, which
+    /// the search runs first; including them here would let hundreds of them
+    /// crowd the actual compounds out of the limit.</summary>
+    public IReadOnlyList<int> FindCompoundsByKanji(string kanji, int limit) =>
+        db.QueryScalars<int>("""
+            SELECT Id FROM WordEntryRow
+            WHERE PrimaryText LIKE ? AND PrimaryText NOT LIKE ?
+            ORDER BY IsCommon DESC, LENGTH(PrimaryText), Id
+            LIMIT ?
+            """, $"%{kanji}%", $"{kanji}%", limit);
+
     /// <summary>Every gloss containing <paramref name="text"/> (case-insensitive),
     /// unranked and uncapped — <see cref="Search.GlossRanker"/> orders them. With
     /// <paramref name="wholeWordOnly"/>, only glosses where it stands as a word.</summary>

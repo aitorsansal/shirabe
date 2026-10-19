@@ -31,6 +31,29 @@ public class SearchServiceTests : IDisposable
     }
 
     [SkippableFact]
+    public void Search_SingleKanji_AlsoFindsCompoundsContainingIt()
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var results = search!.Search("行");
+
+        // Hundreds of 行 words start with it; the compounds must still get room.
+        var compounds = results.Where(r => r.Kind == SearchMatchKind.Contains).ToList();
+        Assert.NotEmpty(compounds);
+        Assert.All(compounds, r => Assert.Contains("行", repo!.GetEntry(r.EntryId)!.PrimaryText));
+        Assert.Contains(results, r => r.Kind == SearchMatchKind.Contains && repo!.GetEntry(r.EntryId)!.PrimaryText == "銀行");
+        Assert.True(results.Count <= 50);
+        Assert.Equal(results.Count, results.Select(r => r.EntryId).Distinct().Count());
+    }
+
+    [SkippableFact]
+    public void Search_LongerKanjiQuery_DoesNotSearchForContainingWords()
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        Assert.DoesNotContain(search!.Search("食堂車"), r => r.Kind == SearchMatchKind.Contains);
+        Assert.DoesNotContain(search.Search("食べる"), r => r.Kind == SearchMatchKind.Contains);
+    }
+
+    [SkippableFact]
     public void Search_ConjugatedKana_FindsTaberuAsPast()
     {
         Skip.If(search == null, "dictionary.db3 not built");
