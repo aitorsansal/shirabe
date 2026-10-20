@@ -3,5 +3,5 @@
      it by the system language (it's shown before the app runs); everything inside
      the popup comes from AppResources and follows the in-app language. -->
 <resources>
-    <string name="lookup_label">Look Up</string>
+    <string name="lookup_label">Shirabe</string>
 </resources>
