@@ -11,9 +11,29 @@ The app's product name is **Shirabe** (launcher label, About page, header wordma
 - Build the whole solution (app + Core + DataBuilder + Tests): `dotnet build JapaneseDictionary.sln`
 - Run tests: `dotnet test JapaneseDictionary.Tests/JapaneseDictionary.Tests.csproj`
 - Run a single test: `dotnet test JapaneseDictionary.Tests/JapaneseDictionary.Tests.csproj --filter "FullyQualifiedName~ClassName.MethodName"`
-- Regenerate the bundled dictionary database (only needed after touching a parser/writer in `JapaneseDictionary.DataBuilder`, or after updating the source corpora): from `JapaneseDictionary.DataBuilder/`, run `dotnet run`. Requires `RawData/` to be populated first (JMdict, KANJIDIC2, KanjiVG, and Tatoeba's `jpn_indices.csv` + `sentences.csv`) — these are **not** checked into git (gitignored, ~1.5GB of downloadable public corpora, and several individual files exceed GitHub's 100MB limit anyway). The tool writes to `../JapaneseDictionary/Resources/Raw/dictionary.db3` (gitignored — it ships as a GitHub Release asset. A fresh clone runs `scripts/fetch-database.ps1`/`.sh`, which reads the tag and SHA-256 from `database-release.txt`; after regenerating, upload the new file to a release and update both lines there).
+- Fetch the bundled dictionary database on a fresh clone: `powershell -File scripts/fetch-database.ps1` (or `sh scripts/fetch-database.sh`). `dictionary.db3` is gitignored and ships as a GitHub Release asset; the script downloads the release named in `database-release.txt` and verifies its SHA-256. The app build fails if the file is missing.
+- Regenerate the dictionary database (only needed after touching a parser/writer in `JapaneseDictionary.DataBuilder`, or after updating the source corpora): from `JapaneseDictionary.DataBuilder/`, run `dotnet run`. Requires `RawData/` to be populated first (JMdict, KANJIDIC2, KanjiVG, and Tatoeba's `jpn_indices.csv` + `sentences.csv`) — these are **not** checked into git (gitignored, ~1.5GB of downloadable public corpora, and several individual files exceed GitHub's 100MB limit anyway). The tool writes to `../JapaneseDictionary/Resources/Raw/dictionary.db3`.
 
-- Publish the privacy policy site (`web/public/privacy/index.html`, served at `shirabe.aitorsansal.com/privacy/` — the URL in the Play Console and on the About page): from `web/`, run `npx wrangler deploy`. Keep the policy's claims in sync with the app (no internet permission, what's in Android backup per `data_extraction_rules.xml`) and update it in all three languages.
+### Maintainer-only
+
+These need the maintainer's credentials. Don't attempt them from a contributor checkout; describe the needed step in the PR instead.
+
+- Publishing a regenerated database: upload `dictionary.db3` to a new GitHub Release and update both lines (tag and SHA-256) in `database-release.txt`.
+- Publishing the privacy policy site (`web/public/privacy/index.html`, served at `shirabe.aitorsansal.com/privacy/` — the URL in the Play Console and on the About page): from `web/`, `npx wrangler deploy`. Editing the policy itself is fine for anyone: keep its claims in sync with the app (no internet permission, what's in Android backup per `data_extraction_rules.xml`) and update it in all three languages.
+
+## Contributing
+
+- Run the test suite before proposing changes; Core logic changes (search, deinflection, romaji, recognition) should come with tests.
+- Never commit `dictionary.db3`, `RawData/` or other generated `.db3` files — they're gitignored for size and licensing reasons; don't force-add them.
+- Only change `database-release.txt` together with an actual new release (maintainer-only, see above).
+
+## Data licensing and attribution
+
+The dictionary data is third-party and its licences require attribution, so treat the credits as load-bearing, not boilerplate:
+- JMdict/EDICT and KANJIDIC2 — EDRDG licence; KanjiVG — CC BY-SA 3.0; Tatoeba sentences — CC BY 2.0 FR. The derived `dictionary.db3` is distributed under CC BY-SA 4.0 (`DATA-LICENSE.md`).
+- Attribution lives in places that must stay consistent: the About page (`Views/AboutPage.xaml`, text in the `About_*` resx keys in all three languages), `README.md`, `DATA-LICENSE.md`, and `THIRD-PARTY-NOTICES.md` (which also covers the handwriting model, fonts and libraries, with full licence texts under `licenses/`).
+- Don't remove, shorten or "clean up" these credits, and don't drop the per-sentence Tatoeba id shown in the app. Adding a new data source, model, font or library means adding its notice in the same change.
+- The app code itself is MIT (`LICENSE`); that doesn't relicense the data.
 
 ## Architecture
 
@@ -27,7 +47,7 @@ Four projects:
 
 ### Data pipeline
 
-`DataBuilder` parses JMdict, KANJIDIC2, KanjiVG, and Tatoeba raw files (`RawData/`) into a single read-only SQLite file, `dictionary.db3`, bundled into the app as a `MauiAsset` (`Resources/Raw/**`, with `LogicalName` stripping the `Raw` prefix). At runtime SQLite needs a real file path, not a package stream, so `DatabaseInitializer.EnsureDictionaryDatabaseAsync` copies it out of the app package into `FileSystem.AppDataDirectory` once on first use. User data (recents/history) lives in a separate writable SQLite file, `userdata.db3`, in the same directory.
+`DataBuilder` parses JMdict, KANJIDIC2, KanjiVG, and Tatoeba raw files (`RawData/`) into a single read-only SQLite file, `dictionary.db3`, bundled into the app as a `MauiAsset` (`Resources/Raw/**`, with `LogicalName` stripping the `Raw` prefix). At runtime SQLite needs a real file path, not a package stream, so `DatabaseInitializer` copies it out of the app package into `FileSystem.AppDataDirectory` once on first use. User data (recents/history) lives in a separate writable SQLite file, `userdata.db3`, in the same directory.
 
 ### Startup / DI
 
@@ -35,7 +55,7 @@ Four projects:
 
 ### Search
 
-`SearchService.Search()` is the single entry point: exact match → deinflection (`Deinflector.Deinflect` undoes conjugation endings with chained suffix rules in `Deinflector.Rules.cs`, then candidates are looked up exactly and filtered by `WordClass`; works on kanji and kana alike) → prefix match → English gloss substring (English mode only, minimum 2 characters — an unindexed scan otherwise). Romaji input is auto-converted to hiragana/katakana before matching (`RomajiConverter`).
+`SearchService.Search()` is the single entry point: exact match → deinflection (`Deinflector` undoes conjugation endings with a table of chained suffix rules, then candidates are looked up exactly and filtered by `WordClass`; works on kanji and kana alike) → prefix match → English gloss substring (English mode only, minimum 2 characters — an unindexed scan otherwise). Romaji input is auto-converted to hiragana/katakana before matching (`RomajiConverter`).
 
 ### Theming
 
