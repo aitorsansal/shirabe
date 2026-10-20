@@ -118,16 +118,25 @@ public sealed partial class SearchService
         (new SearchResult(gloss.EntryId, SearchMatchKind.Gloss, null, gloss.GlossText), gloss.IsCommon, gloss.Rarity);
 
     /// <summary>Exact kanji/reading matches for each form, common and everyday
-    /// words first (かみ: 紙 and 神 before rarer homophones).</summary>
+    /// words first (かみ: 紙 and 神 before rarer homophones; なる: 成る before 生る).</summary>
     private List<(SearchResult Result, bool IsCommon, int Rarity)> FindExactMatches(IReadOnlyList<string> forms)
     {
         var formOrder = forms.Select((form, i) => (form, i)).ToDictionary(x => x.form, x => x.i);
-        return repo.FindByExactTexts(forms.ToList())
+        var matches = repo.FindByExactTexts(forms.ToList())
             .GroupBy(m => m.EntryId)
-            .Select(g => g.OrderBy(m => formOrder[m.Text]).First())
-            .Select(m => (new SearchResult(m.EntryId, SearchMatchKind.ExactMatch, null, m.Text), m.IsCommon, KanjiRarity.Of(m.PrimaryText, kanjiFrequencyRanks!)))
-            .OrderBy(x => x.Item2 ? 0 : 1)
-            .ThenBy(x => x.Item3)
+            .Select(g => (Match: g.OrderBy(m => formOrder[m.Text]).First(), IsCommon: g.Any(m => m.IsCommon && m.FormIsCommon)))
+            .ToList();
+        var exampleCounts = repo.GetExampleCounts(matches.Select(x => x.Match.EntryId).ToList());
+        return matches
+            .Select(x => (
+                Result: new SearchResult(x.Match.EntryId, SearchMatchKind.ExactMatch, null, x.Match.Text),
+                x.IsCommon,
+                Examples: ExampleEvidence.Band(exampleCounts.GetValueOrDefault(x.Match.EntryId)),
+                Rarity: KanjiRarity.Of(x.Match.PrimaryText, kanjiFrequencyRanks!)))
+            .OrderBy(x => x.IsCommon ? 0 : 1)
+            .ThenByDescending(x => x.Examples)
+            .ThenBy(x => x.Rarity)
+            .Select(x => (x.Result, x.IsCommon, x.Rarity))
             .ToList();
     }
 
@@ -168,7 +177,7 @@ public sealed partial class SearchService
 
     /// <summary>Dictionary entries <paramref name="form"/> is a conjugation of,
     /// best first: fewest conjugation steps, then common words, then
-    /// <see cref="KanjiRarity"/>.</summary>
+    /// <see cref="ExampleEvidence"/>, then <see cref="KanjiRarity"/>.</summary>
     private List<SearchResult> FindConjugatedMatches(string form)
     {
         var deinflections = Deinflector.Deinflect(form)
@@ -186,18 +195,23 @@ public sealed partial class SearchService
                 lookups.Add((d.Text[..^2], d));
         }
 
-        var matchesByText = repo.FindByExactTexts(lookups.Select(l => l.Text).Distinct().ToList())
-            .ToLookup(m => m.Text);
+        var exactMatches = repo.FindByExactTexts(lookups.Select(l => l.Text).Distinct().ToList());
+        var matchesByText = exactMatches.ToLookup(m => m.Text);
+        var exampleCounts = repo.GetExampleCounts(exactMatches.Select(m => m.EntryId).Distinct().ToList());
         kanjiFrequencyRanks ??= repo.GetKanjiFrequencyRanks();
 
-        var best = new Dictionary<int, ((int Steps, int NotCommon, int Rarity) Rank, Deinflection Source)>();
+        var best = new Dictionary<int, ((int Steps, int NotCommon, int FewerExamples, int Rarity) Rank, Deinflection Source)>();
         foreach (var (text, source) in lookups)
         {
             foreach (var match in matchesByText[text])
             {
                 if (!match.WordClasses.Any(wc => FitsInflectionType(wc, source.Type, text))) continue;
 
-                var rank = (source.Reasons.Count, match.IsCommon ? 0 : 1, KanjiRarity.Of(match.PrimaryText, kanjiFrequencyRanks));
+                var rank = (
+                    source.Reasons.Count,
+                    match.IsCommon && match.FormIsCommon ? 0 : 1,
+                    -ExampleEvidence.Band(exampleCounts.GetValueOrDefault(match.EntryId)),
+                    KanjiRarity.Of(match.PrimaryText, kanjiFrequencyRanks));
                 if (!best.TryGetValue(match.EntryId, out var existing) || rank.CompareTo(existing.Rank) < 0)
                     best[match.EntryId] = (rank, source);
             }

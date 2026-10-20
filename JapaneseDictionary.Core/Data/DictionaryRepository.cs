@@ -139,9 +139,9 @@ public sealed class DictionaryRepository : IDisposable
         var textList = texts.ToList();
 
         var formRows = db.Table<KanjiFormRow>().Where(r => textList.Contains(r.Text))
-            .Select(r => (r.Text, r.EntryId)).ToList();
+            .Select(r => (r.Text, r.EntryId, r.IsCommon)).ToList();
         formRows.AddRange(db.Table<ReadingFormRow>().Where(r => textList.Contains(r.Text))
-            .Select(r => (r.Text, r.EntryId)));
+            .Select(r => (r.Text, r.EntryId, r.IsCommon)));
         if (formRows.Count == 0) return [];
 
         // sqlite-net-pcl's TableQuery doesn't translate .Join() to SQL (it would
@@ -150,14 +150,25 @@ public sealed class DictionaryRepository : IDisposable
         var entries = db.Table<WordEntryRow>().Where(w => entryIds.Contains(w.Id)).ToDictionary(w => w.Id);
 
         return formRows
-            .Distinct()
-            .Where(r => entries.ContainsKey(r.EntryId))
-            .Select(r =>
+            .GroupBy(r => (r.Text, r.EntryId))
+            .Where(g => entries.ContainsKey(g.Key.EntryId))
+            .Select(g =>
             {
-                var entry = entries[r.EntryId];
-                return new ExactTextMatch(r.Text, r.EntryId, ParseWordClasses(entry.WordClassesJoined), entry.IsCommon, entry.PrimaryText);
+                var entry = entries[g.Key.EntryId];
+                return new ExactTextMatch(g.Key.Text, g.Key.EntryId, ParseWordClasses(entry.WordClassesJoined), entry.IsCommon, entry.PrimaryText, g.Any(r => r.IsCommon));
             })
             .ToList();
+    }
+
+    // Entries with no linked sentence are left out of the result.
+    public IReadOnlyDictionary<int, int> GetExampleCounts(IReadOnlyCollection<int> entryIds)
+    {
+        if (entryIds.Count == 0) return new Dictionary<int, int>();
+        var placeholders = string.Join(",", entryIds.Select(_ => "?"));
+        return db.Query<ExampleCountRow>(
+                $"SELECT EntryId, COUNT(*) AS Count FROM ExampleSentenceLinkRow WHERE EntryId IN ({placeholders}) GROUP BY EntryId",
+                entryIds.Cast<object>().ToArray())
+            .ToDictionary(r => r.EntryId, r => r.Count);
     }
 
     public DictionaryEntry? GetEntry(int id)
@@ -226,4 +237,6 @@ public sealed class DictionaryRepository : IDisposable
         string.IsNullOrEmpty(joined) ? [] : joined.Split(';').ToList();
 }
 
-public sealed record ExactTextMatch(string Text, int EntryId, IReadOnlyList<WordClass> WordClasses, bool IsCommon, string PrimaryText);
+// IsCommon is the entry's flag; FormIsCommon is whether the matched spelling or
+// reading itself is common (大雪 is common as おおゆき, not as たいせつ).
+public sealed record ExactTextMatch(string Text, int EntryId, IReadOnlyList<WordClass> WordClasses, bool IsCommon, string PrimaryText, bool FormIsCommon);
