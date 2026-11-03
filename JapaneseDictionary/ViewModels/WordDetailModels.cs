@@ -55,17 +55,27 @@ public partial class KanjiCard : ObservableObject
     public void Step() => CurrentStep = CurrentStep % TotalStrokes + 1;
 }
 
-/// <summary>A conjugation table row with each form split into the stem shared by
-/// the whole table (shown highlighted) and the conjugated ending.</summary>
-public sealed record ConjugationTableRow(string Label, string PlainStem, string PlainEnding, string PoliteStem, string PoliteEnding)
+/// <summary>One cell of the conjugation table: the displayed form split into the
+/// stem shared by the whole table (shown highlighted) and the conjugated ending,
+/// plus its kana reading and romaji. The reading line only shows when the
+/// displayed form isn't already kana.</summary>
+public sealed record ConjugationTableCell(string Stem, string Ending, string Reading, string Romaji)
 {
-    /// <summary>The prefix every form in the table shares: い for 行く (いく,
-    /// いった, いかない), たべ for 食べる, べんきょう for 勉強. Empty for 来る, whose
-    /// stem changes too (くる, こない, きた).</summary>
-    public static string CommonStem(IEnumerable<Deinflector.ConjugationRow> rows)
+    public static readonly ConjugationTableCell Missing = new("", "—", "", "");
+
+    public bool HasReading => Reading.Length > 0;
+}
+
+/// <summary>A conjugation table row.</summary>
+public sealed record ConjugationTableRow(string Label, ConjugationTableCell Plain, ConjugationTableCell Polite)
+{
+    /// <summary>The prefix every displayed form in the table shares: 食 for 食べる
+    /// (食べない, 食べます), 行 for 行く. Empty when nothing is shared, as for 来る
+    /// in kana (くる, こない, きた).</summary>
+    public static string CommonStem(IEnumerable<Deinflector.ConjugationDisplayRow> rows)
     {
         string? stem = null;
-        foreach (var form in rows.SelectMany(r => new[] { r.Plain, r.Polite }).Where(f => f != "—"))
+        foreach (var form in rows.SelectMany(r => new[] { r.Plain, r.Polite }).Where(c => c != null).Select(c => c!.Display))
         {
             if (stem is null)
             {
@@ -82,13 +92,19 @@ public sealed record ConjugationTableRow(string Label, string PlainStem, string 
         return stem ?? "";
     }
 
-    public static ConjugationTableRow From(Deinflector.ConjugationRow row, string stem)
-    {
-        var (plainStem, plainEnding) = Split(row.Plain, stem);
-        var (politeStem, politeEnding) = Split(row.Polite, stem);
-        return new ConjugationTableRow(UiText.ConjugationLabel(row.Label), plainStem, plainEnding, politeStem, politeEnding);
-    }
+    public static ConjugationTableRow From(Deinflector.ConjugationDisplayRow row, string stem) =>
+        new(UiText.ConjugationLabel(row.Label), Cell(row.Plain, stem), Cell(row.Polite, stem));
 
-    private static (string Stem, string Ending) Split(string form, string stem) =>
-        form.StartsWith(stem, StringComparison.Ordinal) ? (stem, form[stem.Length..]) : ("", form);
+    private static ConjugationTableCell Cell(Deinflector.ConjugationCell? cell, string stem)
+    {
+        if (cell == null) return ConjugationTableCell.Missing;
+
+        var (head, ending) = cell.Display.StartsWith(stem, StringComparison.Ordinal)
+            ? (stem, cell.Display[stem.Length..])
+            : ("", cell.Display);
+        return new ConjugationTableCell(
+            head, ending,
+            cell.HasReading ? cell.Reading : "",
+            RomajiConverter.ToRomaji(cell.Reading));
+    }
 }

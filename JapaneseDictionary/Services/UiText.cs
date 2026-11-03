@@ -109,7 +109,11 @@ public static class UiText
         ["Passive"] = nameof(AppResources.Conj_Passive),
         ["Causative"] = nameof(AppResources.Conj_Causative),
         ["Volitional"] = nameof(AppResources.Conj_Volitional),
-        ["Conditional"] = nameof(AppResources.Conj_Conditional),
+        ["Negative te-form"] = nameof(AppResources.Conj_NegativeTe),
+        ["Causative passive"] = nameof(AppResources.Conj_CausativePassive),
+        ["Want to"] = nameof(AppResources.Conj_WantTo),
+        ["Conditional (ba)"] = nameof(AppResources.Conj_ConditionalBa),
+        ["Conditional (tara)"] = nameof(AppResources.Conj_ConditionalTara),
         ["Imperative"] = nameof(AppResources.Conj_Imperative),
     };
 }

@@ -361,7 +361,8 @@ public partial class WordDetailViewModel : ObservableObject
     {
         if (wordClass == WordClass.Other) return [];
 
-        var rows = Deinflector.GetConjugationTable(entry.PrimaryReading, wordClass);
+        var rows = Deinflector.GetConjugationTable(
+            entry.PrimaryText, entry.PrimaryReading, wordClass, Deinflector.VariantFor(entry, wordClass));
         var stem = ConjugationTableRow.CommonStem(rows);
         return rows.Select(row => ConjugationTableRow.From(row, stem)).ToList();
     }

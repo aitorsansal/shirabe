@@ -374,25 +374,33 @@
                                         <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="0.6" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" />
                                         <Grid ColumnDefinitions="64,*">
                                             <Label Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjPlain}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
-                                            <Label Grid.Column="1" FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" VerticalOptions="Center">
-                                                <Label.FormattedText>
-                                                    <FormattedString>
-                                                        <Span Text="{Binding PlainStem}" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
-                                                        <Span Text="{Binding PlainEnding}" />
-                                                    </FormattedString>
-                                                </Label.FormattedText>
-                                            </Label>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                                <Label FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="{Binding Plain.Stem}" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                                            <Span Text="{Binding Plain.Ending}" />
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                                <Label Text="{Binding Plain.Reading}" IsVisible="{Binding Plain.HasReading}" FontFamily="NotoSerifJPRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                                                <Label Text="{Binding Plain.Romaji}" IsVisible="{Binding ShowRomaji, Source={x:Static services:ReadingPreferences.Instance}, x:DataType=services:ReadingPreferences}" FontFamily="ArchivoRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                            </VerticalStackLayout>
                                         </Grid>
                                         <Grid ColumnDefinitions="64,*">
                                             <Label Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjPolite}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
-                                            <Label Grid.Column="1" FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" VerticalOptions="Center">
-                                                <Label.FormattedText>
-                                                    <FormattedString>
-                                                        <Span Text="{Binding PoliteStem}" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
-                                                        <Span Text="{Binding PoliteEnding}" />
-                                                    </FormattedString>
-                                                </Label.FormattedText>
-                                            </Label>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                                <Label FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="{Binding Polite.Stem}" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                                            <Span Text="{Binding Polite.Ending}" />
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                                <Label Text="{Binding Polite.Reading}" IsVisible="{Binding Polite.HasReading}" FontFamily="NotoSerifJPRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
+                                                <Label Text="{Binding Polite.Romaji}" IsVisible="{Binding ShowRomaji, Source={x:Static services:ReadingPreferences.Instance}, x:DataType=services:ReadingPreferences}" FontFamily="ArchivoRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                            </VerticalStackLayout>
                                         </Grid>
                                     </VerticalStackLayout>
                                     <BoxView Style="{StaticResource RowRuleStyle}" />

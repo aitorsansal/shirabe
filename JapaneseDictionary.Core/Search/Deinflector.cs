@@ -6,29 +6,35 @@ namespace JapaneseDictionary.Core.Search;
 /// Generates every conjugated surface form of a word from its dictionary
 /// reading and <see cref="WordClass"/>. Used two ways: (1) search matches a
 /// typed query against a candidate's generated forms to recognize conjugated
-/// input (e.g. たべた -&gt; 食べる's "past" form), and (2) the same table can
-/// drive a "conjugations" display for a word later, since both need the same
-/// dictionary-form -&gt; conjugated-form mapping.
+/// input (e.g. たべた -&gt; 食べる's "past" form), and (2) the same table drives
+/// the "conjugations" display for a word (see Deinflector.ConjugationTable.cs),
+/// since both need the same dictionary-form -&gt; conjugated-form mapping.
 /// </summary>
 public static partial class Deinflector
 {
     /// <summary>All conjugated forms of <paramref name="dictionaryReading"/>, keyed
     /// by the surface text, mapping to a short form name (e.g. "past", "negative").
     /// Empty for word classes that don't conjugate.</summary>
-    public static IReadOnlyDictionary<string, string> GenerateForms(string dictionaryReading, WordClass wordClass)
+    public static IReadOnlyDictionary<string, string> GenerateForms(string dictionaryReading, WordClass wordClass) =>
+        GenerateForms(dictionaryReading, wordClass, ConjugationVariant.None);
+
+    /// <summary>As <see cref="GenerateForms(string, WordClass)"/>, with the
+    /// exceptions of an irregular verb subclass applied. Only the conjugation
+    /// table uses a variant; search keeps the regular forms.</summary>
+    public static IReadOnlyDictionary<string, string> GenerateForms(string dictionaryReading, WordClass wordClass, ConjugationVariant variant)
     {
         var forms = new Dictionary<string, string>(StringComparer.Ordinal);
 
         switch (wordClass)
         {
             case WordClass.IchidanVerb:
-                AddIchidanForms(forms, dictionaryReading);
+                AddIchidanForms(forms, dictionaryReading, variant);
                 break;
             case WordClass.IAdjective:
                 AddIAdjectiveForms(forms, dictionaryReading);
                 break;
             case WordClass.SuruVerb:
-                AddSuruForms(forms, dictionaryReading);
+                AddSuruForms(forms, dictionaryReading, variant);
                 break;
             case WordClass.KuruVerb:
                 AddKuruForms(forms, dictionaryReading);
@@ -38,7 +44,7 @@ public static partial class Deinflector
                 break;
             default:
                 if (GodanRows.TryGetValue(wordClass, out var row))
-                    AddGodanForms(forms, dictionaryReading, row);
+                    AddGodanForms(forms, dictionaryReading, row, wordClass, variant);
                 break;
         }
 
@@ -49,6 +55,15 @@ public static partial class Deinflector
     /// conjugated form of <paramref name="dictionaryReading"/>, else null.</summary>
     public static string? TryGetFormName(string query, string dictionaryReading, WordClass wordClass) =>
         GenerateForms(dictionaryReading, wordClass).GetValueOrDefault(query);
+
+    /// <summary>Sets the surface text for a form name, dropping whatever text
+    /// the regular rule produced for it.</summary>
+    private static void Replace(Dictionary<string, string> forms, string name, string? text)
+    {
+        foreach (var key in forms.Where(kv => kv.Value == name).Select(kv => kv.Key).ToList())
+            forms.Remove(key);
+        if (text != null) forms[text] = name;
+    }
 
     private readonly record struct GodanRow(string A, string I, string U, string E, string O, string Te, string Ta);
 
@@ -68,19 +83,28 @@ public static partial class Deinflector
         [WordClass.GodanVerbIkuYuku] = new("か", "き", "く", "け", "こ", "って", "った"),
     };
 
-    private static void AddGodanForms(Dictionary<string, string> forms, string reading, GodanRow row)
+    private static void AddGodanForms(Dictionary<string, string> forms, string reading, GodanRow row, WordClass wordClass, ConjugationVariant variant)
     {
         var root = reading[..^1];
 
+        // くださる, いらっしゃる, なさる...: the polite stem is い (くださいます).
+        var polite = variant == ConjugationVariant.GodanAru && wordClass == WordClass.GodanVerbRu ? "い" : row.I;
+
         forms[root + row.A + "ない"] = "negative";
         forms[root + row.A + "なかった"] = "negative past";
-        forms[root + row.I + "ます"] = "polite";
-        forms[root + row.I + "ません"] = "polite negative";
-        forms[root + row.I + "ました"] = "polite past";
-        forms[root + row.I + "ませんでした"] = "polite negative past";
+        forms[root + row.A + "ないで"] = "negative te-form";
+        forms[root + polite + "ます"] = "polite";
+        forms[root + polite + "ません"] = "polite negative";
+        forms[root + polite + "ました"] = "polite past";
+        forms[root + polite + "ませんでした"] = "polite negative past";
+        forms[root + polite + "まして"] = "polite te-form";
+        forms[root + polite + "ましょう"] = "polite volitional";
+        forms[root + polite + "ましたら"] = "polite conditional (tara)";
         forms[root + row.I + "たい"] = "want to";
+        forms[root + row.I + "たいです"] = "polite want to";
         forms[root + row.E + "ば"] = "conditional (ba)";
         forms[root + row.E + "る"] = "potential";
+        forms[root + row.E + "ます"] = "polite potential";
         forms[root + row.O + "う"] = "volitional";
         forms[root + row.A + "れる"] = "passive";
         forms[root + row.A + "せる"] = "causative";
@@ -90,22 +114,57 @@ public static partial class Deinflector
         forms[root + row.Ta + "ら"] = "conditional (tara)";
         forms[root + row.Ta + "り"] = "representative (tari)";
         forms[root + row.E] = "imperative";
+
+        switch (variant)
+        {
+            case ConjugationVariant.GodanAruIrregular when wordClass == WordClass.GodanVerbRu:
+                // ある: the negative is just ない, and there is no potential.
+                var stem = reading.EndsWith("ある", StringComparison.Ordinal) ? reading[..^2] : root;
+                Replace(forms, "negative", stem + "ない");
+                Replace(forms, "negative past", stem + "なかった");
+                Replace(forms, "negative te-form", stem + "ないで");
+                Replace(forms, "potential", null);
+                Replace(forms, "polite potential", null);
+                break;
+            case ConjugationVariant.GodanAru when wordClass == WordClass.GodanVerbRu:
+                Replace(forms, "imperative", root + "い");
+                Replace(forms, "polite potential", null);
+                break;
+            case ConjugationVariant.GodanUArchaic when wordClass == WordClass.GodanVerbU:
+                // 問う, 請う, 乞う: te/ta keep the う (問うて, not 問って).
+                Replace(forms, "te-form", reading + "て");
+                Replace(forms, "past", reading + "た");
+                Replace(forms, "conditional (tara)", reading + "たら");
+                Replace(forms, "representative (tari)", reading + "たり");
+                break;
+        }
     }
 
-    private static void AddIchidanForms(Dictionary<string, string> forms, string reading)
+    private static void AddIchidanForms(Dictionary<string, string> forms, string reading, ConjugationVariant variant)
     {
+        // 信ずる (vz) conjugates like the ichidan 信じる everywhere but the plain
+        // non-past, which the table takes from the dictionary form itself.
+        if (variant == ConjugationVariant.Zuru && reading.EndsWith("ずる", StringComparison.Ordinal))
+            reading = reading[..^2] + "じる";
+
         var root = reading[..^1]; // drop the trailing る
 
         forms[root + "ない"] = "negative";
         forms[root + "なかった"] = "negative past";
+        forms[root + "ないで"] = "negative te-form";
         forms[root + "ます"] = "polite";
         forms[root + "ません"] = "polite negative";
         forms[root + "ました"] = "polite past";
         forms[root + "ませんでした"] = "polite negative past";
+        forms[root + "まして"] = "polite te-form";
+        forms[root + "ましょう"] = "polite volitional";
+        forms[root + "ましたら"] = "polite conditional (tara)";
         forms[root + "たい"] = "want to";
+        forms[root + "たいです"] = "polite want to";
         forms[root + "れば"] = "conditional (ba)";
         forms[root + "よう"] = "volitional";
         forms[root + "られる"] = "potential/passive";
+        forms[root + "られます"] = "polite potential";
         forms[root + "させる"] = "causative";
         forms[root + "させられる"] = "causative passive";
         forms[root + "て"] = "te-form";
@@ -113,6 +172,9 @@ public static partial class Deinflector
         forms[root + "たら"] = "conditional (tara)";
         forms[root + "たり"] = "representative (tari)";
         forms[root + "ろ"] = "imperative";
+
+        if (variant == ConjugationVariant.IchidanKureru)
+            Replace(forms, "imperative", root); // くれ, not くれろ
     }
 
     private static void AddIAdjectiveForms(Dictionary<string, string> forms, string reading)
@@ -128,12 +190,14 @@ public static partial class Deinflector
         forms[root + "くないです"] = "polite negative";
         forms[root + "くなかったです"] = "polite negative past";
         forms[root + "くて"] = "te-form";
+        forms[root + "くなくて"] = "negative te-form";
         forms[root + "く"] = "adverbial";
         forms[root + "ければ"] = "conditional (ba)";
+        forms[root + "かったら"] = "conditional (tara)";
         forms[root + "くなければ"] = "negative conditional";
     }
 
-    private static void AddSuruForms(Dictionary<string, string> forms, string reading)
+    private static void AddSuruForms(Dictionary<string, string> forms, string reading, ConjugationVariant variant)
     {
         // JMdict tags nouns that take する (勉強, べんきょう) with the same class as
         // する verbs themselves (愛する), so the reading may or may not include it.
@@ -141,14 +205,20 @@ public static partial class Deinflector
 
         forms[root + "しない"] = "negative";
         forms[root + "しなかった"] = "negative past";
+        forms[root + "しないで"] = "negative te-form";
         forms[root + "します"] = "polite";
         forms[root + "しません"] = "polite negative";
         forms[root + "しました"] = "polite past";
         forms[root + "しませんでした"] = "polite negative past";
+        forms[root + "しまして"] = "polite te-form";
+        forms[root + "しましょう"] = "polite volitional";
+        forms[root + "しましたら"] = "polite conditional (tara)";
         forms[root + "したい"] = "want to";
+        forms[root + "したいです"] = "polite want to";
         forms[root + "すれば"] = "conditional (ba)";
         forms[root + "しよう"] = "volitional";
         forms[root + "できる"] = "potential";
+        forms[root + "できます"] = "polite potential";
         forms[root + "される"] = "passive";
         forms[root + "させる"] = "causative";
         forms[root + "させられる"] = "causative passive";
@@ -156,6 +226,18 @@ public static partial class Deinflector
         forms[root + "した"] = "past";
         forms[root + "したら"] = "conditional (tara)";
         forms[root + "しろ"] = "imperative";
+
+        if (variant == ConjugationVariant.SuruS)
+        {
+            // 愛する, 察する: the old sa-row verb (愛さない, 愛せる, 愛そう, 愛せ).
+            Replace(forms, "negative", root + "さない");
+            Replace(forms, "negative past", root + "さなかった");
+            Replace(forms, "negative te-form", root + "さないで");
+            Replace(forms, "potential", root + "せる");
+            Replace(forms, "polite potential", root + "せます");
+            Replace(forms, "volitional", root + "そう");
+            Replace(forms, "imperative", root + "せ");
+        }
     }
 
     /// <summary>来る's reading itself changes across forms (くる/こない/きた/...), so
@@ -174,15 +256,22 @@ public static partial class Deinflector
     [
         ("こない", "negative"),
         ("こなかった", "negative past"),
+        ("こないで", "negative te-form"),
         ("きます", "polite"),
         ("きません", "polite negative"),
         ("きました", "polite past"),
         ("きませんでした", "polite negative past"),
+        ("きまして", "polite te-form"),
+        ("きましょう", "polite volitional"),
+        ("きましたら", "polite conditional (tara)"),
         ("きたい", "want to"),
+        ("きたいです", "polite want to"),
         ("くれば", "conditional (ba)"),
         ("こよう", "volitional"),
         ("こられる", "potential/passive"),
+        ("こられます", "polite potential"),
         ("こさせる", "causative"),
+        ("こさせられる", "causative passive"),
         ("きて", "te-form"),
         ("きた", "past"),
         ("きたら", "conditional (tara)"),
@@ -202,66 +291,6 @@ public static partial class Deinflector
         forms[stem + "で"] = "te-form";
         forms[stem + "な"] = "attributive";
         forms[stem + "なら"] = "conditional (ba)";
+        forms[stem + "だったら"] = "conditional (tara)";
     }
-
-    /// <summary>One row of a "conjugations" display table.</summary>
-    public sealed record ConjugationRow(string Label, string Plain, string Polite);
-
-    private static readonly (string Label, string PlainForm, string? PoliteForm)[] TableSpec =
-    [
-        ("Non-past", "__dictionary__", "polite"),
-        ("Past", "past", "polite past"),
-        ("Negative", "negative", "polite negative"),
-        ("Past neg.", "negative past", "polite negative past"),
-        ("Te-form", "te-form", null),
-        ("Potential", "potential", null),
-        ("Passive", "passive", null),
-        ("Causative", "causative", null),
-        ("Volitional", "volitional", null),
-        ("Conditional", "conditional (ba)", null),
-        ("Imperative", "imperative", null),
-    ];
-
-    /// <summary>Builds a Form/Plain/Polite table for display — the same
-    /// generated forms as <see cref="GenerateForms"/>, organized by row
-    /// instead of keyed by surface text. Rows the word class doesn't have
-    /// (e.g. no imperative for i-adjectives) are omitted.</summary>
-    public static IReadOnlyList<ConjugationRow> GetConjugationTable(string dictionaryReading, WordClass wordClass)
-    {
-        var forms = GenerateForms(dictionaryReading, wordClass);
-        if (forms.Count == 0) return [];
-
-        var byName = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (var (text, name) in forms)
-            byName.TryAdd(name, text);
-
-        // Ichidan and 来る don't distinguish potential from passive (-られる) —
-        // GenerateForms only emits the combined "potential/passive" name for
-        // them; alias it onto both table rows.
-        if (byName.TryGetValue("potential/passive", out var potentialPassive))
-        {
-            byName.TryAdd("potential", potentialPassive);
-            byName.TryAdd("passive", potentialPassive);
-        }
-
-        var rows = new List<ConjugationRow>();
-        foreach (var (label, plainKey, politeKey) in TableSpec)
-        {
-            var plain = plainKey == "__dictionary__" ? DictionaryFormForTable(dictionaryReading, wordClass, byName) : byName.GetValueOrDefault(plainKey, "—");
-            var polite = politeKey == null ? "—" : byName.GetValueOrDefault(politeKey, "—");
-            if (plain == "—" && polite == "—") continue;
-            rows.Add(new ConjugationRow(label, plain, polite));
-        }
-
-        return rows;
-    }
-
-    // A する-noun's reading is just the noun (べんきょう), and a な-adjective's plain
-    // predicate needs だ, so neither reading alone is the non-past form.
-    private static string DictionaryFormForTable(string reading, WordClass wordClass, Dictionary<string, string> byName) => wordClass switch
-    {
-        WordClass.SuruVerb when !reading.EndsWith("する", StringComparison.Ordinal) => reading + "する",
-        WordClass.NaAdjective => byName.GetValueOrDefault("plain", reading),
-        _ => reading,
-    };
 }

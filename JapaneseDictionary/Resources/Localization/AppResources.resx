@@ -81,7 +81,11 @@
   <data name="Conj_Passive" xml:space="preserve"><value>Passive</value></data>
   <data name="Conj_Causative" xml:space="preserve"><value>Causative</value></data>
   <data name="Conj_Volitional" xml:space="preserve"><value>Volitional</value></data>
-  <data name="Conj_Conditional" xml:space="preserve"><value>Conditional</value></data>
+  <data name="Conj_NegativeTe" xml:space="preserve"><value>Negative te-form</value></data>
+  <data name="Conj_CausativePassive" xml:space="preserve"><value>Causative passive</value></data>
+  <data name="Conj_WantTo" xml:space="preserve"><value>Want to</value></data>
+  <data name="Conj_ConditionalBa" xml:space="preserve"><value>Conditional (ba)</value></data>
+  <data name="Conj_ConditionalTara" xml:space="preserve"><value>Conditional (tara)</value></data>
   <data name="Conj_Imperative" xml:space="preserve"><value>Imperative</value></data>
   <data name="Form_Negative" xml:space="preserve"><value>negative</value></data>
   <data name="Form_NegativePast" xml:space="preserve"><value>negative past</value></data>
