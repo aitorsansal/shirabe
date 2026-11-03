@@ -47,11 +47,15 @@ public sealed partial class KanjiWordsViewModel : ObservableObject
         await data.EnsureInitializedAsync();
 
         var query = Kanji;
-        var rows = await Task.Run(() => data.SearchService.Search(query, ResultsLimit)
-            .Select(match => data.DictionaryRepository.GetEntry(match.EntryId))
-            .OfType<Core.Models.DictionaryEntry>()
-            .Select(entry => SearchResultRow.FromEntry(entry))
-            .ToList());
+        var rows = await Task.Run(() =>
+        {
+            var entries = data.SearchService.Search(query, ResultsLimit)
+                .Select(match => data.DictionaryRepository.GetEntry(match.EntryId))
+                .OfType<Core.Models.DictionaryEntry>()
+                .ToList();
+            var levels = data.DictionaryRepository.GetJlptLevels(entries.Select(e => e.Id).ToList());
+            return entries.Select(entry => SearchResultRow.FromEntry(entry, levels.TryGetValue(entry.Id, out var level) ? level : null)).ToList();
+        });
 
         foreach (var row in rows) Rows.Add(row);
         CountText = UiText.EntryCount(Rows.Count);

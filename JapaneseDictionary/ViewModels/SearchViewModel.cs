@@ -178,13 +178,14 @@ public partial class SearchViewModel : ObservableObject
         var hasJapanese = matches.Any(m => m.Kind != SearchMatchKind.Gloss);
         var isMixed = hasEnglish && hasJapanese;
 
+        var levels = data.DictionaryRepository.GetJlptLevels(matches.Select(m => m.EntryId).Distinct().ToList());
         var rows = new List<SearchResultRow>();
         foreach (var match in matches)
         {
             var entry = data.DictionaryRepository.GetEntry(match.EntryId);
             if (entry == null) continue;
 
-            rows.Add(SearchResultRow.FromEntry(entry, MatchNote(match, query, isMixed)));
+            rows.Add(SearchResultRow.FromEntry(entry, levels.TryGetValue(entry.Id, out var level) ? level : null, MatchNote(match, query, isMixed)));
         }
 
         var label = isMixed ? AppResources.Search_LabelMixed

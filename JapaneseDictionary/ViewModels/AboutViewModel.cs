@@ -68,6 +68,21 @@ public sealed partial class AboutViewModel : ObservableObject
                 new("CC BY 2.0 FR", "https://creativecommons.org/licenses/by/2.0/fr/"),
             ]),
 
+        new(AppResources.About_PitchTitle,
+            AppResources.About_PitchBody,
+            [
+                new("Kanjium", "https://github.com/mifunetoshiro/kanjium"),
+                new("CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0/"),
+            ]),
+
+        new(AppResources.About_JlptTitle,
+            AppResources.About_JlptBody,
+            [
+                new("Jonathan Waller's JLPT resources", "https://www.tanos.co.uk/jlpt/"),
+                new("yomitan-jlpt-vocab", "https://github.com/stephenmk/yomitan-jlpt-vocab"),
+                new("JLPT_Vocabulary", "https://github.com/Bluskyo/JLPT_Vocabulary"),
+            ]),
+
         new(AppResources.About_DatabaseTitle,
             AppResources.About_DatabaseBody,
             [

@@ -11,6 +11,11 @@ public sealed class KanjiRow
     public int StrokeCount { get; set; }
     public int? Grade { get; set; }
     public int? JlptLevel { get; set; }
+
+    /// <summary>Unofficial JLPT level on the current N5 (easiest) to N1 scale, from
+    /// Jonathan Waller's lists; null if the kanji is on none. Unrelated to the old
+    /// four-level <see cref="JlptLevel"/>, which stays as KANJIDIC2 ships it.</summary>
+    public int? JlptN { get; set; }
     public int? FrequencyRank { get; set; }
     public int RadicalNumber { get; set; }
     public string? SkipCode { get; set; }

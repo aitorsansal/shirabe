@@ -60,7 +60,10 @@
             <VerticalStackLayout Spacing="0">
 
                 <VerticalStackLayout Padding="16,18,16,14" Spacing="4">
-                    <Label Text="{Binding EntryReading}" controls:LongPress.Command="{Binding CopyTextCommand}" controls:LongPress.CommandParameter="{Binding EntryReading}" FontFamily="ArchivoRegular" FontSize="14" CharacterSpacing="0.4" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                    <Label IsVisible="{Binding HasNoPitch}" Text="{Binding EntryReading}" controls:LongPress.Command="{Binding CopyTextCommand}" controls:LongPress.CommandParameter="{Binding EntryReading}" FontFamily="ArchivoRegular" FontSize="14" CharacterSpacing="0.4" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                    <controls:PitchReadingView IsVisible="{Binding HasPitch}" Reading="{Binding EntryReading}" Accents="{Binding PitchAccents}" FontSize="14" HorizontalOptions="Fill"
+                                               controls:LongPress.Command="{Binding CopyTextCommand}" controls:LongPress.CommandParameter="{Binding EntryReading}"
+                                               PrimaryColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
                     <!--  Noto Serif JP's large baked-in ascent shows up as visible "phantom"
                           space above the glyph whenever it follows another element — pulled
                           up to compensate rather than relying on Spacing/Margin alone.  -->
@@ -348,6 +351,12 @@
                                                             Background="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueFillConverter}, ConverterParameter=2}">
                                                         <Label Text="{Binding FreqLabel}" FontFamily="ArchivoSemiBold" FontSize="10" TextTransform="Uppercase"
                                                                TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=2}" />
+                                                    </Border>
+                                                    <Border IsVisible="{Binding HasJlpt}" StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0"
+                                                            Stroke="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueBorderConverter}, ConverterParameter=4}"
+                                                            Background="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueFillConverter}, ConverterParameter=4}">
+                                                        <Label Text="{Binding JlptLabel}" FontFamily="ArchivoSemiBold" FontSize="10" TextTransform="Uppercase"
+                                                               TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=4}" />
                                                     </Border>
                                                 </FlexLayout>
                                                 <Label Text="{x:Static res:AppResources.Word_KanjiTapHint}" FontFamily="ArchivoRegular" FontSize="11" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" />

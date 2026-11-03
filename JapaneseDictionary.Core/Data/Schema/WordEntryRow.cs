@@ -27,6 +27,11 @@ public sealed class WordEntryRow
     /// Used by the deinflection matcher to know which ending rules to try
     /// against a candidate headword.</summary>
     public string WordClassesJoined { get; set; } = "";
+
+    /// <summary>Unofficial JLPT level of the word, 5 (N5, easiest) to 1 (N1), from
+    /// Jonathan Waller's lists; null if the word is on none. A word listed at several
+    /// levels carries the easiest.</summary>
+    public int? JlptLevel { get; set; }
 }
 
 /// <summary>One kanji spelling of an entry, one row per form. Indexed on

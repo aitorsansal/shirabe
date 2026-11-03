@@ -46,6 +46,11 @@ public partial class KanjiCard : ObservableObject
     public required string KunReadings { get; init; }
     public required string GradeLabel { get; init; }
     public required string FreqLabel { get; init; }
+
+    /// <summary>"N5" … "N1", or empty for a kanji on no JLPT list.</summary>
+    public string JlptLabel { get; init; } = "";
+
+    public bool HasJlpt => JlptLabel.Length > 0;
     public required IReadOnlyList<string> StrokePaths { get; init; }
 
     [ObservableProperty]

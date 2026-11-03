@@ -35,9 +35,22 @@ var sentenceTranslations = TatoebaParser.ParseTranslations("RawData/links.csv", 
 foreach (var lang in TranslationLanguages.All)
     Log($"  {sentenceTranslations.Count(t => t.Lang == lang.Code)} sentences with a {lang.Code} translation");
 
+Log("Matching Kanjium pitch accents to entries...");
+var pitch = PitchAccentParser.Parse("RawData/accents.txt", entries);
+Log($"  {pitch.ByEntry.Count} entries with pitch accent ({pitch.ByEntry.Sum(kv => kv.Value.Count)} readings); {pitch.Rows} Kanjium rows, {pitch.MalformedRows} malformed, {pitch.UnmatchedRows} unmatched");
+Log($"  {pitch.KanaRowMatchesOnKanjiEntries} kana-only row matches landed on entries that have kanji spellings");
+
+Log("Reading JLPT levels...");
+var (wordJlpt, wordJlptUnmatched) = JlptParser.ParseWords("RawData/jlpt", entries.Select(e => e.Id).ToHashSet());
+var kanjiJlpt = JlptParser.ParseKanji("RawData/JLPT_kanji_ALL.json");
+var knownKanji = kanji.Select(k => k.Character).ToHashSet();
+for (var level = 5; level >= 1; level--)
+    Log($"  N{level}: {wordJlpt.Count(kv => kv.Value == level)} words ({wordJlptUnmatched[level]} list rows not in JMdict), {kanjiJlpt.Count(kv => kv.Value == level && knownKanji.Contains(kv.Key))} kanji");
+Log($"  {kanjiJlpt.Count(kv => !knownKanji.Contains(kv.Key))} listed kanji not in KANJIDIC2");
+
 const string outputPath = "../JapaneseDictionary/Resources/Raw/dictionary.db3";
 Log($"Writing {outputPath}...");
-SqliteWriter.Write(outputPath, entries, kanji, kanjiStrokes, sentences, translatedSenses, sentenceTranslations);
+SqliteWriter.Write(outputPath, entries, kanji, kanjiStrokes, sentences, translatedSenses, sentenceTranslations, pitch.ByEntry, wordJlpt, kanjiJlpt);
 
 // The app recopies its installed dictionary whenever this value changes (see
 // DatabaseInitializer), so every regenerated database must get a new one.

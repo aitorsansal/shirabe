@@ -45,6 +45,15 @@ public partial class WordDetailViewModel : ObservableObject
 
     public string EntryRomaji => RomajiConverter.ToRomaji(EntryReading);
 
+    /// <summary>Downstep positions of the headword's reading (first is the main one);
+    /// empty when Kanjium has none, in which case the plain reading label shows.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPitch), nameof(HasNoPitch))]
+    private IReadOnlyList<int> pitchAccents = [];
+
+    public bool HasPitch => PitchAccents.Count > 0;
+    public bool HasNoPitch => !HasPitch;
+
     [ObservableProperty]
     private DetailTab selectedTab = DetailTab.Meaning;
 
@@ -80,6 +89,7 @@ public partial class WordDetailViewModel : ObservableObject
 
     private sealed record MeaningContent(
         DictionaryEntry Entry,
+        IReadOnlyList<int> PitchAccents,
         List<EntryBadge> Badges,
         List<SenseGroup> SenseGroups,
         List<TranslatedBlock> TranslatedBlocks,
@@ -169,6 +179,7 @@ public partial class WordDetailViewModel : ObservableObject
         loadedEntry = content.Entry;
         EntryWord = content.Entry.PrimaryText;
         EntryReading = content.Entry.PrimaryReading;
+        PitchAccents = content.PitchAccents;
         IsFavorite = data.UserDataRepository.IsFavorite(entryId);
         CanSpeak = await tts.IsAvailableAsync();
         Fill(Badges, content.Badges);
@@ -224,9 +235,13 @@ public partial class WordDetailViewModel : ObservableObject
         var primaryClass = wordClasses.FirstOrDefault();
         var conjugationTable = BuildConjugationTable(entry, primaryClass);
 
+        var pitch = data.DictionaryRepository.GetPitchAccents(entryId)
+            .FirstOrDefault(p => p.Reading == entry.PrimaryReading)?.Accents ?? [];
+
         return new MeaningContent(
             entry,
-            BuildBadges(entry, wordClasses),
+            pitch,
+            BuildBadges(entry, wordClasses, data.DictionaryRepository.GetJlptLevel(entryId)),
             BuildSenseGroups(entry),
             BuildTranslatedBlocks(entry),
             BuildOtherForms(entry),
@@ -235,11 +250,13 @@ public partial class WordDetailViewModel : ObservableObject
             conjugationTable.Count > 0 ? UiText.Format(AppResources.Word_ConjNote, UiText.WordClassName(primaryClass)) : "");
     }
 
-    private static List<EntryBadge> BuildBadges(DictionaryEntry entry, IReadOnlyList<WordClass> wordClasses)
+    private static List<EntryBadge> BuildBadges(DictionaryEntry entry, IReadOnlyList<WordClass> wordClasses, int? jlptLevel)
     {
         var badges = new List<EntryBadge>();
         if (entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon))
             badges.Add(new EntryBadge(AppResources.Common_CommonBadge, IsCommon: true, HueIndex: 0));
+        if (jlptLevel is { } level)
+            badges.Add(new EntryBadge(UiText.Format(AppResources.Common_JlptBadge, level), IsCommon: false, HueIndex: 4));
 
         var hue = 0;
         foreach (var wc in wordClasses.Distinct())
@@ -383,6 +400,7 @@ public partial class WordDetailViewModel : ObservableObject
                 KunReadings = info.KunReadings.Count > 0 ? string.Join("、", info.KunReadings) : "—",
                 GradeLabel = info.Grade is { } g ? UiText.Format(AppResources.Word_Grade, g) : AppResources.Word_Ungraded,
                 FreqLabel = info.FrequencyRank is { } f ? UiText.Format(AppResources.Word_Freq, f) : AppResources.Word_FreqNone,
+                JlptLabel = info.JlptN is { } n ? UiText.Format(AppResources.Common_JlptBadge, n) : "",
                 StrokePaths = strokes,
             });
         }

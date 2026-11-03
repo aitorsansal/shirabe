@@ -1,4 +1,6 @@
 using JapaneseDictionary.Core.Models;
+using JapaneseDictionary.Resources.Localization;
+using JapaneseDictionary.Services;
 
 namespace JapaneseDictionary.ViewModels;
 
@@ -11,11 +13,16 @@ public sealed record SearchResultRow(
     bool IsCommon,
     IReadOnlyList<TagChip> Tags,
     string Gloss,
-    string? ViaNote)
+    string? ViaNote,
+    int? JlptLevel = null)
 {
     public string Romaji => Core.Search.RomajiConverter.ToRomaji(Reading);
 
-    public static SearchResultRow FromEntry(DictionaryEntry entry, string? viaNote = null)
+    public bool HasJlpt => JlptLevel != null;
+
+    public string JlptLabel => JlptLevel is { } level ? UiText.Format(AppResources.Common_JlptBadge, level) : "";
+
+    public static SearchResultRow FromEntry(DictionaryEntry entry, int? jlptLevel = null, string? viaNote = null)
     {
         var firstSense = entry.Senses.FirstOrDefault();
         var tags = firstSense?.PartOfSpeechTags.Take(2)
@@ -26,7 +33,7 @@ public sealed record SearchResultRow(
         return new SearchResultRow(
             entry.Id, entry.PrimaryReading, entry.PrimaryText,
             entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon),
-            tags, gloss, viaNote);
+            tags, gloss, viaNote, jlptLevel);
     }
 }
 

@@ -7,6 +7,7 @@ Shirabe (調べ, "looking something up") is an offline Japanese dictionary (Engl
 - **Search** by Japanese (kanji or kana), romaji or English. Romaji is converted to kana automatically, and conjugated forms are resolved back to their dictionary form (for example, a past-tense verb finds its base entry).
 - **Handwriting input**: draw a character and pick it from the recognition candidates.
 - **Word detail**: senses and word classes (English, plus Spanish, French and German meanings you can switch on in Settings), example sentences (with Spanish, French and German translations where Tatoeba has them), a per-kanji breakdown with readings, meanings and stroke counts, and a conjugation table.
+- **Pitch accent** drawn over the word's reading on the detail page, and **JLPT levels** (N5 to N1, unofficial estimates) on words and kanji.
 - **Romaji word readings** in results, word details and system-wide lookup, enabled by default and switchable in Settings. Converted offline from dictionary kana readings, with kana-spelled long vowels (for example, `gakkou` and `koohii`). Example sentence readings are not included.
 - **System-wide lookup**: select text in any Android app and choose "Look Up" in the selection toolbar to see a quick result popup without leaving the app.
 - **Light and dark themes**, switchable in the app.
@@ -56,6 +57,9 @@ The downloaded `dictionary.db3` is ready to use. You only need to rebuild it aft
 | `kanjidic2.xml` | [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) |
 | `kanjivg.xml` | [KanjiVG](https://kanjivg.tagaini.net/) (combined XML) |
 | `jpn_indices.csv`, `sentences.csv`, `links.csv` | [Tatoeba downloads](https://tatoeba.org/en/downloads) |
+| `accents.txt` | [Kanjium](https://github.com/mifunetoshiro/kanjium) pitch accents (`data/source_files/raw/accents.txt`) |
+| `jlpt/n1.csv` ... `jlpt/n5.csv` | [yomitan-jlpt-vocab](https://github.com/stephenmk/yomitan-jlpt-vocab) word lists (`original_data/`) |
+| `JLPT_kanji_ALL.json` | [JLPT_Vocabulary](https://github.com/Bluskyo/JLPT_Vocabulary) kanji levels (release asset) |
 
 Then run `dotnet run` from `JapaneseDictionary.DataBuilder/`. It writes `JapaneseDictionary/Resources/Raw/dictionary.db3`.
 
@@ -71,6 +75,9 @@ The dictionary data is not mine. It comes from the projects below, which are use
 - **KanjiVG** (stroke order data) is copyright Ulrich Apel and released under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). Project page: <https://kanjivg.tagaini.net/>.
 - **Example sentences** come from [Tatoeba](https://tatoeba.org/) and are licensed under [CC BY 2.0 FR](https://creativecommons.org/licenses/by/2.0/fr/). Sentences are credited to their contributors on Tatoeba, and each sentence in the app shows its Tatoeba id.
 
+- **Pitch accent** data comes from [Kanjium](https://github.com/mifunetoshiro/kanjium) by Uros O., licensed under CC BY-SA 4.0.
+- **JLPT levels** come from Jonathan Waller's [JLPT resources](https://www.tanos.co.uk/jlpt/) (tanos.co.uk, Creative Commons Attribution), via [stephenmk/yomitan-jlpt-vocab](https://github.com/stephenmk/yomitan-jlpt-vocab) (CC BY-SA 4.0) and [Bluskyo/JLPT_Vocabulary](https://github.com/Bluskyo/JLPT_Vocabulary) (MIT). They are unofficial community estimates: the JLPT has published no official lists since 2010.
+
 **Handwriting recognition**
 
 - Character recognition uses the model from [DaKanji Single Kanji Recognition](https://github.com/CaptainDario/DaKanji-Single-Kanji-Recognition) (MIT, copyright CaptainDario). Character recognition powered by machine learning from Dariyooo (DaAppLab). The model was trained on the [ETL Character Database](https://etlcdb.db.aist.go.jp/) (AIST) and the KanjiVG dataset.
@@ -85,7 +92,7 @@ The dictionary data is not mine. It comes from the projects below, which are use
 ## License
 
 - **Source code**: [MIT](LICENSE). You are free to fork, modify and redistribute it.
-- **Dictionary database** (`dictionary.db3`): [CC BY-SA 4.0](DATA-LICENSE.md), because it is derived from JMdict, KANJIDIC2, KanjiVG and Tatoeba. Redistributions must credit those sources and keep the same license.
+- **Dictionary database** (`dictionary.db3`): [CC BY-SA 4.0](DATA-LICENSE.md), because it is derived from JMdict, KANJIDIC2, KanjiVG, Tatoeba, Kanjium and the JLPT lists above. Redistributions must credit those sources and keep the same license.
 - **Third-party components** (handwriting model, fonts, libraries): see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 - The application name and icon are not covered by the code license. If you publish a fork, please use your own name and icon.
 

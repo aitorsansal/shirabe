@@ -100,12 +100,14 @@ public sealed partial class ListDetailViewModel : ObservableObject
         var loaded = await Task.Run(() =>
         {
             var ids = listId == HistoryListId ? repository.GetRecentHistory(HistoryLimit) : repository.GetListEntries(listId);
-            return ids.Select(data.DictionaryRepository.GetEntry).OfType<DictionaryEntry>().ToList();
+            var found = ids.Select(data.DictionaryRepository.GetEntry).OfType<DictionaryEntry>().ToList();
+            return (Entries: found, Levels: data.DictionaryRepository.GetJlptLevels(found.Select(e => e.Id).ToList()));
         });
 
-        entries = loaded;
+        entries = loaded.Entries;
         Rows.Clear();
-        foreach (var entry in loaded) Rows.Add(SearchResultRow.FromEntry(entry));
+        foreach (var entry in loaded.Entries)
+            Rows.Add(SearchResultRow.FromEntry(entry, loaded.Levels.TryGetValue(entry.Id, out var level) ? level : null));
         UpdateCounts();
         IsLoading = false;
     }

@@ -20,6 +20,12 @@
                             Background="{AppThemeBinding Light={StaticResource CommonBadgeFillLight}, Dark={StaticResource CommonBadgeFillDark}}">
                         <Label Text="{x:Static res:AppResources.Common_CommonBadge}" FontFamily="ArchivoExtraBold" FontSize="9" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     </Border>
+                    <Border IsVisible="{Binding HasJlpt}" StrokeThickness="1" Padding="5,3" VerticalOptions="Center"
+                            Stroke="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueBorderConverter}, ConverterParameter=4}"
+                            Background="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueFillConverter}, ConverterParameter=4}">
+                        <Label Text="{Binding JlptLabel}" FontFamily="ArchivoExtraBold" FontSize="9" CharacterSpacing="1"
+                               TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=4}" />
+                    </Border>
                 </HorizontalStackLayout>
                 <controls:TagChipsView x:Name="TagChips" Tags="{Binding Tags}" />
                 <Label Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" LineBreakMode="WordWrap" />

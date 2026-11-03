@@ -21,7 +21,10 @@ public static class SqliteWriter
         IReadOnlyDictionary<string, List<string>> kanjiStrokes,
         IReadOnlyList<ExampleSentence> sentences,
         IReadOnlyDictionary<int, List<TranslatedSense>> translatedSenses,
-        IReadOnlyList<SentenceTranslation> sentenceTranslations)
+        IReadOnlyList<SentenceTranslation> sentenceTranslations,
+        IReadOnlyDictionary<int, List<PitchAccent>> pitchAccents,
+        IReadOnlyDictionary<int, int> wordJlpt,
+        IReadOnlyDictionary<string, int> kanjiJlpt)
     {
         if (File.Exists(outputPath)) File.Delete(outputPath);
 
@@ -38,12 +41,13 @@ public static class SqliteWriter
         db.CreateTable<ExampleSentenceLinkRow>();
         db.CreateTable<TranslatedSenseRow>();
         db.CreateTable<SentenceTranslationRow>();
+        db.CreateTable<PitchAccentRow>();
 
         var nextSenseId = 1;
         db.RunInTransaction(() =>
         {
             foreach (var entry in entries)
-                WriteEntry(db, entry, ref nextSenseId);
+                WriteEntry(db, entry, wordJlpt, ref nextSenseId);
         });
 
         db.RunInTransaction(() =>
@@ -56,6 +60,7 @@ public static class SqliteWriter
                     StrokeCount = k.StrokeCount,
                     Grade = k.Grade,
                     JlptLevel = k.JlptLevel,
+                    JlptN = kanjiJlpt.TryGetValue(k.Character, out var jlptN) ? jlptN : null,
                     FrequencyRank = k.FrequencyRank,
                     RadicalNumber = k.RadicalNumber,
                     SkipCode = k.SkipCode,
@@ -123,9 +128,25 @@ public static class SqliteWriter
             foreach (var t in sentenceTranslations)
                 db.Insert(new SentenceTranslationRow { SentenceId = t.SentenceId, Lang = t.Lang, Text = t.Text });
         });
+
+        db.RunInTransaction(() =>
+        {
+            foreach (var (entryId, accents) in pitchAccents.OrderBy(kv => kv.Key))
+            {
+                foreach (var accent in accents)
+                {
+                    db.Insert(new PitchAccentRow
+                    {
+                        EntryId = entryId,
+                        Reading = accent.Reading,
+                        AccentsJoined = string.Join(',', accent.Accents),
+                    });
+                }
+            }
+        });
     }
 
-    private static void WriteEntry(SQLiteConnection db, DictionaryEntry entry, ref int nextSenseId)
+    private static void WriteEntry(SQLiteConnection db, DictionaryEntry entry, IReadOnlyDictionary<int, int> wordJlpt, ref int nextSenseId)
     {
         var wordClasses = entry.Senses.SelectMany(s => s.WordClasses).Distinct().ToList();
 
@@ -137,6 +158,7 @@ public static class SqliteWriter
             IsCommon = entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon),
             Priority = entry.KanjiForms.Select(k => k.Priority).Concat(entry.Readings.Select(r => r.Priority)).Min(),
             WordClassesJoined = string.Join(';', wordClasses),
+            JlptLevel = wordJlpt.TryGetValue(entry.Id, out var jlpt) ? jlpt : null,
         });
 
         foreach (var k in entry.KanjiForms)

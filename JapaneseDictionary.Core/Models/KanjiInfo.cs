@@ -23,4 +23,7 @@ public sealed record KanjiInfo(
     string? SkipCode,
     IReadOnlyList<string> OnReadings,
     IReadOnlyList<string> KunReadings,
-    IReadOnlyList<string> Meanings);
+    IReadOnlyList<string> Meanings,
+    /// <summary>Unofficial JLPT level on the N5 (easiest) to N1 scale, or null if the
+    /// kanji is on no list. Separate from the old-scale <see cref="JlptLevel"/>.</summary>
+    int? JlptN = null);

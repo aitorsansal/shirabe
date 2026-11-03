@@ -9,6 +9,7 @@
   <data name="Common_Done" xml:space="preserve"><value>DONE</value></data>
   <data name="Common_Create" xml:space="preserve"><value>Create</value></data>
   <data name="Common_CommonBadge" xml:space="preserve"><value>COMMON</value></data>
+  <data name="Common_JlptBadge" xml:space="preserve"><value>N{0}</value></data>
   <data name="Common_WordCountOne" xml:space="preserve"><value>1 word</value></data>
   <data name="Common_WordCountMany" xml:space="preserve"><value>{0} words</value></data>
   <data name="Common_Lists" xml:space="preserve"><value>Lists</value></data>
@@ -228,6 +229,10 @@
   <data name="About_StrokeBody" xml:space="preserve"><value>Stroke order data comes from KanjiVG, copyright Ulrich Apel, licensed under CC BY-SA 3.0.</value></data>
   <data name="About_SentencesTitle" xml:space="preserve"><value>EXAMPLE SENTENCES</value></data>
   <data name="About_SentencesBody" xml:space="preserve"><value>Example sentences and their translations (English, Spanish, French and German) come from Tatoeba and its contributors, licensed under CC BY 2.0 FR.</value></data>
+  <data name="About_PitchTitle" xml:space="preserve"><value>PITCH ACCENT</value></data>
+  <data name="About_PitchBody" xml:space="preserve"><value>Pitch accent data comes from Kanjium by Uros O., licensed under CC BY-SA 4.0.</value></data>
+  <data name="About_JlptTitle" xml:space="preserve"><value>JLPT LEVELS</value></data>
+  <data name="About_JlptBody" xml:space="preserve"><value>JLPT levels come from Jonathan Waller's JLPT resources (tanos.co.uk, Creative Commons Attribution), via stephenmk/yomitan-jlpt-vocab (CC BY-SA 4.0) and Bluskyo/JLPT_Vocabulary. They are unofficial community estimates: the JLPT has published no official vocabulary or kanji lists since 2010.</value></data>
   <data name="About_DatabaseTitle" xml:space="preserve"><value>DATABASE LICENSE</value></data>
   <data name="About_DatabaseBody" xml:space="preserve"><value>The bundled dictionary database is derived from the sources above and is distributed under CC BY-SA 4.0.</value></data>
   <data name="About_DataLicenseDetails" xml:space="preserve"><value>Data license details</value></data>

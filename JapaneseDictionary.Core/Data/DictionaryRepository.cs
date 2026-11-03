@@ -203,8 +203,29 @@ public sealed class DictionaryRepository : IDisposable
         if (row == null) return null;
         return new KanjiInfo(
             row.Character, row.StrokeCount, row.Grade, row.JlptLevel, row.FrequencyRank,
-            row.RadicalNumber, row.SkipCode, Split(row.OnReadingsJoined), Split(row.KunReadingsJoined), Split(row.MeaningsJoined));
+            row.RadicalNumber, row.SkipCode, Split(row.OnReadingsJoined), Split(row.KunReadingsJoined), Split(row.MeaningsJoined), row.JlptN);
     }
+
+    /// <summary>The entry's unofficial JLPT level (5 = N5 … 1 = N1), or null.</summary>
+    public int? GetJlptLevel(int entryId) =>
+        db.ExecuteScalar<int?>("SELECT JlptLevel FROM WordEntryRow WHERE Id = ?", entryId);
+
+    /// <summary>JLPT levels for the given entries; entries without one are left out.</summary>
+    public IReadOnlyDictionary<int, int> GetJlptLevels(IReadOnlyCollection<int> entryIds)
+    {
+        if (entryIds.Count == 0) return new Dictionary<int, int>();
+        var idList = string.Join(',', entryIds.Select(i => i.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+        return db.Query<JlptLevelRow>($"SELECT Id AS EntryId, JlptLevel AS Level FROM WordEntryRow WHERE JlptLevel IS NOT NULL AND Id IN ({idList})")
+            .ToDictionary(r => r.EntryId, r => r.Level);
+    }
+
+    /// <summary>Pitch accents of the entry's readings that have any, in database order.
+    /// Empty when Kanjium has none for the entry.</summary>
+    public IReadOnlyList<PitchAccent> GetPitchAccents(int entryId) =>
+        db.Table<PitchAccentRow>().Where(r => r.EntryId == entryId).OrderBy(r => r.Id).ToList()
+            .Select(r => new PitchAccent(r.Reading,
+                r.AccentsJoined.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList()))
+            .ToList();
 
     public IReadOnlyList<(int StrokeIndex, string SvgPath)> GetKanjiStrokes(string character) =>
         db.Table<KanjiStrokeRow>().Where(r => r.Character == character).OrderBy(r => r.StrokeIndex)
