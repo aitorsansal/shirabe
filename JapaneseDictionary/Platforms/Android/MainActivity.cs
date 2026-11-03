@@ -16,6 +16,10 @@ public class MainActivity : MauiAppCompatActivity
     {
         base.OnCreate(savedInstanceState);
 
+        // ThemeService applies the theme before this window exists, so set the
+        // bar icons for the starting theme here (later changes go through it).
+        SystemBars.Apply(Microsoft.Maui.Controls.Application.Current?.RequestedTheme == AppTheme.Dark);
+
         // A recreated activity (rotation, process restore) still carries the
         // original intent; only a fresh launch should open the entry.
         if (savedInstanceState == null && TryGetEntryId(Intent) is { } entryId)

@@ -32,6 +32,9 @@ public sealed partial class ThemeService : ObservableObject
 
     private static bool ResolveIsDark() => Application.Current!.RequestedTheme == AppTheme.Dark;
 
+    // The system bar icons follow the effective theme too (see SystemBars).
+    partial void OnIsDarkChanged(bool value) => MainThread.BeginInvokeOnMainThread(() => SystemBars.Apply(value));
+
     public void SetPreference(ThemePreference next)
     {
         Preferences.Default.Set(PreferenceKey, next.ToString());
