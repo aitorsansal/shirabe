@@ -160,7 +160,7 @@
   <data name="Settings_Language" xml:space="preserve"><value>Idioma</value></data>
   <data name="Settings_LanguageSystem" xml:space="preserve"><value>SISTEMA</value></data>
   <data name="Settings_LanguageSystemDescription" xml:space="preserve"><value>Seguir el idioma del sistema</value></data>
-  <data name="Settings_Translations" xml:space="preserve"><value>Idiomas de traducción</value></data>
+  <data name="Settings_Translations" xml:space="preserve"><value>IDIOMAS DE TRADUCCIÓN</value></data>
   <data name="Settings_TranslationsNote" xml:space="preserve"><value>Muestra también los significados y las traducciones de las frases de ejemplo en estos idiomas, cuando el diccionario los tiene. El inglés siempre se muestra.</value></data>
   <data name="Settings_LanguageNote" xml:space="preserve"><value>Solo se traduce la interfaz. La búsqueda y los significados principales siguen en inglés; elige abajo los significados en español, francés o alemán.</value></data>
   <data name="Settings_Audio" xml:space="preserve"><value>AUDIO</value></data>
