@@ -98,8 +98,9 @@
         <!-- Custom Fonts -->
         <MauiFont Include="Resources\Fonts\*" />
 
-        <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+        <!-- Raw Assets (also remove the "Resources\Raw" prefix). The dictionary database is
+             excluded here and bundled Brotli-compressed instead, see below. -->
+        <MauiAsset Include="Resources\Raw\**" Exclude="Resources\Raw\dictionary.db3" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
     <!-- dictionary.db3 is not in git (it ships as a GitHub Release asset), so a fresh clone
@@ -107,6 +108,31 @@
     <Target Name="CheckDictionaryDatabase" BeforeTargets="PrepareForBuild">
         <Error Condition="!Exists('$(MSBuildProjectDirectory)\Resources\Raw\dictionary.db3')"
                Text="Resources\Raw\dictionary.db3 is missing. Run scripts/fetch-database.ps1 (or .sh) to download it, or build it with JapaneseDictionary.DataBuilder." />
+    </Target>
+
+    <!-- The installed app always keeps an extracted copy of dictionary.db3 (SQLite needs a real
+         file), so the copy inside the APK is pure overhead. Bundling it Brotli-compressed
+         (quality 11, 16 MB window) instead of letting the zip deflate it shrinks that overhead,
+         and the download, by about a third. DatabaseInitializer decompresses it on first run.
+         Compression takes minutes, so the output lives in obj/ shared by all configurations and
+         is only regenerated when dictionary.db3 changes (Inputs/Outputs). It's stored
+         uncompressed in the APK/AAB, since deflating Brotli output again only costs time. -->
+    <PropertyGroup>
+        <CompressedDictionaryPath>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(BaseIntermediateOutputPath)', 'dictionary', 'dictionary.db3.br'))</CompressedDictionaryPath>
+        <AndroidStoreUncompressedFileExtensions>$(AndroidStoreUncompressedFileExtensions);.br</AndroidStoreUncompressedFileExtensions>
+    </PropertyGroup>
+    <ItemGroup>
+        <MauiAsset Include="$(CompressedDictionaryPath)" LogicalName="dictionary.db3.br" />
+    </ItemGroup>
+    <Target Name="CompressDictionaryDatabase" BeforeTargets="PrepareForBuild" DependsOnTargets="CheckDictionaryDatabase"
+            Inputs="$(MSBuildProjectDirectory)\Resources\Raw\dictionary.db3;$(MSBuildThisFileDirectory)..\scripts\compress-dictionary.cs"
+            Outputs="$(CompressedDictionaryPath)">
+        <PropertyGroup>
+            <_DotnetHost Condition="'$(DOTNET_HOST_PATH)' != ''">$(DOTNET_HOST_PATH)</_DotnetHost>
+            <_DotnetHost Condition="'$(_DotnetHost)' == ''">dotnet</_DotnetHost>
+        </PropertyGroup>
+        <Message Importance="high" Text="Brotli-compressing dictionary.db3 (takes a few minutes, only when the database changes)..." />
+        <Exec Command="&quot;$(_DotnetHost)&quot; run --file &quot;$(MSBuildThisFileDirectory)..\scripts\compress-dictionary.cs&quot; -- &quot;$(MSBuildProjectDirectory)\Resources\Raw\dictionary.db3&quot; &quot;$(CompressedDictionaryPath)&quot;" />
     </Target>
 
     <!-- UI strings. The AppResources class is generated at build time (into obj/)

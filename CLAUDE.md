@@ -47,7 +47,7 @@ Four projects:
 
 ### Data pipeline
 
-`DataBuilder` parses JMdict, KANJIDIC2, KanjiVG, and Tatoeba raw files (`RawData/`) into a single read-only SQLite file, `dictionary.db3`, bundled into the app as a `MauiAsset` (`Resources/Raw/**`, with `LogicalName` stripping the `Raw` prefix). At runtime SQLite needs a real file path, not a package stream, so `DatabaseInitializer` copies it out of the app package into `FileSystem.AppDataDirectory` once on first use. User data (recents/history) lives in a separate writable SQLite file, `userdata.db3`, in the same directory.
+`DataBuilder` parses JMdict, KANJIDIC2, KanjiVG, and Tatoeba raw files (`RawData/`) into a single read-only SQLite file, `dictionary.db3`, bundled into the app Brotli-compressed: the `CompressDictionaryDatabase` target in the app csproj runs `scripts/compress-dictionary.cs` (quality 11, takes minutes, so it only reruns when the database changes) into `obj/dictionary/dictionary.db3.br`, which is the actual `MauiAsset`; the raw `Resources/Raw/dictionary.db3` is excluded from the assets but stays where it is for the tests and DataBuilder. At runtime SQLite needs a real file path, not a package stream, so `DatabaseInitializer` decompresses it out of the app package into `FileSystem.AppDataDirectory` once on first use (and again when `dictionary.version` changes). That extracted copy is unavoidable, which is why the APK-side copy is compressed as hard as possible. User data (recents/history) lives in a separate writable SQLite file, `userdata.db3`, in the same directory.
 
 ### Startup / DI
 
