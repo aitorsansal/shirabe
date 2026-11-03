@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 
 using JapaneseDictionary.Core.Data.Schema;
+using JapaneseDictionary.Core.Models;
 
 namespace JapaneseDictionary.Core.Search;
 
@@ -11,11 +12,12 @@ namespace JapaneseDictionary.Core.Search;
 /// then a whole-word match, then a bare substring.
 /// Among exact glosses, a narrowing qualifier ("school (of fish)", "to run (a
 /// business)") ranks below an unqualified or merely descriptive one ("water
-/// (esp. cool or cold)", "dog (Canis familiaris)"). Remaining ties go to common
-/// words, earlier senses and glosses, then <see cref="KanjiRarity"/>.
+/// (esp. cool or cold)", "dog (Canis familiaris)"). Remaining ties go to more
+/// frequent words (<see cref="FormPriority.Band"/>), earlier senses and glosses,
+/// then <see cref="KanjiRarity"/>.
 /// </summary>
 /// <param name="MatchRank">0 exact gloss, 1 whole word, 2 substring.</param>
-internal sealed record RankedGloss(int EntryId, int MatchRank, string GlossText, bool IsCommon, int Rarity);
+internal sealed record RankedGloss(int EntryId, int MatchRank, string GlossText, int PriorityBand, int Rarity);
 
 internal static partial class GlossRanker
 {
@@ -44,7 +46,7 @@ internal static partial class GlossRanker
 
             var key = (
                 matchRank,
-                candidate.IsCommon ? 0 : 1,
+                FormPriority.Band(candidate.Priority),
                 isExact && HasNarrowingQualifier(gloss) ? 1 : 0,
                 candidate.SenseOrder,
                 candidate.GlossOrder,
@@ -59,7 +61,7 @@ internal static partial class GlossRanker
         return best.Values
             .OrderBy(v => v.Key)
             .Take(limit)
-            .Select(v => new RankedGloss(v.Key.Item8, v.Key.Item1, v.Gloss, v.Key.Item2 == 0, v.Key.Item6))
+            .Select(v => new RankedGloss(v.Key.Item8, v.Key.Item1, v.Gloss, v.Key.Item2, v.Key.Item6))
             .ToList();
     }
 

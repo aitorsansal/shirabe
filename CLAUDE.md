@@ -55,7 +55,9 @@ Four projects:
 
 ### Search
 
-`SearchService.Search()` is the single entry point: exact match → deinflection (`Deinflector` undoes conjugation endings with a table of chained suffix rules, then candidates are looked up exactly and filtered by `WordClass`; works on kanji and kana alike) → prefix match → English gloss substring (English mode only, minimum 2 characters — an unindexed scan otherwise). Romaji input is auto-converted to hiragana/katakana before matching (`RomajiConverter`).
+`SearchService.Search()` is the single entry point: exact match → deinflection (`Deinflector` undoes conjugation endings with a table of chained suffix rules, then candidates are looked up exactly and filtered by `WordClass`; works on kanji and kana alike) → prefix match → English gloss substring (English mode only, minimum 2 characters — an unindexed scan otherwise). Romaji input is auto-converted to hiragana/katakana before matching (`RomajiConverter`). Within each tier, matches are ordered by `FormPriority.Band` of the matched spelling or reading (JMdict's nfXX/news/ichi/spec markers condensed into one number; a plain common flag can't order homophones like 紙/髪/加味/上 for かみ), then by how many example sentences the entry has (`ExampleEvidence`), then by kanji rarity.
+
+The headword (`DictionaryEntry.PrimaryText`) is the most common kanji spelling, except for words whose first sense is tagged `uk` (usually kana) and that have no common kanji spelling: those lead with the reading (ながら, しまう, なるほど, イタリア) and list the kanji under other forms. The rule lives in Core, so DataBuilder's stored `WordEntryRow.PrimaryText` and the app's detail page always agree.
 
 ### Theming
 

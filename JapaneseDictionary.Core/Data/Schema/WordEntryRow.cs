@@ -18,6 +18,10 @@ public sealed class WordEntryRow
     public string PrimaryReading { get; set; } = "";
     public bool IsCommon { get; set; }
 
+    /// <summary>Best (lowest) <see cref="Models.FormPriority"/> across the entry's
+    /// kanji forms and readings.</summary>
+    public int Priority { get; set; } = Models.FormPriority.None;
+
     /// <summary>Semicolon-joined <see cref="Models.WordClass"/> names this entry's
     /// senses carry, e.g. "IchidanVerb". Empty for non-conjugating words.
     /// Used by the deinflection matcher to know which ending rules to try
@@ -39,6 +43,9 @@ public sealed class KanjiFormRow
     public string Text { get; set; } = "";
 
     public bool IsCommon { get; set; }
+
+    /// <summary>See <see cref="Models.FormPriority"/>; lower is more frequent.</summary>
+    public int Priority { get; set; } = Models.FormPriority.None;
 }
 
 /// <summary>One reading of an entry, one row per form. Indexed on
@@ -56,4 +63,7 @@ public sealed class ReadingFormRow
     public string Text { get; set; } = "";
 
     public bool IsCommon { get; set; }
+
+    /// <summary>See <see cref="Models.FormPriority"/>; lower is more frequent.</summary>
+    public int Priority { get; set; } = Models.FormPriority.None;
 }

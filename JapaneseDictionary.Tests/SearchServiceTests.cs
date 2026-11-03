@@ -89,6 +89,30 @@ public class SearchServiceTests : IDisposable
     }
 
     [SkippableFact]
+    public void Search_Homophones_RankByFrequency()
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var heads = search!.Search("kami").Where(r => r.Kind == SearchMatchKind.ExactMatch)
+            .Select(r => repo!.GetEntry(r.EntryId)!.PrimaryText).ToList();
+
+        // 紙, 神 and 髪 (nf03–nf06) lead, 加味 (nf15) follows, and 上 read as かみ
+        // (ichi1 only) comes after all of them.
+        Assert.Equal(new HashSet<string> { "紙", "神", "髪" }, heads.Take(3).ToHashSet());
+        Assert.True(heads.IndexOf("加味") < heads.IndexOf("上"));
+    }
+
+    [SkippableTheory]
+    [InlineData("nagara", "ながら")]
+    [InlineData("shimatta", "しまった")]
+    [InlineData("arigatou", "ありがとう")]
+    public void Search_UsuallyKanaWords_LeadWithTheReading(string query, string expectedHeadword)
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var first = search!.Search(query)[0];
+        Assert.Equal(expectedHeadword, repo!.GetEntry(first.EntryId)!.PrimaryText);
+    }
+
+    [SkippableFact]
     public void Search_ConjugatedKana_FindsKikuAsPolite()
     {
         Skip.If(search == null, "dictionary.db3 not built");

@@ -114,44 +114,46 @@ public sealed partial class SearchService
         return results;
     }
 
-    private static (SearchResult Result, bool IsCommon, int Rarity) GlossResult(RankedGloss gloss) =>
-        (new SearchResult(gloss.EntryId, SearchMatchKind.Gloss, null, gloss.GlossText), gloss.IsCommon, gloss.Rarity);
+    private static (SearchResult Result, int PriorityBand, int Rarity) GlossResult(RankedGloss gloss) =>
+        (new SearchResult(gloss.EntryId, SearchMatchKind.Gloss, null, gloss.GlossText), gloss.PriorityBand, gloss.Rarity);
 
-    /// <summary>Exact kanji/reading matches for each form, common and everyday
-    /// words first (かみ: 紙 and 神 before rarer homophones; なる: 成る before 生る).</summary>
-    private List<(SearchResult Result, bool IsCommon, int Rarity)> FindExactMatches(IReadOnlyList<string> forms)
+    /// <summary>Exact kanji/reading matches for each form, most frequent first by
+    /// the matched form's <see cref="FormPriority.Band"/>, then
+    /// <see cref="ExampleEvidence"/>, then <see cref="KanjiRarity"/> (かみ: 紙, 神
+    /// and 髪 before 加味, and those before 上 read as かみ; なる: 成る before 生る).</summary>
+    private List<(SearchResult Result, int PriorityBand, int Rarity)> FindExactMatches(IReadOnlyList<string> forms)
     {
         var formOrder = forms.Select((form, i) => (form, i)).ToDictionary(x => x.form, x => x.i);
         var matches = repo.FindByExactTexts(forms.ToList())
             .GroupBy(m => m.EntryId)
-            .Select(g => (Match: g.OrderBy(m => formOrder[m.Text]).First(), IsCommon: g.Any(m => m.IsCommon && m.FormIsCommon)))
+            .Select(g => (Match: g.OrderBy(m => formOrder[m.Text]).First(), PriorityBand: FormPriority.Band(g.Min(m => m.FormPriority))))
             .ToList();
         var exampleCounts = repo.GetExampleCounts(matches.Select(x => x.Match.EntryId).ToList());
         return matches
             .Select(x => (
                 Result: new SearchResult(x.Match.EntryId, SearchMatchKind.ExactMatch, null, x.Match.Text),
-                x.IsCommon,
+                x.PriorityBand,
                 Examples: ExampleEvidence.Band(exampleCounts.GetValueOrDefault(x.Match.EntryId)),
                 Rarity: KanjiRarity.Of(x.Match.PrimaryText, kanjiFrequencyRanks!)))
-            .OrderBy(x => x.IsCommon ? 0 : 1)
+            .OrderBy(x => x.PriorityBand)
             .ThenByDescending(x => x.Examples)
             .ThenBy(x => x.Rarity)
-            .Select(x => (x.Result, x.IsCommon, x.Rarity))
+            .Select(x => (x.Result, x.PriorityBand, x.Rarity))
             .ToList();
     }
 
     /// <summary>Merges two already-ranked lists, taking whichever head is more
-    /// common/everyday, so each keeps its own internal order (the gloss ranker's
+    /// frequent/everyday, so each keeps its own internal order (the gloss ranker's
     /// sense and qualifier ordering isn't flattened).</summary>
     private static IEnumerable<SearchResult> MergeByCommonness(
-        List<(SearchResult Result, bool IsCommon, int Rarity)> first,
-        List<(SearchResult Result, bool IsCommon, int Rarity)> second)
+        List<(SearchResult Result, int PriorityBand, int Rarity)> first,
+        List<(SearchResult Result, int PriorityBand, int Rarity)> second)
     {
         int i = 0, j = 0;
         while (i < first.Count || j < second.Count)
         {
             var takeFirst = j >= second.Count
-                || (i < first.Count && (first[i].IsCommon ? 0 : 1, first[i].Rarity).CompareTo((second[j].IsCommon ? 0 : 1, second[j].Rarity)) <= 0);
+                || (i < first.Count && (first[i].PriorityBand, first[i].Rarity).CompareTo((second[j].PriorityBand, second[j].Rarity)) <= 0);
             yield return takeFirst ? first[i++].Result : second[j++].Result;
         }
     }
@@ -176,7 +178,7 @@ public sealed partial class SearchService
     }
 
     /// <summary>Dictionary entries <paramref name="form"/> is a conjugation of,
-    /// best first: fewest conjugation steps, then common words, then
+    /// best first: fewest conjugation steps, then <see cref="FormPriority.Band"/>, then
     /// <see cref="ExampleEvidence"/>, then <see cref="KanjiRarity"/>.</summary>
     private List<SearchResult> FindConjugatedMatches(string form)
     {
@@ -200,7 +202,7 @@ public sealed partial class SearchService
         var exampleCounts = repo.GetExampleCounts(exactMatches.Select(m => m.EntryId).Distinct().ToList());
         kanjiFrequencyRanks ??= repo.GetKanjiFrequencyRanks();
 
-        var best = new Dictionary<int, ((int Steps, int NotCommon, int FewerExamples, int Rarity) Rank, Deinflection Source)>();
+        var best = new Dictionary<int, ((int Steps, int PriorityBand, int FewerExamples, int Rarity) Rank, Deinflection Source)>();
         foreach (var (text, source) in lookups)
         {
             foreach (var match in matchesByText[text])
@@ -209,7 +211,7 @@ public sealed partial class SearchService
 
                 var rank = (
                     source.Reasons.Count,
-                    match.IsCommon && match.FormIsCommon ? 0 : 1,
+                    FormPriority.Band(match.FormPriority),
                     -ExampleEvidence.Band(exampleCounts.GetValueOrDefault(match.EntryId)),
                     KanjiRarity.Of(match.PrimaryText, kanjiFrequencyRanks));
                 if (!best.TryGetValue(match.EntryId, out var existing) || rank.CompareTo(existing.Rank) < 0)

@@ -9,5 +9,6 @@ public sealed class GlossCandidateRow
     public int SenseOrder { get; set; }
     public int GlossOrder { get; set; }
     public bool IsCommon { get; set; }
+    public int Priority { get; set; } = Models.FormPriority.None;
     public string PrimaryText { get; set; } = "";
 }

@@ -95,7 +95,7 @@ public sealed class DictionaryRepository : IDisposable
         // The whole-word form pads the gloss with spaces and turns brackets and
         // separators into spaces, so "go (somewhere)" matches "% go %".
         const string select = """
-            SELECT s.EntryId, g.Text AS GlossText, s.SenseOrder, g.GlossOrder, w.IsCommon, w.PrimaryText
+            SELECT s.EntryId, g.Text AS GlossText, s.SenseOrder, g.GlossOrder, w.IsCommon, w.Priority, w.PrimaryText
             FROM GlossRow g
             JOIN SenseRow s ON s.Id = g.SenseId
             JOIN WordEntryRow w ON w.Id = s.EntryId
@@ -139,9 +139,9 @@ public sealed class DictionaryRepository : IDisposable
         var textList = texts.ToList();
 
         var formRows = db.Table<KanjiFormRow>().Where(r => textList.Contains(r.Text))
-            .Select(r => (r.Text, r.EntryId, r.IsCommon)).ToList();
+            .Select(r => (r.Text, r.EntryId, r.IsCommon, r.Priority)).ToList();
         formRows.AddRange(db.Table<ReadingFormRow>().Where(r => textList.Contains(r.Text))
-            .Select(r => (r.Text, r.EntryId, r.IsCommon)));
+            .Select(r => (r.Text, r.EntryId, r.IsCommon, r.Priority)));
         if (formRows.Count == 0) return [];
 
         // sqlite-net-pcl's TableQuery doesn't translate .Join() to SQL (it would
@@ -155,7 +155,7 @@ public sealed class DictionaryRepository : IDisposable
             .Select(g =>
             {
                 var entry = entries[g.Key.EntryId];
-                return new ExactTextMatch(g.Key.Text, g.Key.EntryId, ParseWordClasses(entry.WordClassesJoined), entry.IsCommon, entry.PrimaryText, g.Any(r => r.IsCommon));
+                return new ExactTextMatch(g.Key.Text, g.Key.EntryId, ParseWordClasses(entry.WordClassesJoined), entry.IsCommon, entry.PrimaryText, g.Any(r => r.IsCommon), g.Min(r => r.Priority));
             })
             .ToList();
     }
@@ -177,9 +177,9 @@ public sealed class DictionaryRepository : IDisposable
         if (wordRow == null) return null;
 
         var kanjiForms = db.Table<KanjiFormRow>().Where(r => r.EntryId == id)
-            .Select(r => new KanjiForm(r.Text, r.IsCommon)).ToList();
+            .Select(r => new KanjiForm(r.Text, r.IsCommon, r.Priority)).ToList();
         var readings = db.Table<ReadingFormRow>().Where(r => r.EntryId == id)
-            .Select(r => new ReadingForm(r.Text, r.IsCommon, true, [])).ToList();
+            .Select(r => new ReadingForm(r.Text, r.IsCommon, true, [], r.Priority)).ToList();
 
         var senseRows = db.Table<SenseRow>().Where(s => s.EntryId == id).OrderBy(s => s.SenseOrder).ToList();
         var senses = senseRows.Select(s =>
@@ -238,5 +238,6 @@ public sealed class DictionaryRepository : IDisposable
 }
 
 // IsCommon is the entry's flag; FormIsCommon is whether the matched spelling or
-// reading itself is common (大雪 is common as おおゆき, not as たいせつ).
-public sealed record ExactTextMatch(string Text, int EntryId, IReadOnlyList<WordClass> WordClasses, bool IsCommon, string PrimaryText, bool FormIsCommon);
+// reading itself is common (大雪 is common as おおゆき, not as たいせつ), and
+// FormPriority how frequent it is (see FormPriority: かみ is nf03 as 紙, ichi1 as 上).
+public sealed record ExactTextMatch(string Text, int EntryId, IReadOnlyList<WordClass> WordClasses, bool IsCommon, string PrimaryText, bool FormIsCommon, int FormPriority);

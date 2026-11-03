@@ -60,6 +60,8 @@ public partial class WordDetailViewModel : ObservableObject
     public ObservableCollection<ConjugationTableRow> ConjugationRows { get; } = [];
 
     public bool HasOtherForms => OtherForms.Count > 0;
+
+    public bool HasCompounds => Compounds.Count > 0;
     public string ConjugationNote { get; private set; } = "";
 
     public bool IsMeaningTab => SelectedTab == DetailTab.Meaning;
@@ -172,6 +174,7 @@ public partial class WordDetailViewModel : ObservableObject
         Fill(OtherForms, content.OtherForms);
         OnPropertyChanged(nameof(HasOtherForms));
         Fill(Compounds, content.Compounds);
+        OnPropertyChanged(nameof(HasCompounds));
 
         conjugationTable = content.ConjugationTable;
         ShowConjugationTab = conjugationTable.Count > 0;
@@ -261,12 +264,14 @@ public partial class WordDetailViewModel : ObservableObject
             })
             .ToList();
 
+    // Everything except the headline pair. For words usually written in kana the
+    // headline is the reading, so every kanji spelling (乍ら for ながら) lands here.
     private static List<FormChip> BuildOtherForms(DictionaryEntry entry)
     {
-        var primaryKanji = entry.KanjiForms.FirstOrDefault(k => k.IsCommon)?.Text ?? entry.KanjiForms.FirstOrDefault()?.Text;
-        var primaryReading = entry.Readings.FirstOrDefault(r => r.IsCommon)?.Text ?? entry.Readings.FirstOrDefault()?.Text;
+        var primaryText = entry.PrimaryText;
+        var primaryReading = entry.PrimaryReading;
 
-        return entry.KanjiForms.Where(k => k.Text != primaryKanji).Select(k => new FormChip(k.Text, AppResources.Word_AlternateForm))
+        return entry.KanjiForms.Where(k => k.Text != primaryText).Select(k => new FormChip(k.Text, AppResources.Word_AlternateForm))
             .Concat(entry.Readings.Where(r => r.Text != primaryReading).Select(r => new FormChip(r.Text, AppResources.Word_AlternateReading)))
             .ToList();
     }

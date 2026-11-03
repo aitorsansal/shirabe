@@ -111,6 +111,7 @@ public static class SqliteWriter
             PrimaryText = entry.PrimaryText,
             PrimaryReading = entry.PrimaryReading,
             IsCommon = entry.KanjiForms.Any(k => k.IsCommon) || entry.Readings.Any(r => r.IsCommon),
+            Priority = entry.KanjiForms.Select(k => k.Priority).Concat(entry.Readings.Select(r => r.Priority)).Min(),
             WordClassesJoined = string.Join(';', wordClasses),
         });
 
@@ -121,6 +122,7 @@ public static class SqliteWriter
                 EntryId = entry.Id,
                 Text = k.Text,
                 IsCommon = k.IsCommon,
+                Priority = k.Priority,
             });
         }
 
@@ -131,6 +133,7 @@ public static class SqliteWriter
                 EntryId = entry.Id,
                 Text = r.Text,
                 IsCommon = r.IsCommon,
+                Priority = r.Priority,
             });
         }
 

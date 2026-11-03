@@ -28,6 +28,18 @@ public class DictionaryRepositoryTests : IDisposable
         Assert.Contains(1358280, ids);
     }
 
+    [SkippableTheory]
+    [InlineData(1311530)] // 紙(かみ)
+    [InlineData(1477950)] // 髪(かみ)
+    [InlineData(1364440)] // 神(かみ)
+    public void GetExampleSentences_HomographsGetLinkedThroughTheirReading(int entryId)
+    {
+        // These headwords belong to several entries, so their index words only link
+        // once the () reading picks the right one.
+        Skip.If(repo == null, "dictionary.db3 not built");
+        Assert.NotEmpty(repo!.GetExampleSentences(entryId, 5));
+    }
+
     [SkippableFact]
     public void GetEntry_TaberuHasExpectedGlossAndClass()
     {

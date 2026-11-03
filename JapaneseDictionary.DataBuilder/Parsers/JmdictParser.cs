@@ -35,7 +35,8 @@ public static partial class JmdictParser
             var kanjiForms = entryEl.Elements("k_ele")
                 .Select(k => new KanjiForm(
                     k.Element("keb")!.Value,
-                    k.Elements("ke_pri").Any(IsCommonPriority)))
+                    k.Elements("ke_pri").Any(IsCommonPriority),
+                    FormPriority.FromMarkers(k.Elements("ke_pri").Select(p => p.Value))))
                 .ToList();
 
             var readingForms = entryEl.Elements("r_ele")
@@ -46,7 +47,8 @@ public static partial class JmdictParser
                         r.Element("reb")!.Value,
                         r.Elements("re_pri").Any(IsCommonPriority),
                         restrictedTo.Count == 0,
-                        restrictedTo);
+                        restrictedTo,
+                        FormPriority.FromMarkers(r.Elements("re_pri").Select(p => p.Value)));
                 })
                 .ToList();
 
