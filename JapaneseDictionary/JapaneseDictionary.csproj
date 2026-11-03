@@ -71,7 +71,7 @@
              runs searches/page loads no faster, for +8MB. -->
         <RunAOTCompilation>true</RunAOTCompilation>
         <AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>
-        <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers>
+        <RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
     </PropertyGroup>
 
     <!-- Fix 3: belt-and-suspenders — Fix 1 alone wasn't reliable enough in
