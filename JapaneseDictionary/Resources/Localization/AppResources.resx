@@ -160,7 +160,9 @@
   <data name="Settings_Language" xml:space="preserve"><value>Language</value></data>
   <data name="Settings_LanguageSystem" xml:space="preserve"><value>SYSTEM</value></data>
   <data name="Settings_LanguageSystemDescription" xml:space="preserve"><value>Follow the system language</value></data>
-  <data name="Settings_LanguageNote" xml:space="preserve"><value>Meanings, search and sentence translations stay in English: the dictionary data is English.</value></data>
+  <data name="Settings_Translations" xml:space="preserve"><value>Translation languages</value></data>
+  <data name="Settings_TranslationsNote" xml:space="preserve"><value>Also show meanings and example-sentence translations in these languages, when the dictionary has them. English is always shown.</value></data>
+  <data name="Settings_LanguageNote" xml:space="preserve"><value>Only the interface is translated. Search and the main meanings stay in English; pick Spanish, French or German meanings below.</value></data>
   <data name="Settings_Audio" xml:space="preserve"><value>AUDIO</value></data>
   <data name="Settings_VoiceReady" xml:space="preserve"><value>A Japanese voice is installed. Word readings and example sentences can be read aloud.</value></data>
   <data name="Settings_VoiceMissing" xml:space="preserve"><value>No Japanese voice found. Install one in the system text-to-speech settings to hear readings.</value></data>
@@ -218,14 +220,14 @@
   <data name="About_SourceCode" xml:space="preserve"><value>Source code on GitHub</value></data>
   <data name="About_MitLicense" xml:space="preserve"><value>MIT license</value></data>
   <data name="About_DictionaryTitle" xml:space="preserve"><value>DICTIONARY DATA</value></data>
-  <data name="About_DictionaryBody" xml:space="preserve"><value>This application uses the JMdict/EDICT and KANJIDIC dictionary files. These files are the property of the Electronic Dictionary Research and Development Group, and are used in conformance with the Group's licence.</value></data>
+  <data name="About_DictionaryBody" xml:space="preserve"><value>This application uses the JMdict/EDICT and KANJIDIC dictionary files. These files are the property of the Electronic Dictionary Research and Development Group, and are used in conformance with the Group's licence. The Spanish, French and German meanings are also from JMdict.</value></data>
   <data name="About_EdrdgLicence" xml:space="preserve"><value>EDRDG licence</value></data>
   <data name="About_JmdictProject" xml:space="preserve"><value>JMdict project</value></data>
   <data name="About_KanjidicProject" xml:space="preserve"><value>KANJIDIC project</value></data>
   <data name="About_StrokeTitle" xml:space="preserve"><value>STROKE ORDER</value></data>
   <data name="About_StrokeBody" xml:space="preserve"><value>Stroke order data comes from KanjiVG, copyright Ulrich Apel, licensed under CC BY-SA 3.0.</value></data>
   <data name="About_SentencesTitle" xml:space="preserve"><value>EXAMPLE SENTENCES</value></data>
-  <data name="About_SentencesBody" xml:space="preserve"><value>Example sentences and their translations come from Tatoeba and its contributors, licensed under CC BY 2.0 FR.</value></data>
+  <data name="About_SentencesBody" xml:space="preserve"><value>Example sentences and their translations (English, Spanish, French and German) come from Tatoeba and its contributors, licensed under CC BY 2.0 FR.</value></data>
   <data name="About_DatabaseTitle" xml:space="preserve"><value>DATABASE LICENSE</value></data>
   <data name="About_DatabaseBody" xml:space="preserve"><value>The bundled dictionary database is derived from the sources above and is distributed under CC BY-SA 4.0.</value></data>
   <data name="About_DataLicenseDetails" xml:space="preserve"><value>Data license details</value></data>

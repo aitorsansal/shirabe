@@ -131,6 +131,69 @@ public static partial class TatoebaParser
     [GeneratedRegex(@"\(#(\d+)\)")]
     private static partial Regex ExplicitEntryId();
 
+    /// <summary>
+    /// Direct translations of the given Japanese sentences into the supported
+    /// non-English languages. links.csv (id, tab, id; ~450 MB) is streamed once to
+    /// find the sentences linked to ours, then sentences.csv once for only those
+    /// candidates' texts; with several translations in one language the lowest
+    /// sentence id wins.
+    /// </summary>
+    public static List<SentenceTranslation> ParseTranslations(string linksPath, string sentencesPath, IEnumerable<long> japaneseIds)
+    {
+        var wanted = japaneseIds.ToHashSet();
+
+        // candidate sentence id -> the Japanese ids it is linked to
+        var candidates = new Dictionary<long, List<long>>();
+        using (var reader = new StreamReader(linksPath))
+        {
+            string? line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                var tab = line.IndexOf('\t');
+                if (tab < 0) continue;
+                if (!long.TryParse(line.AsSpan(0, tab), out var a) || !long.TryParse(line.AsSpan(tab + 1), out var b)) continue;
+
+                if (wanted.Contains(a)) AddCandidate(candidates, b, a);
+                if (wanted.Contains(b)) AddCandidate(candidates, a, b);
+            }
+        }
+
+        var tatoebaToCode = TranslationLanguages.All.ToDictionary(l => l.TatoebaCode, l => l.Code, StringComparer.Ordinal);
+        var best = new Dictionary<(long Japanese, string Lang), (long Id, string Text)>();
+        using (var reader = new StreamReader(sentencesPath))
+        {
+            string? line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                var firstTab = line.IndexOf('\t');
+                if (firstTab < 0) continue;
+                var secondTab = line.IndexOf('\t', firstTab + 1);
+                if (secondTab < 0) continue;
+                if (!tatoebaToCode.TryGetValue(line.Substring(firstTab + 1, secondTab - firstTab - 1), out var code)) continue;
+                if (!long.TryParse(line.AsSpan(0, firstTab), out var id) || !candidates.TryGetValue(id, out var linkedJapanese)) continue;
+
+                var text = line[(secondTab + 1)..];
+                foreach (var jp in linkedJapanese)
+                {
+                    var key = (jp, code);
+                    if (!best.TryGetValue(key, out var current) || id < current.Id)
+                        best[key] = (id, text);
+                }
+            }
+        }
+
+        return best
+            .OrderBy(kv => kv.Key.Japanese).ThenBy(kv => kv.Key.Lang, StringComparer.Ordinal)
+            .Select(kv => new SentenceTranslation(kv.Key.Japanese, kv.Key.Lang, kv.Value.Text))
+            .ToList();
+    }
+
+    private static void AddCandidate(Dictionary<long, List<long>> candidates, long candidate, long japanese)
+    {
+        if (!candidates.TryGetValue(candidate, out var list)) candidates[candidate] = list = [];
+        list.Add(japanese);
+    }
+
     private static Dictionary<long, string> LoadSentenceText(string sentencesPath, HashSet<long> neededIds)
     {
         var result = new Dictionary<long, string>(neededIds.Count);

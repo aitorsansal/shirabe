@@ -27,10 +27,16 @@ public sealed record FormChip(string Word, string Note);
 
 public sealed record CompoundRow(int? EntryId, string Word, string Reading, string Gloss);
 
-public sealed record ExampleCard(long Id, string Pre, string Hit, string Post, string English)
+/// <summary>One extra-language line under a sentence: the language badge ("ES") and the text.</summary>
+public sealed record TranslationLine(string Badge, string Text);
+
+public sealed record ExampleCard(long Id, string Pre, string Hit, string Post, string English, IReadOnlyList<TranslationLine> Translations)
 {
     public string Japanese => Pre + Hit + Post;
 }
+
+/// <summary>One selected language's numbered senses on the Meaning tab, headed by its endonym.</summary>
+public sealed record TranslatedBlock(string Header, IReadOnlyList<SenseItem> Items);
 
 public partial class KanjiCard : ObservableObject
 {

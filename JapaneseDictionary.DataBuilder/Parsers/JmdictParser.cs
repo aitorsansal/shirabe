@@ -15,7 +15,16 @@ public static partial class JmdictParser
     private static readonly HashSet<string> CommonPriorityMarkers =
         new(StringComparer.Ordinal) { "news1", "ichi1", "spec1", "spec2", "gai1" };
 
-    public static List<DictionaryEntry> Parse(string path)
+    private static readonly XName XmlLang = XNamespace.Xml + "lang";
+
+    /// <summary>The parsed dictionary: the English entries exactly as before, plus
+    /// each entry's meanings in the other supported languages (see
+    /// <see cref="TranslationLanguages"/>), keyed by entry id.</summary>
+    public sealed record Result(
+        List<DictionaryEntry> Entries,
+        Dictionary<int, List<TranslatedSense>> TranslatedSenses);
+
+    public static Result Parse(string path)
     {
         var codeByText = ExtractEntityCodesByText(path);
 
@@ -28,6 +37,8 @@ public static partial class JmdictParser
         var doc = XDocument.Load(reader);
 
         var entries = new List<DictionaryEntry>();
+        var translated = new Dictionary<int, List<TranslatedSense>>();
+        var wantedLangs = TranslationLanguages.All.Select(l => l.Code).ToHashSet(StringComparer.Ordinal);
         foreach (var entryEl in doc.Root!.Elements("entry"))
         {
             var id = int.Parse(entryEl.Element("ent_seq")!.Value);
@@ -60,7 +71,7 @@ public static partial class JmdictParser
                     var posCodes = ResolveCodes(senseEl, "pos", codeByText);
                     var fieldCodes = ResolveCodes(senseEl, "field", codeByText);
                     var miscCodes = ResolveCodes(senseEl, "misc", codeByText);
-                    var glosses = senseEl.Elements("gloss").Select(g => g.Value).ToList();
+                    var glosses = senseEl.Elements("gloss").Where(IsEnglishGloss).Select(g => g.Value).ToList();
                     var wordClasses = posCodes
                         .Select(WordClassMap.FromJmdictTag)
                         .Where(wc => wc != WordClass.Other)
@@ -75,10 +86,30 @@ public static partial class JmdictParser
             if (senses.Count == 0) continue;
 
             entries.Add(new DictionaryEntry(id, kanjiForms, readingForms, senses));
+
+            // Other languages come as their own <sense> elements, not aligned with
+            // the English ones, so each language gets an independent numbering.
+            var perLangOrder = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var senseEl in entryEl.Elements("sense"))
+            {
+                foreach (var byLang in senseEl.Elements("gloss")
+                    .Select(g => (Lang: g.Attribute(XmlLang)?.Value ?? "eng", Text: g.Value))
+                    .Where(g => wantedLangs.Contains(g.Lang))
+                    .GroupBy(g => g.Lang))
+                {
+                    var order = perLangOrder[byLang.Key] = perLangOrder.GetValueOrDefault(byLang.Key) + 1;
+                    if (!translated.TryGetValue(id, out var list)) translated[id] = list = [];
+                    list.Add(new TranslatedSense(byLang.Key, order, byLang.Select(g => g.Text).ToList()));
+                }
+            }
         }
 
-        return entries;
+        return new Result(entries, translated);
     }
+
+    /// <summary>Glosses with no xml:lang are English by the DTD's default.</summary>
+    private static bool IsEnglishGloss(XElement gloss) =>
+        gloss.Attribute(XmlLang) is not { } lang || lang.Value == "eng";
 
     private static List<string> ResolveCodes(XElement senseEl, string elementName, Dictionary<string, string> codeByText) =>
         senseEl.Elements(elementName)

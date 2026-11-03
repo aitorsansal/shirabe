@@ -160,7 +160,9 @@
   <data name="Settings_Language" xml:space="preserve"><value>Idioma</value></data>
   <data name="Settings_LanguageSystem" xml:space="preserve"><value>SISTEMA</value></data>
   <data name="Settings_LanguageSystemDescription" xml:space="preserve"><value>Segueix l'idioma del sistema</value></data>
-  <data name="Settings_LanguageNote" xml:space="preserve"><value>Els significats, la cerca i les traduccions de les frases continuen en anglès, perquè les dades del diccionari són en anglès.</value></data>
+  <data name="Settings_Translations" xml:space="preserve"><value>Idiomes de traducció</value></data>
+  <data name="Settings_TranslationsNote" xml:space="preserve"><value>Mostra també els significats i les traduccions de les frases d'exemple en aquests idiomes, quan el diccionari els té. L'anglès sempre es mostra.</value></data>
+  <data name="Settings_LanguageNote" xml:space="preserve"><value>Només es tradueix la interfície. La cerca i els significats principals continuen en anglès; tria a sota els significats en castellà, francès o alemany.</value></data>
   <data name="Settings_Audio" xml:space="preserve"><value>ÀUDIO</value></data>
   <data name="Settings_VoiceReady" xml:space="preserve"><value>Hi ha una veu japonesa instal·lada. Es poden llegir en veu alta les lectures i les frases d'exemple.</value></data>
   <data name="Settings_VoiceMissing" xml:space="preserve"><value>No s'ha trobat cap veu japonesa. Instal·la'n una a la configuració de síntesi de veu del sistema per sentir les lectures.</value></data>
@@ -218,14 +220,14 @@
   <data name="About_SourceCode" xml:space="preserve"><value>Codi font a GitHub</value></data>
   <data name="About_MitLicense" xml:space="preserve"><value>Llicència MIT</value></data>
   <data name="About_DictionaryTitle" xml:space="preserve"><value>DADES DEL DICCIONARI</value></data>
-  <data name="About_DictionaryBody" xml:space="preserve"><value>Aquesta aplicació fa servir els fitxers de diccionari JMdict/EDICT i KANJIDIC. Aquests fitxers són propietat de l'Electronic Dictionary Research and Development Group i s'utilitzen d'acord amb la llicència del grup.</value></data>
+  <data name="About_DictionaryBody" xml:space="preserve"><value>Aquesta aplicació fa servir els fitxers de diccionari JMdict/EDICT i KANJIDIC. Aquests fitxers són propietat de l'Electronic Dictionary Research and Development Group i s'utilitzen d'acord amb la llicència del grup. Els significats en castellà, francès i alemany també provenen de JMdict.</value></data>
   <data name="About_EdrdgLicence" xml:space="preserve"><value>Llicència de l'EDRDG</value></data>
   <data name="About_JmdictProject" xml:space="preserve"><value>Projecte JMdict</value></data>
   <data name="About_KanjidicProject" xml:space="preserve"><value>Projecte KANJIDIC</value></data>
   <data name="About_StrokeTitle" xml:space="preserve"><value>ORDRE DELS TRAÇOS</value></data>
   <data name="About_StrokeBody" xml:space="preserve"><value>Les dades d'ordre dels traços provenen de KanjiVG, copyright d'Ulrich Apel, amb llicència CC BY-SA 3.0.</value></data>
   <data name="About_SentencesTitle" xml:space="preserve"><value>FRASES D'EXEMPLE</value></data>
-  <data name="About_SentencesBody" xml:space="preserve"><value>Les frases d'exemple i les seves traduccions provenen de Tatoeba i els seus col·laboradors, amb llicència CC BY 2.0 FR.</value></data>
+  <data name="About_SentencesBody" xml:space="preserve"><value>Les frases d'exemple i les seves traduccions (anglès, castellà, francès i alemany) provenen de Tatoeba i els seus col·laboradors, amb llicència CC BY 2.0 FR.</value></data>
   <data name="About_DatabaseTitle" xml:space="preserve"><value>LLICÈNCIA DE LA BASE DE DADES</value></data>
   <data name="About_DatabaseBody" xml:space="preserve"><value>La base de dades del diccionari inclosa deriva de les fonts anteriors i es distribueix amb la llicència CC BY-SA 4.0.</value></data>
   <data name="About_DataLicenseDetails" xml:space="preserve"><value>Detalls de la llicència de les dades</value></data>

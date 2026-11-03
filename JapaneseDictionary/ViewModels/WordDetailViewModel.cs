@@ -53,6 +53,7 @@ public partial class WordDetailViewModel : ObservableObject
 
     public ObservableCollection<EntryBadge> Badges { get; } = [];
     public ObservableCollection<SenseGroup> SenseGroups { get; } = [];
+    public ObservableCollection<TranslatedBlock> TranslatedBlocks { get; } = [];
     public ObservableCollection<FormChip> OtherForms { get; } = [];
     public ObservableCollection<CompoundRow> Compounds { get; } = [];
     public ObservableCollection<ExampleCard> Examples { get; } = [];
@@ -81,6 +82,7 @@ public partial class WordDetailViewModel : ObservableObject
         DictionaryEntry Entry,
         List<EntryBadge> Badges,
         List<SenseGroup> SenseGroups,
+        List<TranslatedBlock> TranslatedBlocks,
         List<FormChip> OtherForms,
         List<CompoundRow> Compounds,
         IReadOnlyList<ConjugationTableRow> ConjugationTable,
@@ -171,6 +173,7 @@ public partial class WordDetailViewModel : ObservableObject
         CanSpeak = await tts.IsAvailableAsync();
         Fill(Badges, content.Badges);
         Fill(SenseGroups, content.SenseGroups);
+        Fill(TranslatedBlocks, content.TranslatedBlocks);
         Fill(OtherForms, content.OtherForms);
         OnPropertyChanged(nameof(HasOtherForms));
         Fill(Compounds, content.Compounds);
@@ -225,6 +228,7 @@ public partial class WordDetailViewModel : ObservableObject
             entry,
             BuildBadges(entry, wordClasses),
             BuildSenseGroups(entry),
+            BuildTranslatedBlocks(entry),
             BuildOtherForms(entry),
             BuildCompounds(entry),
             conjugationTable,
@@ -242,6 +246,25 @@ public partial class WordDetailViewModel : ObservableObject
             badges.Add(new EntryBadge(UiText.WordClassName(wc), IsCommon: false, HueIndex: hue++));
         badges.Add(new EntryBadge($"#{entry.Id}", IsCommon: false, HueIndex: hue));
         return badges;
+    }
+
+    /// <summary>One block per selected language that has data for the entry, read
+    /// fresh from the preference so a Settings change applies on the next page.</summary>
+    private List<TranslatedBlock> BuildTranslatedBlocks(DictionaryEntry entry)
+    {
+        var selected = TranslationPreferences.Selected;
+        var senses = data.DictionaryRepository.GetTranslatedSenses(entry.Id, selected);
+
+        var blocks = new List<TranslatedBlock>();
+        foreach (var code in selected)
+        {
+            var items = senses.Where(s => s.Lang == code).OrderBy(s => s.Order)
+                .Select(s => new SenseItem(s.Order, string.Join(" · ", s.Glosses), null)).ToList();
+            if (items.Count > 0 && TranslationLanguages.Find(code) is { } language)
+                blocks.Add(new TranslatedBlock(language.Endonym, items));
+        }
+
+        return blocks;
     }
 
     private static List<SenseGroup> BuildSenseGroups(DictionaryEntry entry) =>
@@ -312,17 +335,27 @@ public partial class WordDetailViewModel : ObservableObject
         var sentences = data.DictionaryRepository.GetExampleSentences(entry.Id, ExamplesLimit);
         var highlightCandidates = ExampleHighlighter.Candidates(entry, data.DictionaryRepository.GetEntryWordClasses(entry.Id));
 
+        var selected = TranslationPreferences.Selected;
+        var translations = data.DictionaryRepository.GetSentenceTranslations(sentences.Select(s => s.Id).ToList(), selected)
+            .ToLookup(t => t.SentenceId);
+
         var examples = new List<ExampleCard>();
         foreach (var sentence in sentences)
         {
+            var lines = selected
+                .Select(code => (Language: TranslationLanguages.Find(code), Translation: translations[sentence.Id].FirstOrDefault(t => t.Lang == code)))
+                .Where(x => x.Language != null && x.Translation != null)
+                .Select(x => new TranslationLine(x.Language!.Badge, x.Translation!.Text))
+                .ToList();
+
             var text = sentence.Japanese;
             if (ExampleHighlighter.Find(text, highlightCandidates) is not var (index, length))
             {
-                examples.Add(new ExampleCard(sentence.Id, text, "", "", sentence.English));
+                examples.Add(new ExampleCard(sentence.Id, text, "", "", sentence.English, lines));
                 continue;
             }
 
-            examples.Add(new ExampleCard(sentence.Id, text[..index], text.Substring(index, length), text[(index + length)..], sentence.English));
+            examples.Add(new ExampleCard(sentence.Id, text[..index], text.Substring(index, length), text[(index + length)..], sentence.English, lines));
         }
 
         return examples;

@@ -1,6 +1,6 @@
 # Third-party notices
 
-This project includes or depends on the components below. Each stays under its own license. For the dictionary data (JMdict, KANJIDIC2, KanjiVG, Tatoeba) see `DATA-LICENSE.md`.
+This project includes or depends on the components below. Each stays under its own license. For the dictionary data (JMdict, KANJIDIC2, KanjiVG, Tatoeba) see `DATA-LICENSE.md` (this includes the Spanish, French and German JMdict glosses and Tatoeba sentence translations).
 
 ## Handwriting recognition model
 

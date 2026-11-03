@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using JapaneseDictionary.Core.Models;
 using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
 using JapaneseDictionary.Views;
@@ -19,6 +20,26 @@ public sealed partial class EngineChoiceRow : ObservableObject
 
     [ObservableProperty]
     private bool isSelected;
+}
+
+/// <summary>One extra meaning/sentence language switch in Settings; changing it
+/// is saved straight to <see cref="TranslationPreferences"/>.</summary>
+public sealed class TranslationLanguageRow : ObservableObject
+{
+    public required string Code { get; init; }
+    public required string Endonym { get; init; }
+
+    private bool isSelected;
+
+    public bool IsSelected
+    {
+        get => isSelected;
+        set
+        {
+            if (!SetProperty(ref isSelected, value)) return;
+            TranslationPreferences.Set(Code, value);
+        }
+    }
 }
 
 public sealed partial class SettingsViewModel : ObservableObject
@@ -48,6 +69,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     }
 
     public ReadingPreferences ReadingPreferences => ReadingPreferences.Instance;
+
+    public IReadOnlyList<TranslationLanguageRow> TranslationLanguageRows { get; } = TranslationLanguages.All
+        .Select(l => new TranslationLanguageRow { Code = l.Code, Endonym = l.Endonym, IsSelected = TranslationPreferences.IsSelected(l.Code) })
+        .ToList();
 
     public bool IsThemeSystem => theme.Preference == ThemePreference.System;
     public bool IsThemeLight => theme.Preference == ThemePreference.Light;

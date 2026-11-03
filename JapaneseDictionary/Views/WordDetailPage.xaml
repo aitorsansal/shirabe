@@ -177,6 +177,27 @@
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
 
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding TranslatedBlocks}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:TranslatedBlock">
+                                <VerticalStackLayout Padding="16" Spacing="9">
+                                    <Label Text="{Binding Header}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.2" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="9">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:SenseItem">
+                                                <Grid ColumnDefinitions="16,*" ColumnSpacing="10">
+                                                    <Label Grid.Column="0" Text="{Binding Number}" FontFamily="ArchivoExtraBold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
+                                                    <Label Grid.Column="1" Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" LineBreakMode="WordWrap" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Margin="0,7,0,-16" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
                     <VerticalStackLayout IsVisible="{Binding HasOtherForms}" Padding="16" Spacing="10">
                         <Label Text="{x:Static res:AppResources.Word_OtherForms}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.2" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
                         <FlexLayout BindableLayout.ItemsSource="{Binding OtherForms}" Wrap="Wrap">
@@ -236,6 +257,21 @@
                                                 </Label.FormattedText>
                                             </Label>
                                             <Label Text="{Binding English}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" LineBreakMode="WordWrap" />
+                                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Translations}" Spacing="8">
+                                                <BindableLayout.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:TranslationLine">
+                                                        <Label FontFamily="ArchivoRegular" FontSize="14" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}">
+                                                            <Label.FormattedText>
+                                                                <FormattedString>
+                                                                    <Span Text="{Binding Badge}" FontFamily="ArchivoExtraBold" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
+                                                                    <Span Text="  " />
+                                                                    <Span Text="{Binding Text}" />
+                                                                </FormattedString>
+                                                            </Label.FormattedText>
+                                                        </Label>
+                                                    </DataTemplate>
+                                                </BindableLayout.ItemTemplate>
+                                            </VerticalStackLayout>
                                             <Grid ColumnDefinitions="*,Auto">
                                                 <Label Grid.Column="0" FontFamily="ArchivoSemiBold" FontSize="10" CharacterSpacing="1" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" TextTransform="Uppercase">
                                                     <Label.FormattedText>

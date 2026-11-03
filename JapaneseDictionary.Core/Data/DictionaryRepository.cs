@@ -221,6 +221,36 @@ public sealed class DictionaryRepository : IDisposable
             .ToList();
     }
 
+    /// <summary>The entry's meanings in the given languages (codes from
+    /// <see cref="TranslationLanguages"/>), one numbered sense list per language,
+    /// in the order the languages are given. Languages without data are omitted.</summary>
+    public IReadOnlyList<TranslatedSense> GetTranslatedSenses(int entryId, IReadOnlyCollection<string> languages)
+    {
+        if (languages.Count == 0) return [];
+
+        var rows = db.Table<TranslatedSenseRow>().Where(r => r.EntryId == entryId).ToList()
+            .Where(r => languages.Contains(r.Lang))
+            .OrderBy(r => r.SenseOrder)
+            .ToList();
+
+        return languages.Distinct()
+            .SelectMany(lang => rows.Where(r => r.Lang == lang))
+            .Select(r => new TranslatedSense(r.Lang, r.SenseOrder, r.GlossesJoined.Split(TranslatedSenseRow.GlossSeparator)))
+            .ToList();
+    }
+
+    /// <summary>Translations of the given Japanese sentences in the given languages.</summary>
+    public IReadOnlyList<SentenceTranslation> GetSentenceTranslations(IReadOnlyCollection<long> sentenceIds, IReadOnlyCollection<string> languages)
+    {
+        if (sentenceIds.Count == 0 || languages.Count == 0) return [];
+
+        var idList = string.Join(',', sentenceIds.Select(i => i.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+        return db.Query<SentenceTranslationRow>($"SELECT * FROM SentenceTranslationRow WHERE SentenceId IN ({idList})")
+            .Where(r => languages.Contains(r.Lang))
+            .Select(r => new SentenceTranslation(r.SentenceId, r.Lang, r.Text))
+            .ToList();
+    }
+
     private static List<WordClass> ParseWordClasses(string joined) =>
         Split(joined).Select(s => Enum.TryParse<WordClass>(s, out var wc) ? wc : WordClass.Other)
             .Where(wc => wc != WordClass.Other).ToList();

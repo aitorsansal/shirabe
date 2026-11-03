@@ -19,7 +19,9 @@ public static class SqliteWriter
         IReadOnlyList<DictionaryEntry> entries,
         IReadOnlyList<KanjiInfo> kanji,
         IReadOnlyDictionary<string, List<string>> kanjiStrokes,
-        IReadOnlyList<ExampleSentence> sentences)
+        IReadOnlyList<ExampleSentence> sentences,
+        IReadOnlyDictionary<int, List<TranslatedSense>> translatedSenses,
+        IReadOnlyList<SentenceTranslation> sentenceTranslations)
     {
         if (File.Exists(outputPath)) File.Delete(outputPath);
 
@@ -34,6 +36,8 @@ public static class SqliteWriter
         db.CreateTable<KanjiStrokeRow>();
         db.CreateTable<ExampleSentenceRow>();
         db.CreateTable<ExampleSentenceLinkRow>();
+        db.CreateTable<TranslatedSenseRow>();
+        db.CreateTable<SentenceTranslationRow>();
 
         var nextSenseId = 1;
         db.RunInTransaction(() =>
@@ -98,6 +102,26 @@ public static class SqliteWriter
                     });
                 }
             }
+        });
+
+        db.RunInTransaction(() =>
+        {
+            foreach (var (entryId, senses) in translatedSenses.OrderBy(kv => kv.Key))
+            {
+                foreach (var sense in senses)
+                {
+                    db.Insert(new TranslatedSenseRow
+                    {
+                        EntryId = entryId,
+                        Lang = sense.Lang,
+                        SenseOrder = sense.Order,
+                        GlossesJoined = string.Join(TranslatedSenseRow.GlossSeparator, sense.Glosses),
+                    });
+                }
+            }
+
+            foreach (var t in sentenceTranslations)
+                db.Insert(new SentenceTranslationRow { SentenceId = t.SentenceId, Lang = t.Lang, Text = t.Text });
         });
     }
 

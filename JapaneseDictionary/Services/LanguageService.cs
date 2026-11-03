@@ -10,8 +10,8 @@ namespace JapaneseDictionary.Services;
 /// (English neutral, .es and .ca satellites); any other system language falls
 /// back to English through normal resource fallback.
 ///
-/// Only the UI is translated: glosses, search and sentence translations come
-/// from the English JMdict/Tatoeba data whatever the language.
+/// Only the UI is translated here; extra gloss and sentence languages are a
+/// separate choice (<see cref="TranslationPreferences"/>) and search stays English.
 ///
 /// XAML reads strings through x:Static when a page is built, so a change only
 /// shows on pages built afterwards: the caller rebuilds the Shell.
@@ -25,6 +25,9 @@ public sealed class LanguageService
     /// <summary>The device's language as it was before any override, so
     /// switching back to "system" at runtime restores it.</summary>
     private static CultureInfo? systemUiCulture;
+
+    /// <summary>The device language, unaffected by the in-app override.</summary>
+    public static CultureInfo SystemCulture => systemUiCulture ?? CultureInfo.CurrentUICulture;
 
     /// <summary>"" (follow the system) or one of <see cref="Supported"/>.</summary>
     public static string Preference

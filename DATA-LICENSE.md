@@ -8,7 +8,7 @@ If you redistribute the database, or a database built from it, you must credit t
 
 ### JMdict and KANJIDIC2
 
-JMdict (dictionary entries, readings, senses, word classes) and KANJIDIC2 (kanji readings, meanings, grades, frequency) are the property of the [Electronic Dictionary Research and Development Group](https://www.edrdg.org/) and are used in conformance with the Group's [licence](https://www.edrdg.org/edrdg/licence.html), which is CC BY-SA 4.0.
+JMdict (dictionary entries, readings, senses and their English, Spanish, French and German glosses, word classes) and KANJIDIC2 (kanji readings, meanings, grades, frequency) are the property of the [Electronic Dictionary Research and Development Group](https://www.edrdg.org/) and are used in conformance with the Group's [licence](https://www.edrdg.org/edrdg/licence.html), which is CC BY-SA 4.0.
 
 - JMdict: <https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project>
 - KANJIDIC: <https://www.edrdg.org/wiki/index.php/KANJIDIC_Project>
@@ -21,8 +21,8 @@ Stroke order data comes from [KanjiVG](https://kanjivg.tagaini.net/), copyright 
 
 ### Tatoeba
 
-Example sentences and their translations come from [Tatoeba](https://tatoeba.org/) and its contributors, licensed under [CC BY 2.0 FR](https://creativecommons.org/licenses/by/2.0/fr/). Each sentence in the database keeps its Tatoeba sentence id, so it can be traced back to its page and author on tatoeba.org.
+Example sentences and their English, Spanish, French and German translations come from [Tatoeba](https://tatoeba.org/) and its contributors, licensed under [CC BY 2.0 FR](https://creativecommons.org/licenses/by/2.0/fr/). Each sentence in the database keeps its Tatoeba sentence id, so it can be traced back to its page and author on tatoeba.org.
 
 ## Changes made
 
-The source files are parsed, filtered and restructured into a single SQLite schema. Example sentences are linked to JMdict entries using Tatoeba's Japanese indices. Entry text is otherwise kept as published.
+The source files are parsed, filtered and restructured into a single SQLite schema. Example sentences are linked to JMdict entries using Tatoeba's Japanese indices. Spanish, French and German sentence translations are the sentences Tatoeba links directly to the Japanese sentence (the lowest sentence id when there are several). Spanish, French and German glosses are kept as separate lists per language, since JMdict does not align them with the English senses. Entry text is otherwise kept as published.

@@ -1,12 +1,12 @@
 # Shirabe
 
-Shirabe (調べ, "looking something up") is an offline Japanese-English dictionary for Android, built with .NET MAUI. Everything runs on the device: the dictionary is a bundled SQLite database, so lookups need no network connection.
+Shirabe (調べ, "looking something up") is an offline Japanese dictionary (English, with optional Spanish, French and German meanings) for Android, built with .NET MAUI. Everything runs on the device: the dictionary is a bundled SQLite database, so lookups need no network connection.
 
 ## Features
 
 - **Search** by Japanese (kanji or kana), romaji or English. Romaji is converted to kana automatically, and conjugated forms are resolved back to their dictionary form (for example, a past-tense verb finds its base entry).
 - **Handwriting input**: draw a character and pick it from the recognition candidates.
-- **Word detail**: senses and word classes, example sentences, a per-kanji breakdown with readings, meanings and stroke counts, and a conjugation table.
+- **Word detail**: senses and word classes (English, plus Spanish, French and German meanings you can switch on in Settings), example sentences (with Spanish, French and German translations where Tatoeba has them), a per-kanji breakdown with readings, meanings and stroke counts, and a conjugation table.
 - **Romaji word readings** in results, word details and system-wide lookup, enabled by default and switchable in Settings. Converted offline from dictionary kana readings, with kana-spelled long vowels (for example, `gakkou` and `koohii`). Example sentence readings are not included.
 - **System-wide lookup**: select text in any Android app and choose "Look Up" in the selection toolbar to see a quick result popup without leaving the app.
 - **Light and dark themes**, switchable in the app.
@@ -52,10 +52,10 @@ The downloaded `dictionary.db3` is ready to use. You only need to rebuild it aft
 
 | File | Source |
 |---|---|
-| `JMdict_e` | [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) (English edition) |
+| `JMdict` | [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) (the full multilingual file, `JMdict.gz`; English plus Spanish, French and German glosses are used) |
 | `kanjidic2.xml` | [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) |
 | `kanjivg.xml` | [KanjiVG](https://kanjivg.tagaini.net/) (combined XML) |
-| `jpn_indices.csv`, `sentences.csv` | [Tatoeba downloads](https://tatoeba.org/en/downloads) |
+| `jpn_indices.csv`, `sentences.csv`, `links.csv` | [Tatoeba downloads](https://tatoeba.org/en/downloads) |
 
 Then run `dotnet run` from `JapaneseDictionary.DataBuilder/`. It writes `JapaneseDictionary/Resources/Raw/dictionary.db3`.
 
