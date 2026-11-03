@@ -87,6 +87,29 @@
   <data name="Conj_ConditionalBa" xml:space="preserve"><value>Condicional (-ba)</value></data>
   <data name="Conj_ConditionalTara" xml:space="preserve"><value>Condicional (-tara)</value></data>
   <data name="Conj_Imperative" xml:space="preserve"><value>Imperativo</value></data>
+  <data name="ConjMeaning_NonPast" xml:space="preserve"><value>[hace] / [hará]</value></data>
+  <data name="ConjMeaning_Past" xml:space="preserve"><value>[hizo]</value></data>
+  <data name="ConjMeaning_Negative" xml:space="preserve"><value>no [hace]</value></data>
+  <data name="ConjMeaning_PastNegative" xml:space="preserve"><value>no [hizo]</value></data>
+  <data name="ConjMeaning_TeForm" xml:space="preserve"><value>[haciendo], y…</value></data>
+  <data name="ConjMeaning_NegativeTe" xml:space="preserve"><value>sin [hacer]</value></data>
+  <data name="ConjMeaning_Potential" xml:space="preserve"><value>puede [hacer]</value></data>
+  <data name="ConjMeaning_Passive" xml:space="preserve"><value>es [hecho] (por…)</value></data>
+  <data name="ConjMeaning_Causative" xml:space="preserve"><value>hace / deja [hacer]</value></data>
+  <data name="ConjMeaning_CausativePassive" xml:space="preserve"><value>es obligado a [hacer]</value></data>
+  <data name="ConjMeaning_Volitional" xml:space="preserve"><value>vamos a [hacer]</value></data>
+  <data name="ConjMeaning_WantTo" xml:space="preserve"><value>quiere [hacer]</value></data>
+  <data name="ConjMeaning_ConditionalBa" xml:space="preserve"><value>si [hace]</value></data>
+  <data name="ConjMeaning_ConditionalTara" xml:space="preserve"><value>si / cuando [hace]</value></data>
+  <data name="ConjMeaning_Imperative" xml:space="preserve"><value>¡[haz]!</value></data>
+  <data name="ConjMeaning_NonPast_Adj" xml:space="preserve"><value>es [adj.]</value></data>
+  <data name="ConjMeaning_Past_Adj" xml:space="preserve"><value>era [adj.]</value></data>
+  <data name="ConjMeaning_Negative_Adj" xml:space="preserve"><value>no es [adj.]</value></data>
+  <data name="ConjMeaning_PastNegative_Adj" xml:space="preserve"><value>no era [adj.]</value></data>
+  <data name="ConjMeaning_TeForm_Adj" xml:space="preserve"><value>es [adj.] y…</value></data>
+  <data name="ConjMeaning_NegativeTe_Adj" xml:space="preserve"><value>no es [adj.] y…</value></data>
+  <data name="ConjMeaning_ConditionalBa_Adj" xml:space="preserve"><value>si es [adj.]</value></data>
+  <data name="ConjMeaning_ConditionalTara_Adj" xml:space="preserve"><value>si / cuando es [adj.]</value></data>
   <data name="Form_Negative" xml:space="preserve"><value>negativa</value></data>
   <data name="Form_NegativePast" xml:space="preserve"><value>negativa pasada</value></data>
   <data name="Form_Polite" xml:space="preserve"><value>cortés</value></data>

@@ -364,7 +364,8 @@ public partial class WordDetailViewModel : ObservableObject
         var rows = Deinflector.GetConjugationTable(
             entry.PrimaryText, entry.PrimaryReading, wordClass, Deinflector.VariantFor(entry, wordClass));
         var stem = ConjugationTableRow.CommonStem(rows);
-        return rows.Select(row => ConjugationTableRow.From(row, stem)).ToList();
+        var isAdjective = wordClass is WordClass.IAdjective or WordClass.NaAdjective;
+        return rows.Select(row => ConjugationTableRow.From(row, stem, isAdjective)).ToList();
     }
 
     private static bool IsKanji(char c) => c is >= '一' and <= '鿿';

@@ -51,6 +51,16 @@ public static class UiText
     public static string ConjugationLabel(string coreLabel) =>
         ConjugationKeys.TryGetValue(coreLabel, out var key) ? Lookup(key, coreLabel) : coreLabel;
 
+    /// <summary>Short generic meaning of a conjugation row ("didn't [do]"), with
+    /// the adjective wording when the table is an adjective's. Empty when there
+    /// is none.</summary>
+    public static string ConjugationMeaning(string coreLabel, bool isAdjective)
+    {
+        if (!ConjugationKeys.TryGetValue(coreLabel, out var key)) return "";
+        var meaningKey = "ConjMeaning_" + key["Conj_".Length..] + (isAdjective ? "_Adj" : "");
+        return AppResources.ResourceManager.GetString(meaningKey, LanguageService.Culture) ?? "";
+    }
+
     /// <summary>Plain-language name of a JMdict part-of-speech tag ("vs" → "noun
     /// that takes する"). Archaic verb classes share one description; an unknown
     /// tag is returned as is.</summary>

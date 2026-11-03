@@ -87,6 +87,29 @@
   <data name="Conj_ConditionalBa" xml:space="preserve"><value>Conditional (ba)</value></data>
   <data name="Conj_ConditionalTara" xml:space="preserve"><value>Conditional (tara)</value></data>
   <data name="Conj_Imperative" xml:space="preserve"><value>Imperative</value></data>
+  <data name="ConjMeaning_NonPast" xml:space="preserve"><value>does / will [do]</value></data>
+  <data name="ConjMeaning_Past" xml:space="preserve"><value>[did]</value></data>
+  <data name="ConjMeaning_Negative" xml:space="preserve"><value>doesn't [do]</value></data>
+  <data name="ConjMeaning_PastNegative" xml:space="preserve"><value>didn't [do]</value></data>
+  <data name="ConjMeaning_TeForm" xml:space="preserve"><value>[doing], and…</value></data>
+  <data name="ConjMeaning_NegativeTe" xml:space="preserve"><value>without [doing]</value></data>
+  <data name="ConjMeaning_Potential" xml:space="preserve"><value>can [do]</value></data>
+  <data name="ConjMeaning_Passive" xml:space="preserve"><value>is [done] (by…)</value></data>
+  <data name="ConjMeaning_Causative" xml:space="preserve"><value>makes / lets [do]</value></data>
+  <data name="ConjMeaning_CausativePassive" xml:space="preserve"><value>is made to [do]</value></data>
+  <data name="ConjMeaning_Volitional" xml:space="preserve"><value>let's [do]</value></data>
+  <data name="ConjMeaning_WantTo" xml:space="preserve"><value>wants to [do]</value></data>
+  <data name="ConjMeaning_ConditionalBa" xml:space="preserve"><value>if [one does]</value></data>
+  <data name="ConjMeaning_ConditionalTara" xml:space="preserve"><value>if / when [one does]</value></data>
+  <data name="ConjMeaning_Imperative" xml:space="preserve"><value>[do]!</value></data>
+  <data name="ConjMeaning_NonPast_Adj" xml:space="preserve"><value>is [adj.]</value></data>
+  <data name="ConjMeaning_Past_Adj" xml:space="preserve"><value>was [adj.]</value></data>
+  <data name="ConjMeaning_Negative_Adj" xml:space="preserve"><value>isn't [adj.]</value></data>
+  <data name="ConjMeaning_PastNegative_Adj" xml:space="preserve"><value>wasn't [adj.]</value></data>
+  <data name="ConjMeaning_TeForm_Adj" xml:space="preserve"><value>is [adj.] and…</value></data>
+  <data name="ConjMeaning_NegativeTe_Adj" xml:space="preserve"><value>isn't [adj.] and…</value></data>
+  <data name="ConjMeaning_ConditionalBa_Adj" xml:space="preserve"><value>if it's [adj.]</value></data>
+  <data name="ConjMeaning_ConditionalTara_Adj" xml:space="preserve"><value>if / when it's [adj.]</value></data>
   <data name="Form_Negative" xml:space="preserve"><value>negative</value></data>
   <data name="Form_NegativePast" xml:space="preserve"><value>negative past</value></data>
   <data name="Form_Polite" xml:space="preserve"><value>polite</value></data>

@@ -67,8 +67,10 @@ public sealed record ConjugationTableCell(string Stem, string Ending, string Rea
 }
 
 /// <summary>A conjugation table row.</summary>
-public sealed record ConjugationTableRow(string Label, ConjugationTableCell Plain, ConjugationTableCell Polite)
+public sealed record ConjugationTableRow(string Label, string Meaning, ConjugationTableCell Plain, ConjugationTableCell Polite)
 {
+    public bool HasMeaning => Meaning.Length > 0;
+
     /// <summary>The prefix every displayed form in the table shares: 食 for 食べる
     /// (食べない, 食べます), 行 for 行く. Empty when nothing is shared, as for 来る
     /// in kana (くる, こない, きた).</summary>
@@ -92,8 +94,9 @@ public sealed record ConjugationTableRow(string Label, ConjugationTableCell Plai
         return stem ?? "";
     }
 
-    public static ConjugationTableRow From(Deinflector.ConjugationDisplayRow row, string stem) =>
-        new(UiText.ConjugationLabel(row.Label), Cell(row.Plain, stem), Cell(row.Polite, stem));
+    public static ConjugationTableRow From(Deinflector.ConjugationDisplayRow row, string stem, bool isAdjective) =>
+        new(UiText.ConjugationLabel(row.Label), UiText.ConjugationMeaning(row.Label, isAdjective),
+            Cell(row.Plain, stem), Cell(row.Polite, stem));
 
     private static ConjugationTableCell Cell(Deinflector.ConjugationCell? cell, string stem)
     {

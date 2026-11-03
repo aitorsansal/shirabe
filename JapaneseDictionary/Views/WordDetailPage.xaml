@@ -371,7 +371,10 @@
                             <DataTemplate x:DataType="vm:ConjugationTableRow">
                                 <Grid>
                                     <VerticalStackLayout Padding="16,11" Spacing="6">
-                                        <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="0.6" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" />
+                                        <VerticalStackLayout Spacing="1">
+                                            <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="0.6" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" />
+                                            <Label Text="{Binding Meaning}" IsVisible="{Binding HasMeaning}" FontFamily="ArchivoRegular" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" TextTransform="None" />
+                                        </VerticalStackLayout>
                                         <Grid ColumnDefinitions="64,*">
                                             <Label Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjPlain}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
                                             <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
