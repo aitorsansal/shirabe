@@ -66,6 +66,9 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
         <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+        <!-- Play flagged DEX obfuscation at 1%. R8 shrinks and obfuscates the Java side
+             (AndroidX/Material/MAUI glue); the C# code is AOT'd to native code and unaffected. -->
+        <AndroidLinkTool>r8</AndroidLinkTool>
         <!-- Profiled AOT: measured on a phone, cold start drops from ~1.24s to ~0.75s
              for +3MB. Full AOT (AndroidEnableProfiledAot=false) starts no faster and
              runs searches/page loads no faster, for +8MB. -->
