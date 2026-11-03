@@ -24,8 +24,12 @@ internal enum InflectionType
     Te = 1 << 8,
     Past = 1 << 9,
 
+    /// <summary>The untouched query. No rule outputs it, so a rule taking only
+    /// this applies to what the user typed, never to an intermediate result.</summary>
+    Query = 1 << 10,
+
     DictionaryForm = Ichidan | Godan | Kuru | Suru | IAdjective | NaAdjective,
-    Any = DictionaryForm | Masu | Te | Past,
+    Any = DictionaryForm | Masu | Te | Past | Query,
 }
 
 /// <param name="Reasons">Rules applied, outermost first (食べなかった: past,
@@ -111,6 +115,7 @@ public static partial class Deinflector
         const InflectionType vs = InflectionType.Suru;
         const InflectionType adjI = InflectionType.IAdjective;
         const InflectionType adjNa = InflectionType.NaAdjective;
+        const InflectionType query = InflectionType.Query;
 
         var rules = new List<Rule>
         {
@@ -175,7 +180,10 @@ public static partial class Deinflector
             new("くない", "い", adjI, adjI, "negative"),
             new("かった", "い", past, adjI, "past"),
             new("くて", "い", te, adjI, "te-form"),
-            new("く", "い", any, adjI, "adverbial"),
+            // Only on the query itself: nothing else conjugates out of an adverbial
+            // く (くない and くて have their own rules), and taking any input let it
+            // read a finished godan verb as one, so いかなければ -> いく -> いい.
+            new("く", "い", query, adjI, "adverbial"),
             new("ければ", "い", any, adjI, "conditional (ba)"),
             new("いです", "い", any, adjI, "polite"),
             new("かったです", "かった", any, past, "polite"),

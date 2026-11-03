@@ -113,6 +113,16 @@ public class SearchServiceTests : IDisposable
     }
 
     [SkippableFact]
+    public void Search_NegativeConditionalOfIku_FindsOnlyTheVerbs()
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var heads = search!.Search("ikanakereba").Select(r => repo!.GetEntry(r.EntryId)!.PrimaryText).ToList();
+        Assert.Contains("行く", heads);
+        Assert.DoesNotContain("いい", heads);
+        Assert.DoesNotContain("良い", heads);
+    }
+
+    [SkippableFact]
     public void Search_ConjugatedKana_FindsKikuAsPolite()
     {
         Skip.If(search == null, "dictionary.db3 not built");

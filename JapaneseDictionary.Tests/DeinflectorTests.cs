@@ -65,6 +65,24 @@ public class DeinflectorTests
     {
         Assert.Null(Deinflector.TryGetFormName("ねる", "たべる", WordClass.IchidanVerb));
     }
+
+    [Theory]
+    [InlineData("たかく", "たかい")]
+    [InlineData("はやく", "はやい")]
+    public void Deinflect_AdverbialOfTheQuery_FindsTheAdjective(string query, string adjective)
+    {
+        Assert.Contains(Deinflector.Deinflect(query), d =>
+            d.Text == adjective && d.Type == InflectionType.IAdjective && d.Reasons.SequenceEqual(["adverbial"]));
+    }
+
+    [Theory]
+    [InlineData("いかなければ", "いい")] // via いく: not a form of いい, which conjugates from よ-
+    [InlineData("かかない", "かい")]     // via かく
+    public void Deinflect_DictionaryFormOfAVerb_IsNotReadAsAnAdverbial(string query, string notAnAdjective)
+    {
+        Assert.DoesNotContain(Deinflector.Deinflect(query), d =>
+            d.Text == notAnAdjective && d.Type == InflectionType.IAdjective);
+    }
 }
 
 public class ConjugationTableTests
