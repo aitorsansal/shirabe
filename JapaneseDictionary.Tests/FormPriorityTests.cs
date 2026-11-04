@@ -29,6 +29,25 @@ public class FormPriorityTests
         Assert.True(FormPriority.Band(FormPriority.CommonUnranked) < FormPriority.Band(FormPriority.Secondary));
         Assert.True(FormPriority.Band(FormPriority.Secondary) < FormPriority.Band(FormPriority.None));
     }
+
+    [Theory]
+    [InlineData(FormPriority.CommonUnranked, 5, 0)]
+    [InlineData(FormPriority.CommonUnranked, 4, 0)]
+    [InlineData(FormPriority.CommonUnranked, 3, 2)]
+    [InlineData(FormPriority.CommonUnranked, 2, 3)]
+    [InlineData(FormPriority.CommonUnranked, 1, 4)]
+    [InlineData(FormPriority.None, 5, 0)]
+    public void EffectiveBand_LiftsUntaggedWordsByJlptLevel(int priority, int level, int expected) =>
+        Assert.Equal(expected, FormPriority.EffectiveBand(priority, level));
+
+    [Fact]
+    public void EffectiveBand_NeverWorsensAndIgnoresMissingLevel()
+    {
+        // No level: same as Band. A low JLPT level never pushes a frequent word down.
+        Assert.Equal(FormPriority.Band(FormPriority.CommonUnranked), FormPriority.EffectiveBand(FormPriority.CommonUnranked, null));
+        Assert.Equal(FormPriority.Band(3), FormPriority.EffectiveBand(3, 1));
+        Assert.Equal(FormPriority.Band(15), FormPriority.EffectiveBand(15, 1));
+    }
 }
 
 public class DictionaryEntryHeadwordTests

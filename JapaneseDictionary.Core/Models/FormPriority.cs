@@ -56,4 +56,27 @@ public static class FormPriority
         Secondary => 7,
         _ => 8,
     };
+
+    /// <summary><see cref="Band"/> improved by the entry's JLPT level. JMdict leaves
+    /// many of the most basic words (行く, する, 書く, 家, 本) with ichi1/news1/spec1
+    /// but no nfXX tag, which <see cref="Band"/> puts below every nf-tagged word.
+    /// The JLPT lists cover them: N5/N4 count as the top band, N3 as band 2, N2 as
+    /// band 3, N1 as band 4 (kept clear of band 1 so a mid-frequency nf word such
+    /// as 加味 nf15 still outranks 上 read as かみ, which is N3). Never worsens the result; null means no effect.
+    /// JLPT is per entry, not per form, so callers ranking by a matched spelling
+    /// or reading should only pass it when that form is the entry's headword or
+    /// first reading.</summary>
+    /// <param name="jlptLevel">5 (N5) to 1 (N1), or null for an unlisted word.</param>
+    public static int EffectiveBand(int priority, int? jlptLevel)
+    {
+        var band = Band(priority);
+        return jlptLevel switch
+        {
+            >= 4 => Math.Min(band, 0),
+            3 => Math.Min(band, 2),
+            2 => Math.Min(band, 3),
+            1 => Math.Min(band, 4),
+            _ => band,
+        };
+    }
 }

@@ -11,4 +11,5 @@ public sealed class GlossCandidateRow
     public bool IsCommon { get; set; }
     public int Priority { get; set; } = Models.FormPriority.None;
     public string PrimaryText { get; set; } = "";
+    public int? JlptLevel { get; set; }
 }

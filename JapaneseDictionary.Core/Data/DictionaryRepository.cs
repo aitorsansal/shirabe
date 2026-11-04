@@ -95,7 +95,7 @@ public sealed class DictionaryRepository : IDisposable
         // The whole-word form pads the gloss with spaces and turns brackets and
         // separators into spaces, so "go (somewhere)" matches "% go %".
         const string select = """
-            SELECT s.EntryId, g.Text AS GlossText, s.SenseOrder, g.GlossOrder, w.IsCommon, w.Priority, w.PrimaryText
+            SELECT s.EntryId, g.Text AS GlossText, s.SenseOrder, g.GlossOrder, w.IsCommon, w.Priority, w.PrimaryText, w.JlptLevel
             FROM GlossRow g
             JOIN SenseRow s ON s.Id = g.SenseId
             JOIN WordEntryRow w ON w.Id = s.EntryId
@@ -139,9 +139,9 @@ public sealed class DictionaryRepository : IDisposable
         var textList = texts.ToList();
 
         var formRows = db.Table<KanjiFormRow>().Where(r => textList.Contains(r.Text))
-            .Select(r => (r.Text, r.EntryId, r.IsCommon, r.Priority)).ToList();
+            .Select(r => (r.Text, r.EntryId, r.IsCommon, r.Priority, RowId: 0)).ToList();
         formRows.AddRange(db.Table<ReadingFormRow>().Where(r => textList.Contains(r.Text))
-            .Select(r => (r.Text, r.EntryId, r.IsCommon, r.Priority)));
+            .Select(r => (r.Text, r.EntryId, r.IsCommon, r.Priority, r.RowId)));
         if (formRows.Count == 0) return [];
 
         // sqlite-net-pcl's TableQuery doesn't translate .Join() to SQL (it would
@@ -149,13 +149,20 @@ public sealed class DictionaryRepository : IDisposable
         var entryIds = formRows.Select(r => r.EntryId).Distinct().ToList();
         var entries = db.Table<WordEntryRow>().Where(w => entryIds.Contains(w.Id)).ToDictionary(w => w.Id);
 
+        // ReadingFormRow has no order column, but DataBuilder inserts readings in
+        // JMdict order with an autoincrement RowId, so an entry's lowest RowId is its
+        // first reading. (WordEntryRow.PrimaryReading is the first *common* reading.)
+        var firstReadingRowIds = db.Query<FirstReadingRow>(
+                $"SELECT EntryId, MIN(RowId) AS RowId FROM ReadingFormRow WHERE EntryId IN ({string.Join(",", entryIds)}) GROUP BY EntryId")
+            .ToDictionary(r => r.EntryId, r => r.RowId);
+
         return formRows
             .GroupBy(r => (r.Text, r.EntryId))
             .Where(g => entries.ContainsKey(g.Key.EntryId))
             .Select(g =>
             {
                 var entry = entries[g.Key.EntryId];
-                return new ExactTextMatch(g.Key.Text, g.Key.EntryId, ParseWordClasses(entry.WordClassesJoined), entry.IsCommon, entry.PrimaryText, g.Any(r => r.IsCommon), g.Min(r => r.Priority));
+                return new ExactTextMatch(g.Key.Text, g.Key.EntryId, ParseWordClasses(entry.WordClassesJoined), entry.IsCommon, entry.PrimaryText, g.Any(r => r.IsCommon), g.Min(r => r.Priority), entry.JlptLevel, g.Key.Text == entry.PrimaryText || g.Any(r => r.RowId != 0 && r.RowId == firstReadingRowIds.GetValueOrDefault(g.Key.EntryId)));
             })
             .ToList();
     }
@@ -288,7 +295,19 @@ public sealed class DictionaryRepository : IDisposable
         string.IsNullOrEmpty(joined) ? [] : joined.Split(';').ToList();
 }
 
+internal sealed class FirstReadingRow
+{
+    public int EntryId { get; set; }
+    public int RowId { get; set; }
+}
+
 // IsCommon is the entry's flag; FormIsCommon is whether the matched spelling or
 // reading itself is common (大雪 is common as おおゆき, not as たいせつ), and
 // FormPriority how frequent it is (see FormPriority: かみ is nf03 as 紙, ichi1 as 上).
-public sealed record ExactTextMatch(string Text, int EntryId, IReadOnlyList<WordClass> WordClasses, bool IsCommon, string PrimaryText, bool FormIsCommon, int FormPriority);
+public sealed record ExactTextMatch(string Text, int EntryId, IReadOnlyList<WordClass> WordClasses, bool IsCommon, string PrimaryText, bool FormIsCommon, int FormPriority, int? JlptLevel = null, bool IsHeadwordOrFirstReading = false)
+{
+    /// <summary>The matched form's <see cref="Models.FormPriority.EffectiveBand"/>. The
+    /// entry's JLPT level only counts when the match is its headword or first reading:
+    /// 上 is N5 as うえ and must not outrank 紙/神/髪 for かみ.</summary>
+    public int EffectiveBand => Models.FormPriority.EffectiveBand(FormPriority, IsHeadwordOrFirstReading ? JlptLevel : null);
+}

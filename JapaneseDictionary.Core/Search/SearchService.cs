@@ -69,7 +69,7 @@ public sealed partial class SearchService
 
         var japaneseForms = BuildJapaneseForms(query);
         var glosses = !ContainsJapanese(query) && query.Length >= MinGlossQueryLength
-            ? GlossRanker.Rank(query, repo.FindGlossCandidates(query, wholeWordOnly: query.Length <= MaxWholeWordOnlyLength), kanjiFrequencyRanks, limit)
+            ? GlossRanker.Rank(query, repo.FindGlossCandidates(query, wholeWordOnly: query.Length <= MaxWholeWordOnlyLength), kanjiFrequencyRanks, limit, repo.GetExampleCounts)
             : [];
 
         var results = new List<SearchResult>();
@@ -118,7 +118,7 @@ public sealed partial class SearchService
         (new SearchResult(gloss.EntryId, SearchMatchKind.Gloss, null, gloss.GlossText), gloss.PriorityBand, gloss.Rarity);
 
     /// <summary>Exact kanji/reading matches for each form, most frequent first by
-    /// the matched form's <see cref="FormPriority.Band"/>, then
+    /// the matched form's <see cref="FormPriority.EffectiveBand"/>, then
     /// <see cref="ExampleEvidence"/>, then <see cref="KanjiRarity"/> (かみ: 紙, 神
     /// and 髪 before 加味, and those before 上 read as かみ; なる: 成る before 生る).</summary>
     private List<(SearchResult Result, int PriorityBand, int Rarity)> FindExactMatches(IReadOnlyList<string> forms)
@@ -126,7 +126,7 @@ public sealed partial class SearchService
         var formOrder = forms.Select((form, i) => (form, i)).ToDictionary(x => x.form, x => x.i);
         var matches = repo.FindByExactTexts(forms.ToList())
             .GroupBy(m => m.EntryId)
-            .Select(g => (Match: g.OrderBy(m => formOrder[m.Text]).First(), PriorityBand: FormPriority.Band(g.Min(m => m.FormPriority))))
+            .Select(g => (Match: g.OrderBy(m => formOrder[m.Text]).First(), PriorityBand: g.Min(m => m.EffectiveBand)))
             .ToList();
         var exampleCounts = repo.GetExampleCounts(matches.Select(x => x.Match.EntryId).ToList());
         return matches
@@ -178,7 +178,7 @@ public sealed partial class SearchService
     }
 
     /// <summary>Dictionary entries <paramref name="form"/> is a conjugation of,
-    /// best first: fewest conjugation steps, then <see cref="FormPriority.Band"/>, then
+    /// best first: fewest conjugation steps, then <see cref="FormPriority.EffectiveBand"/>, then
     /// <see cref="ExampleEvidence"/>, then <see cref="KanjiRarity"/>.</summary>
     private List<SearchResult> FindConjugatedMatches(string form)
     {
@@ -211,7 +211,7 @@ public sealed partial class SearchService
 
                 var rank = (
                     source.Reasons.Count,
-                    FormPriority.Band(match.FormPriority),
+                    match.EffectiveBand,
                     -ExampleEvidence.Band(exampleCounts.GetValueOrDefault(match.EntryId)),
                     KanjiRarity.Of(match.PrimaryText, kanjiFrequencyRanks));
                 if (!best.TryGetValue(match.EntryId, out var existing) || rank.CompareTo(existing.Rank) < 0)

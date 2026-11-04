@@ -129,4 +129,45 @@ public class SearchServiceTests : IDisposable
         var results = search!.Search("ききます");
         Assert.Contains(results, r => r.Kind == SearchMatchKind.Conjugated && r.ConjugationForm == "polite");
     }
+
+    private List<string> Heads(string query) =>
+        search!.Search(query).Select(r => repo!.GetEntry(r.EntryId)!.PrimaryText).ToList();
+
+    [SkippableTheory]
+    [InlineData("eat", "食べる")]
+    [InlineData("write", "書く")]
+    [InlineData("sit", "座る")]
+    [InlineData("understand", "分かる")]
+    [InlineData("きく", "聞く")]
+    [InlineData("する", "する")]
+    public void Search_BasicWord_RanksFirst(string query, string expected)
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        Assert.Equal(expected, Heads(query)[0]);
+    }
+
+    [SkippableTheory]
+    [InlineData("go", "行く", 3)]
+    [InlineData("do", "する", 2)]
+    [InlineData("leg", "足", 2)]
+    [InlineData("wake up", "起きる", 3)]
+    [InlineData("arrive", "着く", 3)]
+    [InlineData("search", "探す", 4)]
+    [InlineData("drink", "飲む", 2)]
+    [InlineData("enter", "入る", 2)]
+    [InlineData("かく", "書く", 2)]
+    [InlineData("おく", "置く", 2)]
+    public void Search_BasicWord_RanksInTopN(string query, string expected, int n)
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        Assert.Contains(expected, Heads(query).Take(n));
+    }
+
+    [SkippableFact]
+    public void Search_Suru_RanksTheVerbWithManySensesFirst()
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var first = repo!.GetEntry(search!.Search("する")[0].EntryId)!;
+        Assert.True(first.Senses.Count > 5);
+    }
 }
