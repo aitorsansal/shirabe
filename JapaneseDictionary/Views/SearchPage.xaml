@@ -45,6 +45,8 @@
                         FontFamily="ArchivoRegular"
                         FontSize="17"
                         BackgroundColor="Transparent"
+                        ReturnType="Search"
+                        Completed="OnQueryCompleted"
                         VerticalOptions="Center" />
                     <Button
                         Grid.Column="2"

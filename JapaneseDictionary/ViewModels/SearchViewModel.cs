@@ -185,7 +185,11 @@ public partial class SearchViewModel : ObservableObject
             var entry = data.DictionaryRepository.GetEntry(match.EntryId);
             if (entry == null) continue;
 
-            rows.Add(SearchResultRow.FromEntry(entry, levels.TryGetValue(entry.Id, out var level) ? level : null, MatchNote(match, query, isMixed)));
+            rows.Add(SearchResultRow.FromEntry(
+                entry,
+                levels.TryGetValue(entry.Id, out var level) ? level : null,
+                MatchNote(match, query, isMixed),
+                match.Kind == SearchMatchKind.Gloss ? match.MatchedText : null));
         }
 
         var label = isMixed ? AppResources.Search_LabelMixed

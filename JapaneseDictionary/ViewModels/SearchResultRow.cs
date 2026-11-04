@@ -22,13 +22,23 @@ public sealed record SearchResultRow(
 
     public string JlptLabel => JlptLevel is { } level ? UiText.Format(AppResources.Common_JlptBadge, level) : "";
 
-    public static SearchResultRow FromEntry(DictionaryEntry entry, int? jlptLevel = null, string? viaNote = null)
+    private const int PreviewGlossCount = 3;
+
+    /// <param name="matchedGloss">For an English search, the gloss the entry matched
+    /// on. When it isn't among the first glosses it leads the preview, so 足 found by
+    /// "leg" reads "leg · foot · paw" instead of hiding why it's in the list.</param>
+    public static SearchResultRow FromEntry(DictionaryEntry entry, int? jlptLevel = null, string? viaNote = null, string? matchedGloss = null)
     {
         var firstSense = entry.Senses.FirstOrDefault();
         var tags = firstSense?.PartOfSpeechTags.Take(2)
             .Select(TagChip.For)
             .ToList() ?? [];
-        var gloss = string.Join(" · ", entry.MeaningGlosses.Take(3));
+
+        var glosses = entry.MeaningGlosses.ToList();
+        var preview = glosses.Take(PreviewGlossCount).ToList();
+        if (matchedGloss != null && !preview.Contains(matchedGloss) && glosses.Contains(matchedGloss))
+            preview = [matchedGloss, .. glosses.Where(g => g != matchedGloss).Take(PreviewGlossCount - 1)];
+        var gloss = string.Join(" · ", preview);
 
         return new SearchResultRow(
             entry.Id, entry.PrimaryReading, entry.PrimaryText,
