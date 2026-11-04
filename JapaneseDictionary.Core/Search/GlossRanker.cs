@@ -6,7 +6,7 @@ using JapaneseDictionary.Core.Models;
 namespace JapaneseDictionary.Core.Search;
 
 /// <summary>
-/// Orders English gloss matches so that searching "eat" finds é£Ÿã¹ã‚‹ rather than
+/// Orders English gloss matches so that searching "eat" finds 食べる rather than
 /// whatever happens to contain "b<i>eat</i>". Each entry is ranked by its best
 /// gloss: an exact gloss ("eat" / "to eat", ignoring bracketed qualifiers),
 /// then a whole-word match, then a bare substring.
@@ -15,13 +15,13 @@ namespace JapaneseDictionary.Core.Search;
 /// Within a match rank, frequency decides (<see cref="FormPriority.EffectiveBand"/>,
 /// so very basic words JMdict leaves without an nf tag still count by their JLPT
 /// level), with a <see cref="LaterSensePenalty"/> for matches outside the first
-/// sense: é£Ÿã¹ã‚‹ (sense 1) outranks å–ã‚‹ (sense 7 of 18) for "eat".
+/// sense: 食べる (sense 1) outranks 取る (sense 7 of 18) for "eat".
 /// Among exact glosses, a narrowing qualifier ("school (of fish)", "to run (a
 /// business)") ranks below an unqualified or merely descriptive one ("water
 /// (esp. cool or cold)", "dog (Canis familiaris)"). Among equally good exact
 /// glosses, the entry with more example sentences (<see cref="ExampleEvidence"/>)
-/// wins, the same tiebreak exact Japanese matches use (ã™ã‚‹ over è‡´ã™, ã‚„ã‚‹ and
-/// ãªã•ã‚‹ for "do"). Remaining ties go to earlier senses and glosses, then
+/// wins, the same tiebreak exact Japanese matches use (する over 致す, やる and
+/// なさる for "do"). Remaining ties go to earlier senses and glosses, then
 /// <see cref="KanjiRarity"/>.
 /// </summary>
 /// <param name="MatchRank">0 exact gloss, 1 whole word, 2 substring.</param>
@@ -36,9 +36,9 @@ internal static partial class GlossRanker
 
     /// <summary>Bands a match outside the entry's first sense loses. JMdict lists
     /// core meanings first, so a second sense costs little: a basic word's sense 2
-    /// (è¶³ "leg", èµ·ãã‚‹ "to wake up") still beats rare words that mean it first
-    /// (è„šéƒ¨, ç›®ã‚’è¦šã¾ã™). Later senses are side meanings of common words (å–ã‚‹ "to
-    /// eat", sense 7; é‡ã„ "blue") and cost enough to stay out of the way.</summary>
+    /// (足 "leg", 起きる "to wake up") still beats rare words that mean it first
+    /// (脚部, 目を覚ます). Later senses are side meanings of common words (取る "to
+    /// eat", sense 7; 重い "blue") and cost enough to stay out of the way.</summary>
     private static int LaterSensePenalty(int senseOrder) => senseOrder switch
     {
         <= FirstSenseOrder => 0,
