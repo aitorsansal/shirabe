@@ -84,7 +84,7 @@ public partial class SearchViewModel : ObservableObject
     private async Task OpenDrawAsync()
     {
         var page = App.Services.GetRequiredService<HandwritingSheetPage>();
-        page.OnCharacterPicked = character => Query += character;
+        page.Attach(() => Query, text => Query = text);
         await Shell.Current.Navigation.PushModalAsync(page);
     }
 

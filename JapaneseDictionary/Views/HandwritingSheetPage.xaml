@@ -13,12 +13,56 @@
     <Grid VerticalOptions="End">
         <VerticalStackLayout BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}" Spacing="0" Padding="0,0,0,24">
 
-            <Grid ColumnDefinitions="*,Auto" Padding="16,14,16,12">
-                <VerticalStackLayout Grid.Column="0" Spacing="3">
+            <!--  Header. The Append/Replace switch sits in row 1 in portrait and moves
+                  into row 0, between title and Done, in landscape (see OnSizeAllocated).  -->
+            <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto" Padding="16,14,16,12">
+                <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="3">
                     <Label Text="{x:Static res:AppResources.Hand_Kicker}" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.4" TextColor="{AppThemeBinding Light={StaticResource KickerAccentLight}, Dark={StaticResource KickerAccentDark}}" />
                     <Label Text="{x:Static res:AppResources.Hand_Title}" FontFamily="ArchivoExtraBold" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                 </VerticalStackLayout>
-                <Button Grid.Column="1" Text="{x:Static res:AppResources.Common_Done}" Clicked="OnDoneClicked" Style="{StaticResource SheetChromeButtonStyle}" VerticalOptions="Center" />
+                <Button Grid.Row="0" Grid.Column="2" Text="{x:Static res:AppResources.Common_Done}" Clicked="OnDoneClicked" Style="{StaticResource SheetChromeButtonStyle}" VerticalOptions="Center" />
+
+                <!--  Segmented control: the selected side gets the same sky-blue fill as the
+                      Word Detail tabs; the outer Border keeps the hairline frame.  -->
+                <Border x:Name="ModeSwitch" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,12,0,0" Padding="0" StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}">
+                    <Grid ColumnDefinitions="*,*">
+                        <Button Grid.Column="0" Text="{x:Static res:AppResources.Hand_ModeAppend}" Command="{Binding SetModeCommand}" CommandParameter="Append"
+                                Style="{StaticResource TabButtonStyle}" MinimumWidthRequest="88"
+                                BackgroundColor="{Binding IsAppendMode, Converter={StaticResource TabActiveBgConverter}}">
+                            <Button.TextColor>
+                                <MultiBinding Converter="{StaticResource TabActiveFgConverter}">
+                                    <Binding Path="IsAppendMode" />
+                                    <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                                </MultiBinding>
+                            </Button.TextColor>
+                        </Button>
+                        <Button Grid.Column="1" Text="{x:Static res:AppResources.Hand_ModeReplace}" Command="{Binding SetModeCommand}" CommandParameter="Replace"
+                                Style="{StaticResource TabButtonStyle}" MinimumWidthRequest="88"
+                                BackgroundColor="{Binding IsReplaceMode, Converter={StaticResource TabActiveBgConverter}}">
+                            <Button.TextColor>
+                                <MultiBinding Converter="{StaticResource TabActiveFgConverter}">
+                                    <Binding Path="IsReplaceMode" />
+                                    <Binding Source="{StaticResource ThemeService}" Path="IsDark" />
+                                </MultiBinding>
+                            </Button.TextColor>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!--  Append mode only: the query as it is being built, plus backspace.  -->
+            <Grid IsVisible="{Binding IsAppendMode}" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="16,0,16,12">
+                <Border Grid.Column="0" StrokeThickness="1" Padding="12,0" MinimumHeightRequest="44"
+                        Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}"
+                        Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" VerticalOptions="Center" SemanticProperties.Hint="{x:Static res:AppResources.Hand_QueryLabel}">
+                        <Label Text="{Binding ComposedQuery}" FontFamily="NotoSerifJPSemiBold" FontSize="24" LineBreakMode="NoWrap" VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                    </ScrollView>
+                </Border>
+                <Button Grid.Column="1" Text="⌫" FontSize="18" Clicked="OnBackspaceClicked" IsEnabled="{Binding HasQuery}"
+                        Style="{StaticResource SheetChromeButtonStyle}" SemanticProperties.Description="{x:Static res:AppResources.Hand_Backspace}" />
             </Grid>
 
             <!--  Portrait: draw section, rule, matches stacked. Landscape (see

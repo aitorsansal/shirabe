@@ -148,6 +148,10 @@
   <data name="Hand_Matches" xml:space="preserve"><value>COINCIDÈNCIES</value></data>
   <data name="Hand_StrokeAbbreviation" xml:space="preserve"><value> tr.</value></data>
   <data name="Hand_Ranked" xml:space="preserve"><value>Ordenades pel model de reconeixement del dispositiu (DaKanji, ONNX), de més a menys probable.</value></data>
+  <data name="Hand_ModeAppend" xml:space="preserve"><value>Afegir</value></data>
+  <data name="Hand_ModeReplace" xml:space="preserve"><value>Substituir</value></data>
+  <data name="Hand_QueryLabel" xml:space="preserve"><value>Text de cerca</value></data>
+  <data name="Hand_Backspace" xml:space="preserve"><value>Esborra l'últim caràcter</value></data>
   <data name="Hand_NoteEmpty" xml:space="preserve"><value>dibuixa per cercar</value></data>
   <data name="Hand_NoteTop" xml:space="preserve"><value>millors {0}</value></data>
   <data name="Settings_Appearance" xml:space="preserve"><value>ASPECTE</value></data>
