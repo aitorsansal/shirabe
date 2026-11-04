@@ -4,6 +4,18 @@ Shirabe is a lookup tool, not a study app. Practice lives in NihongoNoPractise (
 
 Order: 1.1a, 1.1b, 1.1c, then 1.2. Cut 1.2 only after closed-test feedback is in.
 
+## Pending verification
+
+- **Anki import check.** The list export uses Anki's file headers (`#columns`, `#tags column`, `#guid column`) per the manual, but hasn't been imported into a real Anki yet. Before relying on it: import one exported list into Anki desktop and AnkiDroid with the Basic note type and check that no header card appears, Front/Back are filled, tags arrive, Japanese text isn't garbled (the file is UTF-8 without a BOM), and re-importing after adding a word updates instead of duplicating. Not a blocker for the next release.
+
+## Open from the 1.0.2 comparison with Takoboto
+
+Done since the report: ranking by core meaning and JLPT level, matched meaning in result previews, one line per sense, handwriting Append/Replace switch, stroke-order autoplay, "Show more results", Spanish/French/German meaning search, Anki-ready list export, grade chip and JMdict id badge removed. Still open:
+
+- **Wildcards** (`?` one character, `*` any run) on Japanese forms only. No database change. A leading `*` means a full scan of ~100k forms: measure on the phone before shipping.
+- **Kanji search by components (radicals):** see 1.2; needs KRADFILE and a rebuild. Handwriting already covers most "I can't type this kanji" cases, so it stays last.
+- **English ranking gaps.** "station" doesn't put 駅 first and "evening" doesn't put 夕方 first: both need a head-noun tier (the query as the head of a longer gloss). "come" puts 来る third behind honorific verbs; accepted as is.
+
 ## 1.1a: layout fixes, no data changes
 
 - **Landscape audit.** Check every page with the phone rotated (a wider/higher screen than that is assumed to work if the phone does). Fix clipping and cramped layouts.
@@ -21,16 +33,17 @@ Order: 1.1a, 1.1b, 1.1c, then 1.2. Cut 1.2 only after closed-test feedback is in
 
 ## 1.1c: NNP link (undecided, blocked on NNP)
 
-Per-list CSV export (`Word,Reading,Meanings`, via `WordListCsv`) already exists. NNP has no import and no personal-card model; the options are analysed in `../NihongoNoPractise/reports/SHIRABE_INTEGRATION_OPTIONS.md`. Nothing to build in Shirabe until NNP decides which of those it wants. Likely Shirabe-side pieces, cheapest first:
+Per-list CSV export for Anki (Word, Back, Reading, Meanings, Tags and a `shirabe-{JMdict id}` GUID column, via `WordListCsv`) already exists. NNP has no import and no personal-card model; the options are analysed in `../NihongoNoPractise/reports/SHIRABE_INTEGRATION_OPTIONS.md`. Nothing to build in Shirabe until NNP decides which of those it wants. Likely Shirabe-side pieces, cheapest first:
 
 - "Look up in Shirabe" from NNP needs nothing here: `ProcessTextLookupActivity` already accepts it.
 - A "Practise in NNP" button (word page and list page) that launches NNP, with a Play Store fallback. Replaces the Settings promo that opens the store listing even when NNP is installed.
-- A versioned companion JSON export (JMdict `entryId`, selected form, reading, gloss, language, attribution) next to the CSV, only once NNP's inbox/personal-card model exists. The CSV has no entry ID, so it can't identify exact entries.
+- A versioned companion JSON export (JMdict `entryId`, selected form, reading, gloss, language, attribution) next to the CSV, only once NNP's inbox/personal-card model exists. The CSV only carries the JMdict id inside the Anki GUID column (`shirabe-{id}`), with no selected form, language or attribution fields, so it isn't a proper machine-readable interchange format.
 
 ## 1.2: one dictionary rebuild, batch everything
 
-- **Language model change (Spanish content).** Settings language only changes the UI. Dictionary content always shows English and Spanish side by side (Takoboto-style); when there is no Spanish translation, show English only, never an empty section. Needs: es glosses from full JMdict, es Tatoeba translations, es kanji meanings, accent-insensitive Spanish search. Measured coverage: es glosses on 70% of common JMdict words, 19% of kanji, 17% of used Tatoeba sentences.
+- **Language model change (Spanish content).** Settings language only changes the UI. Dictionary content always shows English and Spanish side by side (Takoboto-style); when there is no Spanish translation, show English only, never an empty section. Needs: es glosses from full JMdict, es Tatoeba translations, es kanji meanings (accent-insensitive search of the es/fr/de meanings already exists, see "Faster translated-meaning search" below). Measured coverage: es glosses on 70% of common JMdict words, 19% of kanji, 17% of used Tatoeba sentences.
 - **Frequency bands.** JMdict nf01-nf48 for ranking search and related words.
+- **Faster translated-meaning search.** It scans `TranslatedSenseRow` unindexed with a LIKE + GLOB pre-filter: up to ~410 ms per search on a Mi 10T with es/fr/de all on (German's 166k senses are most of it). An accent-folded, per-word indexed column (or FTS5 table) built by DataBuilder would make it an index lookup.
 - **JLPT N5-N1 chip** on the kanji tab (and later on words). Source: community per-level lists (e.g. Tanos), since the JLPT has published no official lists since 2010; label as unofficial and add to the notices. KANJIDIC2's old 4-level `jlpt` field is not used.
 - **Kanji search by components.** KRADFILE (EDRDG licence, add to notices). Multi-select grid of components grouped by stroke count; results are kanji containing all selected components; components that would yield zero results are disabled.
 - **Word of the day** (needs the common/frequency flag): deterministic by date, same for everyone, no storage, shown on the empty search state. No notification or widget at first.
