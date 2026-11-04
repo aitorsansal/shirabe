@@ -14,8 +14,10 @@ public partial class SearchViewModel : ObservableObject
 {
     private const int RecentsLimit = 6;
     private const int ResultsLimit = 50;
+    private const int ExpandedResultsLimit = 200;
 
     private readonly AppDataContext data;
+    private int resultsFetchedWith = ResultsLimit;
     private CancellationTokenSource? searchCts;
 
     public SearchViewModel(AppDataContext data)
@@ -27,6 +29,7 @@ public partial class SearchViewModel : ObservableObject
     private string query = "";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanShowMore))]
     private bool isLoading;
 
     [ObservableProperty]
@@ -45,6 +48,8 @@ public partial class SearchViewModel : ObservableObject
     public bool ShowHomeContent => !HasQuery;
     public bool ShowRecents => !HasQuery && !IsPreparingDictionary;
     public bool IsEmpty => HasQuery && !IsLoading && !IsPreparingDictionary && Results.Count == 0;
+    // True once the first page hit its cap, so there may be more to fetch.
+    public bool CanShowMore => !IsLoading && resultsFetchedWith == ResultsLimit && Results.Count == ResultsLimit;
     public string Placeholder => "食べる · taberu · to eat";
     public string ResultCountText => UiText.EntryCount(Results.Count);
 
@@ -128,6 +133,7 @@ public partial class SearchViewModel : ObservableObject
             if (!HasQuery)
             {
                 Results.Clear();
+                resultsFetchedWith = ResultsLimit;
                 return;
             }
 
@@ -150,30 +156,72 @@ public partial class SearchViewModel : ObservableObject
             if (token.IsCancellationRequested) return;
 
             var query = Query;
-            var (rows, label) = await Task.Run(() => BuildResultRows(query), token);
+            var (rows, label) = await Task.Run(() => BuildResultRows(query, ResultsLimit), token);
             if (token.IsCancellationRequested) return;
 
             Results.Clear();
             foreach (var row in rows) Results.Add(row);
             ResultLabel = label;
+            resultsFetchedWith = ResultsLimit;
         }
         finally
         {
             // Only the newest search owns the loading state: a superseded one
             // returning early must not hide the spinner of the search that
             // replaced it, and clearing the query mid-search must not leave it on.
-            if (searchCts == cts)
-            {
-                IsLoading = false;
-                OnPropertyChanged(nameof(IsEmpty));
-                OnPropertyChanged(nameof(ResultCountText));
-            }
+            if (searchCts == cts) FinishSearch();
         }
     }
 
-    private (List<SearchResultRow> Rows, string Label) BuildResultRows(string query)
+    private void FinishSearch()
     {
-        var matches = data.SearchService.Search(query, ResultsLimit);
+        IsLoading = false;
+        OnPropertyChanged(nameof(IsEmpty));
+        OnPropertyChanged(nameof(ResultCountText));
+        OnPropertyChanged(nameof(CanShowMore));
+    }
+
+    [RelayCommand]
+    private async Task ShowMoreAsync()
+    {
+        try { await ShowMoreCoreAsync(); }
+        catch (OperationCanceledException) { }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Show more failed: {ex}"); }
+    }
+
+    private async Task ShowMoreCoreAsync()
+    {
+        if (!CanShowMore) return;
+
+        // Shares searchCts with normal searches, so typing a new query drops this one.
+        searchCts?.Cancel();
+        var cts = searchCts = new CancellationTokenSource();
+        var token = cts.Token;
+
+        try
+        {
+            IsLoading = true;
+            OnPropertyChanged(nameof(IsEmpty));
+
+            var query = Query;
+            var (rows, _) = await Task.Run(() => BuildResultRows(query, ExpandedResultsLimit), token);
+            if (token.IsCancellationRequested) return;
+
+            // Append only the new rows so the ones already shown keep their place.
+            var known = Results.Select(r => r.EntryId).ToHashSet();
+            foreach (var row in rows)
+                if (known.Add(row.EntryId)) Results.Add(row);
+            resultsFetchedWith = ExpandedResultsLimit;
+        }
+        finally
+        {
+            if (searchCts == cts) FinishSearch();
+        }
+    }
+
+    private (List<SearchResultRow> Rows, string Label) BuildResultRows(string query, int limit)
+    {
+        var matches = data.SearchService.Search(query, limit);
         var hasEnglish = matches.Any(m => m.Kind == SearchMatchKind.Gloss);
         var hasJapanese = matches.Any(m => m.Kind != SearchMatchKind.Gloss);
         var isMixed = hasEnglish && hasJapanese;

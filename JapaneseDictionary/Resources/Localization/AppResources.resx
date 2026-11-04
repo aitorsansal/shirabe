@@ -21,6 +21,7 @@
   <data name="Search_PreparingBody" xml:space="preserve"><value>Setting up the offline dictionary on your device. This only happens after installing or updating, and takes a few seconds.</value></data>
   <data name="Search_Recent" xml:space="preserve"><value>RECENT</value></data>
   <data name="Search_Clear" xml:space="preserve"><value>CLEAR</value></data>
+  <data name="Search_ShowMore" xml:space="preserve"><value>Show more results</value></data>
   <data name="Search_ClearDescription" xml:space="preserve"><value>Clear recent words</value></data>
   <data name="Search_Try" xml:space="preserve"><value>TRY</value></data>
   <data name="Search_HintType" xml:space="preserve"><value>Type </value></data>

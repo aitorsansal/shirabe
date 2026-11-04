@@ -21,6 +21,7 @@
   <data name="Search_PreparingBody" xml:space="preserve"><value>Configurando el diccionario sin conexión en tu dispositivo. Solo pasa después de instalar o actualizar y tarda unos segundos.</value></data>
   <data name="Search_Recent" xml:space="preserve"><value>RECIENTES</value></data>
   <data name="Search_Clear" xml:space="preserve"><value>BORRAR</value></data>
+  <data name="Search_ShowMore" xml:space="preserve"><value>Mostrar más resultados</value></data>
   <data name="Search_ClearDescription" xml:space="preserve"><value>Borrar las palabras recientes</value></data>
   <data name="Search_Try" xml:space="preserve"><value>PRUEBA</value></data>
   <data name="Search_HintType" xml:space="preserve"><value>Escribe </value></data>

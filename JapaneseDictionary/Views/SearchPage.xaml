@@ -159,6 +159,19 @@
                             CornerRadius="0" />
                     </VerticalStackLayout>
 
+                    <Button
+                        Text="{x:Static res:AppResources.Search_ShowMore}"
+                        IsVisible="{Binding CanShowMore}"
+                        Command="{Binding ShowMoreCommand}"
+                        Margin="16,8,16,0"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}"
+                        FontFamily="ArchivoExtraBold"
+                        FontSize="13"
+                        CornerRadius="0"
+                        BorderWidth="1"
+                        BorderColor="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
+
                     <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Margin="0,20,0,0" />
                 </VerticalStackLayout>
             </CollectionView.Footer>

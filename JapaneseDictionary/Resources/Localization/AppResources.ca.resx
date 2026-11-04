@@ -21,6 +21,7 @@
   <data name="Search_PreparingBody" xml:space="preserve"><value>S'està configurant el diccionari sense connexió al dispositiu. Només passa després d'instal·lar o actualitzar i triga uns segons.</value></data>
   <data name="Search_Recent" xml:space="preserve"><value>RECENTS</value></data>
   <data name="Search_Clear" xml:space="preserve"><value>ESBORRA</value></data>
+  <data name="Search_ShowMore" xml:space="preserve"><value>Mostra més resultats</value></data>
   <data name="Search_ClearDescription" xml:space="preserve"><value>Esborra les paraules recents</value></data>
   <data name="Search_Try" xml:space="preserve"><value>PROVA</value></data>
   <data name="Search_HintType" xml:space="preserve"><value>Escriu </value></data>
