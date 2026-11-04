@@ -119,6 +119,19 @@ public sealed class DictionaryRepository : IDisposable
             : db.Query<GlossCandidateRow>(substring, $"%{escaped}%");
     }
 
+    /// <summary>Senses of <paramref name="lang"/> whose joined glosses match both
+    /// patterns (from <see cref="Search.TextFolding"/>): the cheap, loose LIKE first so
+    /// the slower, exact GLOB only sees its survivors. The match can still span two
+    /// joined glosses, so callers re-check each gloss. A <paramref name="wholeWord"/>
+    /// GLOB is tested against the glosses padded with a space at both ends.</summary>
+    public IReadOnlyList<TranslatedGlossCandidateRow> FindTranslatedGlossCandidates(string likePattern, string globPattern, string lang, bool wholeWord = false) =>
+        db.Query<TranslatedGlossCandidateRow>($"""
+            SELECT t.EntryId, t.SenseOrder, t.GlossesJoined, w.IsCommon, w.Priority, w.PrimaryText, w.JlptLevel
+            FROM TranslatedSenseRow t
+            JOIN WordEntryRow w ON w.Id = t.EntryId
+            WHERE t.Lang = ? AND t.GlossesJoined LIKE ? ESCAPE '\' AND {(wholeWord ? "(' ' || t.GlossesJoined || ' ')" : "t.GlossesJoined")} GLOB ?
+            """, lang, likePattern, globPattern);
+
     /// <summary>KANJIDIC2 newspaper frequency rank (1 = most frequent) for every
     /// kanji that has one.</summary>
     public IReadOnlyDictionary<char, int> GetKanjiFrequencyRanks() =>

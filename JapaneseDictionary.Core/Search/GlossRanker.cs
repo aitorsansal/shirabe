@@ -53,7 +53,9 @@ internal static partial class GlossRanker
         int limit,
         Func<IReadOnlyCollection<int>, IReadOnlyDictionary<int, int>>? exampleCountsOf = null)
     {
-        var normalizedQuery = query.Trim().ToLowerInvariant();
+        // Everything is compared accent-folded ("cafe" is "café"); the original
+        // gloss is what gets returned.
+        var normalizedQuery = TextFolding.Fold(query.Trim());
         var toForm = "to " + normalizedQuery;
         var wholeWord = new Regex(
             $"(?<![a-z0-9]){Regex.Escape(normalizedQuery)}(?![a-z0-9])",
@@ -67,13 +69,13 @@ internal static partial class GlossRanker
         foreach (var candidate in candidates)
         {
             var gloss = candidate.GlossText;
-            var core = StripQualifiers(gloss).ToLowerInvariant();
+            var core = TextFolding.Fold(StripQualifiers(gloss));
 
             var isPlainExact = core == normalizedQuery || core == toForm;
             var isPrepositionExact = !isPlainExact && withPreposition.IsMatch(core);
             var isExact = isPlainExact || isPrepositionExact;
             var matchRank = isExact ? 0
-                : wholeWord.IsMatch(gloss) ? 1
+                : wholeWord.IsMatch(TextFolding.Fold(gloss)) ? 1
                 : 2;
 
             var band = FormPriority.EffectiveBand(candidate.Priority, candidate.JlptLevel);

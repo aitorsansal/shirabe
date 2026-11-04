@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 
 using JapaneseDictionary.Core.Data;
+using JapaneseDictionary.Core.Data.Schema;
 using JapaneseDictionary.Core.Models;
 
 namespace JapaneseDictionary.Core.Search;
@@ -11,6 +12,8 @@ public enum SearchMatchKind
     Prefix,
     Conjugated,
     Gloss,
+    /// <summary>A Spanish/French/German meaning; <see cref="SearchResult.MatchedLanguage"/> says which.</summary>
+    TranslatedGloss,
     /// <summary>A short kanji query found inside a longer headword (行 in 銀行).</summary>
     Contains,
 }
@@ -18,17 +21,22 @@ public enum SearchMatchKind
 /// <param name="ConjugationForm">For conjugated matches, the forms undone, innermost
 /// first (e.g. "causative · passive · negative · past").</param>
 /// <param name="MatchedText">What the entry matched on: the deinflected text for
-/// conjugated matches, the kana form for romaji input, the gloss for English.</param>
-public sealed record SearchResult(int EntryId, SearchMatchKind Kind, string? ConjugationForm, string? MatchedText = null);
+/// conjugated matches, the kana form for romaji input, the original gloss for
+/// English and translated meanings.</param>
+/// <param name="MatchedLanguage">For translated meanings, the language code ("spa").</param>
+public sealed record SearchResult(int EntryId, SearchMatchKind Kind, string? ConjugationForm, string? MatchedText = null, string? MatchedLanguage = null);
 
 /// <summary>
 /// Single entry point for dictionary search: kanji, kana, romaji, conjugated
-/// verb/adjective forms and English meanings, from one search box.
+/// verb/adjective forms and English meanings (plus the user's chosen Spanish,
+/// French and German ones), from one search box.
 /// Text with any Japanese in it is searched as Japanese only. Latin text is
 /// searched as English, and also as romaji when all of it converts to kana
-/// ("taberu", "go", but not "eat"), with both merged into one list by match
-/// strength: exact matches, then conjugations, whole-word English, Japanese
-/// prefixes, and English substrings last.
+/// ("taberu", "go", but not "eat"), with everything merged into one list by match
+/// strength: exact matches (Japanese, English and translated ones interleaved by
+/// commonness), then conjugations, whole-word English, whole-word translated,
+/// Japanese prefixes, English substrings and translated substrings last.
+/// Translated meanings are matched ignoring accents ("cafe" finds "café").
 /// </summary>
 public sealed partial class SearchService
 {
@@ -60,7 +68,9 @@ public sealed partial class SearchService
     // building the same small dictionary twice.
     private IReadOnlyDictionary<char, int>? kanjiFrequencyRanks;
 
-    public IReadOnlyList<SearchResult> Search(string rawQuery, int limit = 50)
+    /// <param name="translationLanguages">Codes of extra languages whose meanings are
+    /// searched too (<see cref="TranslationLanguages"/>); null or empty searches English only.</param>
+    public IReadOnlyList<SearchResult> Search(string rawQuery, int limit = 50, IReadOnlyCollection<string>? translationLanguages = null)
     {
         var query = rawQuery.Trim();
         if (query.Length == 0) return [];
@@ -68,9 +78,21 @@ public sealed partial class SearchService
         kanjiFrequencyRanks ??= repo.GetKanjiFrequencyRanks();
 
         var japaneseForms = BuildJapaneseForms(query);
-        var glosses = !ContainsJapanese(query) && query.Length >= MinGlossQueryLength
+        var searchesGlosses = !ContainsJapanese(query) && query.Length >= MinGlossQueryLength;
+        var glosses = searchesGlosses
             ? GlossRanker.Rank(query, repo.FindGlossCandidates(query, wholeWordOnly: query.Length <= MaxWholeWordOnlyLength), kanjiFrequencyRanks, limit, repo.GetExampleCounts)
             : [];
+
+        // In TranslationLanguages.All order, so ties and tiers are stable.
+        var translated = new List<(string Lang, IReadOnlyList<RankedGloss> Ranked)>();
+        if (searchesGlosses && translationLanguages is { Count: > 0 })
+        {
+            foreach (var language in TranslationLanguages.All.Where(l => translationLanguages.Contains(l.Code)))
+                translated.Add((language.Code, GlossRanker.Rank(query, FindTranslatedCandidates(query, language.Code), kanjiFrequencyRanks, limit, repo.GetExampleCounts)));
+        }
+
+        List<(SearchResult Result, int PriorityBand, int Rarity)> TranslatedTier(int matchRank) =>
+            translated.SelectMany(t => t.Ranked.Where(g => g.MatchRank == matchRank).Select(g => GlossResult(g, t.Lang))).ToList();
 
         var results = new List<SearchResult>();
         var seen = new HashSet<int>();
@@ -84,14 +106,19 @@ public sealed partial class SearchService
             }
         }
 
-        Add(MergeByCommonness(
+        var exactLists = new List<List<(SearchResult Result, int PriorityBand, int Rarity)>>
+        {
             FindExactMatches(japaneseForms),
-            glosses.Where(g => g.MatchRank == 0).Select(GlossResult).ToList()));
+            glosses.Where(g => g.MatchRank == 0).Select(g => GlossResult(g)).ToList(),
+        };
+        exactLists.AddRange(translated.Select(t => t.Ranked.Where(g => g.MatchRank == 0).Select(g => GlossResult(g, t.Lang)).ToList()));
+        Add(MergeByCommonness(exactLists));
 
         foreach (var form in japaneseForms.Where(ContainsJapanese))
             Add(FindConjugatedMatches(form));
 
         Add(glosses.Where(g => g.MatchRank == 1).Select(g => GlossResult(g).Result));
+        Add(TranslatedTier(1).Select(x => x.Result));
 
         // Kanji forms and readings are Japanese, so the raw Latin text never
         // prefixes one; skipping it saves two table scans per keystroke.
@@ -110,12 +137,48 @@ public sealed partial class SearchService
             Add(repo.FindCompoundsByKanji(query, limit).Select(id => new SearchResult(id, SearchMatchKind.Contains, null, query)));
 
         Add(glosses.Where(g => g.MatchRank == 2).Select(g => GlossResult(g).Result));
+        Add(TranslatedTier(2).Select(x => x.Result));
 
         return results;
     }
 
-    private static (SearchResult Result, int PriorityBand, int Rarity) GlossResult(RankedGloss gloss) =>
-        (new SearchResult(gloss.EntryId, SearchMatchKind.Gloss, null, gloss.GlossText), gloss.PriorityBand, gloss.Rarity);
+    private static (SearchResult Result, int PriorityBand, int Rarity) GlossResult(RankedGloss gloss, string? language = null) =>
+        (new SearchResult(gloss.EntryId, language == null ? SearchMatchKind.Gloss : SearchMatchKind.TranslatedGloss, null, gloss.GlossText, language), gloss.PriorityBand, gloss.Rarity);
+
+    /// <summary>Glosses of <paramref name="lang"/> that contain the query ignoring
+    /// case and accents, one candidate per gloss (the table stores a sense's glosses
+    /// joined). Like the English search, short queries only match whole words.</summary>
+    private IEnumerable<GlossCandidateRow> FindTranslatedCandidates(string query, string lang)
+    {
+        var folded = TextFolding.Fold(query);
+        var wholeWordOnly = query.Length <= MaxWholeWordOnlyLength;
+        var wholeWord = wholeWordOnly
+            ? new Regex($"(?<![a-z0-9]){Regex.Escape(folded)}(?![a-z0-9])", RegexOptions.CultureInvariant)
+            : null;
+
+        foreach (var row in repo.FindTranslatedGlossCandidates(TextFolding.AccentInsensitiveLikePattern(query), TextFolding.AccentInsensitiveGlobPattern(query, wholeWordOnly), lang, wholeWordOnly))
+        {
+            var glosses = row.GlossesJoined.Split(TranslatedSenseRow.GlossSeparator);
+            for (var i = 0; i < glosses.Length; i++)
+            {
+                var foldedGloss = TextFolding.Fold(glosses[i]);
+                if (!foldedGloss.Contains(folded, StringComparison.Ordinal)) continue;
+                if (wholeWord != null && !wholeWord.IsMatch(foldedGloss)) continue;
+
+                yield return new GlossCandidateRow
+                {
+                    EntryId = row.EntryId,
+                    GlossText = glosses[i],
+                    SenseOrder = row.SenseOrder,
+                    GlossOrder = i + 1,
+                    IsCommon = row.IsCommon,
+                    Priority = row.Priority,
+                    PrimaryText = row.PrimaryText,
+                    JlptLevel = row.JlptLevel,
+                };
+            }
+        }
+    }
 
     /// <summary>Exact kanji/reading matches for each form, most frequent first by
     /// the matched form's <see cref="FormPriority.EffectiveBand"/>, then
@@ -142,19 +205,24 @@ public sealed partial class SearchService
             .ToList();
     }
 
-    /// <summary>Merges two already-ranked lists, taking whichever head is more
-    /// frequent/everyday, so each keeps its own internal order (the gloss ranker's
-    /// sense and qualifier ordering isn't flattened).</summary>
-    private static IEnumerable<SearchResult> MergeByCommonness(
-        List<(SearchResult Result, int PriorityBand, int Rarity)> first,
-        List<(SearchResult Result, int PriorityBand, int Rarity)> second)
+    /// <summary>Merges already-ranked lists, always taking whichever head is more
+    /// frequent/everyday (ties go to the earlier list), so each keeps its own
+    /// internal order (the gloss ranker's sense and qualifier ordering isn't flattened).</summary>
+    private static IEnumerable<SearchResult> MergeByCommonness(List<List<(SearchResult Result, int PriorityBand, int Rarity)>> lists)
     {
-        int i = 0, j = 0;
-        while (i < first.Count || j < second.Count)
+        var heads = new int[lists.Count];
+        while (true)
         {
-            var takeFirst = j >= second.Count
-                || (i < first.Count && (first[i].PriorityBand, first[i].Rarity).CompareTo((second[j].PriorityBand, second[j].Rarity)) <= 0);
-            yield return takeFirst ? first[i++].Result : second[j++].Result;
+            var best = -1;
+            for (var k = 0; k < lists.Count; k++)
+            {
+                if (heads[k] >= lists[k].Count) continue;
+                if (best < 0 || (lists[k][heads[k]].PriorityBand, lists[k][heads[k]].Rarity).CompareTo((lists[best][heads[best]].PriorityBand, lists[best][heads[best]].Rarity)) < 0)
+                    best = k;
+            }
+
+            if (best < 0) yield break;
+            yield return lists[best][heads[best]++].Result;
         }
     }
 

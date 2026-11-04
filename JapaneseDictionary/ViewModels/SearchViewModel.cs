@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using JapaneseDictionary.Core.Models;
 using JapaneseDictionary.Core.Search;
 using JapaneseDictionary.Resources.Localization;
 using JapaneseDictionary.Services;
@@ -221,10 +222,11 @@ public partial class SearchViewModel : ObservableObject
 
     private (List<SearchResultRow> Rows, string Label) BuildResultRows(string query, int limit)
     {
-        var matches = data.SearchService.Search(query, limit);
+        var matches = data.SearchService.Search(query, limit, TranslationPreferences.Selected);
         var hasEnglish = matches.Any(m => m.Kind == SearchMatchKind.Gloss);
-        var hasJapanese = matches.Any(m => m.Kind != SearchMatchKind.Gloss);
-        var isMixed = hasEnglish && hasJapanese;
+        var hasTranslated = matches.Any(m => m.Kind == SearchMatchKind.TranslatedGloss);
+        var hasJapanese = matches.Any(m => m.Kind is not (SearchMatchKind.Gloss or SearchMatchKind.TranslatedGloss));
+        var isMixed = (hasEnglish ? 1 : 0) + (hasTranslated ? 1 : 0) + (hasJapanese ? 1 : 0) > 1;
 
         var levels = data.DictionaryRepository.GetJlptLevels(matches.Select(m => m.EntryId).Distinct().ToList());
         var rows = new List<SearchResultRow>();
@@ -240,7 +242,9 @@ public partial class SearchViewModel : ObservableObject
                 match.Kind == SearchMatchKind.Gloss ? match.MatchedText : null));
         }
 
-        var label = isMixed ? AppResources.Search_LabelMixed
+        var label = hasTranslated
+            ? (hasJapanese ? AppResources.Search_LabelMixedMeaning : AppResources.Search_LabelMeaning)
+            : isMixed ? AppResources.Search_LabelMixed
             : hasEnglish ? AppResources.Search_LabelEnglish
             : AppResources.Search_LabelJapanese;
         return (rows, label);
@@ -252,6 +256,8 @@ public partial class SearchViewModel : ObservableObject
     {
         SearchMatchKind.Conjugated => UiText.Format(AppResources.Search_NoteConjugated, match.MatchedText ?? query, UiText.FormName(match.ConjugationForm)),
         SearchMatchKind.Gloss when isMixed => UiText.Format(AppResources.Search_NoteEnglish, match.MatchedText ?? ""),
+        // Always shown: a Spanish gloss next to an unlabelled English one would be ambiguous.
+        SearchMatchKind.TranslatedGloss => UiText.Format(AppResources.Search_NoteTranslated, TranslationLanguages.Find(match.MatchedLanguage ?? "")?.Endonym ?? match.MatchedLanguage ?? "", match.MatchedText ?? ""),
         _ when isMixed && match.MatchedText is { } kana && kana != query => UiText.Format(AppResources.Search_NoteRomaji, kana),
         _ => null,
     };

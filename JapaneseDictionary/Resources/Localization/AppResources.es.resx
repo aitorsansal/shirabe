@@ -39,6 +39,9 @@
   <data name="Search_LabelJapanese" xml:space="preserve"><value>Japonés → Inglés</value></data>
   <data name="Search_NoteConjugated" xml:space="preserve"><value>desde la forma conjugada {0} ({1})</value></data>
   <data name="Search_NoteEnglish" xml:space="preserve"><value>Inglés: {0}</value></data>
+  <data name="Search_NoteTranslated" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="Search_LabelMeaning" xml:space="preserve"><value>Significado → Japonés</value></data>
+  <data name="Search_LabelMixedMeaning" xml:space="preserve"><value>Japonés · significado</value></data>
   <data name="Search_NoteRomaji" xml:space="preserve"><value>rōmaji: {0}</value></data>
   <data name="Word_Results" xml:space="preserve"><value>‹  RESULTADOS</value></data>
   <data name="Word_Speak" xml:space="preserve"><value>Leer la palabra en voz alta</value></data>
