@@ -53,3 +53,7 @@ JapaneseDictionary/keystore/
 # Bundled dictionary database: ~130 MB, distributed as a GitHub Release asset
 # (scripts/fetch-database.*), not tracked in git.
 JapaneseDictionary/Resources/Raw/dictionary.db3
+
+# Its Brotli-compressed copy for the APK (CompressDictionaryDatabase in the app
+# csproj). Kept outside obj/ so clean builds don't redo minutes of compression.
+JapaneseDictionary/.cache/

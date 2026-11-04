@@ -117,11 +117,13 @@
          file), so the copy inside the APK is pure overhead. Bundling it Brotli-compressed
          (quality 11, 16 MB window) instead of letting the zip deflate it shrinks that overhead,
          and the download, by about a third. DatabaseInitializer decompresses it on first run.
-         Compression takes minutes, so the output lives in obj/ shared by all configurations and
-         is only regenerated when dictionary.db3 changes (Inputs/Outputs). It's stored
-         uncompressed in the APK/AAB, since deflating Brotli output again only costs time. -->
+         Compression takes minutes, so the output lives in .cache/ (gitignored), shared by all
+         configurations, and is only regenerated when dictionary.db3 or the script changes
+         (Inputs/Outputs). Not obj/: clean builds wipe it, and redoing the compression is most
+         of a clean build's time. It's stored uncompressed in the APK/AAB, since deflating
+         Brotli output again only costs time. -->
     <PropertyGroup>
-        <CompressedDictionaryPath>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(BaseIntermediateOutputPath)', 'dictionary', 'dictionary.db3.br'))</CompressedDictionaryPath>
+        <CompressedDictionaryPath>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '.cache', 'dictionary.db3.br'))</CompressedDictionaryPath>
         <AndroidStoreUncompressedFileExtensions>$(AndroidStoreUncompressedFileExtensions);.br</AndroidStoreUncompressedFileExtensions>
     </PropertyGroup>
     <ItemGroup>
