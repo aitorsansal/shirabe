@@ -195,14 +195,14 @@
   <data name="Settings_OfflineNote" xml:space="preserve"><value>Funciona completament sense connexió. Dades del diccionari de JMdict, KANJIDIC2, KanjiVG i Tatoeba.</value></data>
   <data name="Settings_Licences" xml:space="preserve"><value>Llicències i atribucions</value></data>
   <data name="Lists_Yours" xml:space="preserve"><value>LES TEVES LLISTES</value></data>
-  <data name="Lists_Hint" xml:space="preserve"><value>Agrupa paraules com vulguis: un tema del llibre, un nivell del JLPT, paraules d'una sèrie. Exporta qualsevol llista com a CSV per a Anki o un full de càlcul.</value></data>
+  <data name="Lists_Hint" xml:space="preserve"><value>Agrupa paraules com vulguis: un tema del llibre, un nivell del JLPT, paraules d'una sèrie. Exporta qualsevol llista com a CSV a punt per importar a Anki.</value></data>
   <data name="Lists_NewPromptMessage" xml:space="preserve"><value>Afegeix-hi paraules des de qualsevol pàgina de paraula.</value></data>
   <data name="Lists_NewPromptFromWord" xml:space="preserve"><value>Posa nom a la llista. S'hi afegirà aquesta paraula.</value></data>
   <data name="Lists_NamePlaceholder" xml:space="preserve"><value>Nom de la llista</value></data>
   <data name="Lists_NameEmpty" xml:space="preserve"><value>El nom no pot estar buit.</value></data>
   <data name="Lists_NameTaken" xml:space="preserve"><value>Ja hi ha una llista anomenada «{0}».</value></data>
   <data name="Lists_Back" xml:space="preserve"><value>‹  LLISTES</value></data>
-  <data name="Lists_ExportDescription" xml:space="preserve"><value>Exporta com a CSV</value></data>
+  <data name="Lists_ExportDescription" xml:space="preserve"><value>Exporta per a Anki (CSV)</value></data>
   <data name="Lists_MenuDescription" xml:space="preserve"><value>Canvia el nom o elimina la llista</value></data>
   <data name="Lists_KickerHistory" xml:space="preserve"><value>VISTES RECENTMENT</value></data>
   <data name="Lists_KickerList" xml:space="preserve"><value>LLISTA</value></data>

@@ -27,6 +27,7 @@ public sealed partial class ListDetailViewModel : ObservableObject
 
     private readonly AppDataContext data;
     private List<DictionaryEntry> entries = [];
+    private IReadOnlyDictionary<int, int> jlptLevels = new Dictionary<int, int>();
 
     public ListDetailViewModel(AppDataContext data)
     {
@@ -105,6 +106,7 @@ public sealed partial class ListDetailViewModel : ObservableObject
         });
 
         entries = loaded.Entries;
+        jlptLevels = loaded.Levels;
         Rows.Clear();
         foreach (var entry in loaded.Entries)
             Rows.Add(SearchResultRow.FromEntry(entry, loaded.Levels.TryGetValue(entry.Id, out var level) ? level : null));
@@ -158,8 +160,21 @@ public sealed partial class ListDetailViewModel : ObservableObject
     {
         if (entries.Count == 0) return;
 
+        var snapshot = entries.ToList();
+        var levels = jlptLevels;
+        var listName = Title;
+        var languages = TranslationPreferences.Selected;
+        var repository = data.DictionaryRepository;
+
+        var csv = await Task.Run(() => WordListCsv.Build(
+            snapshot.Select(e => new WordListCsv.Row(
+                e,
+                levels.TryGetValue(e.Id, out var level) ? level : null,
+                repository.GetTranslatedSenses(e.Id, languages))).ToList(),
+            listName));
+
         var path = Path.Combine(FileSystem.CacheDirectory, $"{SafeFileName(Title)}.csv");
-        await File.WriteAllBytesAsync(path, WordListCsv.ToBytes(WordListCsv.Build(entries)));
+        await File.WriteAllBytesAsync(path, WordListCsv.ToBytes(csv));
 
         await Share.Default.RequestAsync(new ShareFileRequest
         {

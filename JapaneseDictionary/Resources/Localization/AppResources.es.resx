@@ -195,14 +195,14 @@
   <data name="Settings_OfflineNote" xml:space="preserve"><value>Funciona totalmente sin conexión. Datos del diccionario de JMdict, KANJIDIC2, KanjiVG y Tatoeba.</value></data>
   <data name="Settings_Licences" xml:space="preserve"><value>Licencias y atribuciones</value></data>
   <data name="Lists_Yours" xml:space="preserve"><value>TUS LISTAS</value></data>
-  <data name="Lists_Hint" xml:space="preserve"><value>Agrupa palabras como quieras: un tema del libro, un nivel del JLPT, palabras de una serie. Exporta cualquier lista como CSV para Anki o una hoja de cálculo.</value></data>
+  <data name="Lists_Hint" xml:space="preserve"><value>Agrupa palabras como quieras: un tema del libro, un nivel del JLPT, palabras de una serie. Exporta cualquier lista como un CSV listo para importar en Anki.</value></data>
   <data name="Lists_NewPromptMessage" xml:space="preserve"><value>Añade palabras desde cualquier página de palabra.</value></data>
   <data name="Lists_NewPromptFromWord" xml:space="preserve"><value>Ponle nombre a la lista. Se le añadirá esta palabra.</value></data>
   <data name="Lists_NamePlaceholder" xml:space="preserve"><value>Nombre de la lista</value></data>
   <data name="Lists_NameEmpty" xml:space="preserve"><value>El nombre no puede estar vacío.</value></data>
   <data name="Lists_NameTaken" xml:space="preserve"><value>Ya hay una lista llamada «{0}».</value></data>
   <data name="Lists_Back" xml:space="preserve"><value>‹  LISTAS</value></data>
-  <data name="Lists_ExportDescription" xml:space="preserve"><value>Exportar como CSV</value></data>
+  <data name="Lists_ExportDescription" xml:space="preserve"><value>Exportar para Anki (CSV)</value></data>
   <data name="Lists_MenuDescription" xml:space="preserve"><value>Renombrar o eliminar la lista</value></data>
   <data name="Lists_KickerHistory" xml:space="preserve"><value>VISTAS RECIENTEMENTE</value></data>
   <data name="Lists_KickerList" xml:space="preserve"><value>LISTA</value></data>
