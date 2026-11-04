@@ -35,7 +35,9 @@ public sealed record ExampleCard(long Id, string Pre, string Hit, string Post, s
     public string Japanese => Pre + Hit + Post;
 }
 
-/// <summary>One selected language's numbered senses on the Meaning tab, headed by its endonym.</summary>
+/// <summary>One selected language's senses on the Meaning tab, headed by its endonym.
+/// Unnumbered: JMdict doesn't align the translated senses with the English ones, so
+/// the items' <see cref="SenseItem.Number"/> is unused (0).</summary>
 public sealed record TranslatedBlock(string Header, IReadOnlyList<SenseItem> Items);
 
 public partial class KanjiCard : ObservableObject

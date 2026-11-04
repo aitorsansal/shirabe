@@ -54,6 +54,34 @@ public class DictionaryRepositoryTests : IDisposable
     }
 
     [SkippableFact]
+    public void GetEntry_EverySenseOfTaberuHasPartOfSpeech()
+    {
+        // The bundled JMdict happens to repeat <pos> on every sense (no empty-POS sense
+        // exists in the database), so this is a regression guard; the carry-forward
+        // itself is covered by CarryForwardPartOfSpeech_InheritsOnlyPartOfSpeech.
+        Skip.If(repo == null, "dictionary.db3 not built");
+        var entry = repo!.GetEntry(1358280);
+        Assert.NotNull(entry);
+        Assert.All(entry!.Senses, s => Assert.Contains("v1", s.PartOfSpeechTags));
+    }
+
+    [Fact]
+    public void CarryForwardPartOfSpeech_InheritsOnlyPartOfSpeech()
+    {
+        var first = new WordSense([], ["v1", "vt"], ["a"], ["comp"], ["col"]);
+        var second = new WordSense([], [], ["b"], [], []);
+        var third = new WordSense([], ["n"], ["c"], [], []);
+        var fourth = new WordSense([], [], ["d"], [], []);
+
+        var result = DictionaryRepository.CarryForwardPartOfSpeech([first, second, third, fourth]);
+
+        Assert.Equal(["v1", "vt"], result[1].PartOfSpeechTags);
+        Assert.Empty(result[1].Fields);
+        Assert.Empty(result[1].MiscTags);
+        Assert.Equal(["n"], result[3].PartOfSpeechTags);
+    }
+
+    [SkippableFact]
     public void FindByPrefix_TabeMatchesTaberu()
     {
         Skip.If(repo == null, "dictionary.db3 not built");

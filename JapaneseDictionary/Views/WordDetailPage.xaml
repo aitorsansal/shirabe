@@ -188,8 +188,8 @@
                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="9">
                                         <BindableLayout.ItemTemplate>
                                             <DataTemplate x:DataType="vm:SenseItem">
-                                                <Grid ColumnDefinitions="16,*" ColumnSpacing="10">
-                                                    <Label Grid.Column="0" Text="{Binding Number}" FontFamily="ArchivoExtraBold" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                                    <Label Grid.Column="0" Text="•" FontFamily="ArchivoExtraBold" FontSize="12" VerticalOptions="Start" TextColor="{AppThemeBinding Light={StaticResource InkMetaLight}, Dark={StaticResource InkMetaDark}}" />
                                                     <Label Grid.Column="1" Text="{Binding Gloss}" FontFamily="ArchivoRegular" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" LineBreakMode="WordWrap" />
                                                 </Grid>
                                             </DataTemplate>

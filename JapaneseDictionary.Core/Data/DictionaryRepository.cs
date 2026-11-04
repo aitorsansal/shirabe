@@ -201,7 +201,24 @@ public sealed class DictionaryRepository : IDisposable
                 Split(s.MiscTagsJoined));
         }).ToList();
 
-        return new DictionaryEntry(id, kanjiForms, readings, senses);
+        return new DictionaryEntry(id, kanjiForms, readings, CarryForwardPartOfSpeech(senses));
+    }
+
+    /// <summary>JMdict omits &lt;pos&gt; on a sense that has the same parts of speech
+    /// as the previous one; a sense without any inherits the previous sense's.
+    /// Only part of speech is inherited, not field or misc tags.</summary>
+    internal static List<WordSense> CarryForwardPartOfSpeech(IReadOnlyList<WordSense> senses)
+    {
+        var result = new List<WordSense>(senses.Count);
+        IReadOnlyList<string> previous = [];
+        foreach (var sense in senses)
+        {
+            var current = sense.PartOfSpeechTags.Count > 0 ? sense : sense with { PartOfSpeechTags = previous };
+            previous = current.PartOfSpeechTags;
+            result.Add(current);
+        }
+
+        return result;
     }
 
     public KanjiInfo? GetKanjiInfo(string character)

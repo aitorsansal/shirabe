@@ -276,7 +276,7 @@ public partial class WordDetailViewModel : ObservableObject
         foreach (var code in selected)
         {
             var items = senses.Where(s => s.Lang == code).OrderBy(s => s.Order)
-                .Select(s => new SenseItem(s.Order, string.Join(" · ", s.Glosses), null)).ToList();
+                .Select(s => new SenseItem(0, string.Join(" · ", s.Glosses), null)).ToList();
             if (items.Count > 0 && TranslationLanguages.Find(code) is { } language)
                 blocks.Add(new TranslatedBlock(language.Endonym, items));
         }
@@ -284,25 +284,31 @@ public partial class WordDetailViewModel : ObservableObject
         return blocks;
     }
 
-    private static List<SenseGroup> BuildSenseGroups(DictionaryEntry entry) =>
-        entry.Senses
-            .GroupBy(s => string.Join(", ", s.PartOfSpeechTags))
-            .Select(g =>
-            {
-                var items = new List<SenseItem>();
-                foreach (var sense in g)
-                {
-                    foreach (var gloss in sense.Glosses)
-                    {
-                        var note = sense.MiscTags.Count > 0 && items.Count == 0 ? string.Join(", ", sense.MiscTags) : null;
-                        items.Add(new SenseItem(items.Count + 1, gloss, note));
-                    }
-                }
+    /// <summary>One line per sense, numbered by its position in the entry. Runs of
+    /// adjacent senses with the same parts of speech share a group header, so the
+    /// numbers read continuously across groups (1-3, 4, 5-6).</summary>
+    private static List<SenseGroup> BuildSenseGroups(DictionaryEntry entry)
+    {
+        var groups = new List<SenseGroup>();
+        List<SenseItem>? items = null;
+        IReadOnlyList<string>? runTags = null;
 
-                var tags = g.First().PartOfSpeechTags.Select(TagChip.For).ToList();
-                return new SenseGroup(tags, AppResources.Word_SenseOther.ToUpperInvariant(), items);
-            })
-            .ToList();
+        for (var i = 0; i < entry.Senses.Count; i++)
+        {
+            var sense = entry.Senses[i];
+            if (items is null || !sense.PartOfSpeechTags.SequenceEqual(runTags!))
+            {
+                items = [];
+                runTags = sense.PartOfSpeechTags;
+                groups.Add(new SenseGroup(runTags.Select(TagChip.For).ToList(), AppResources.Word_SenseOther.ToUpperInvariant(), items));
+            }
+
+            var note = sense.MiscTags.Count > 0 ? string.Join(", ", sense.MiscTags) : null;
+            items.Add(new SenseItem(i + 1, string.Join(" · ", sense.Glosses), note));
+        }
+
+        return groups;
+    }
 
     // Everything except the headline pair. For words usually written in kana the
     // headline is the reading, so every kanji spelling (乍ら for ながら) lands here.
