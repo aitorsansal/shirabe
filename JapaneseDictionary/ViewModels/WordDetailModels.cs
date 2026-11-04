@@ -64,7 +64,27 @@ public partial class KanjiCard : ObservableObject
     public double ProgressFraction => TotalStrokes == 0 ? 0 : (double)CurrentStep / TotalStrokes;
     public IReadOnlyList<string> VisiblePaths => CurrentStep == 0 ? [] : StrokePaths.Take(CurrentStep).ToList();
 
-    public void Step() => CurrentStep = CurrentStep % TotalStrokes + 1;
+    public void Step()
+    {
+        // A kanji without KanjiVG data has no strokes to step through.
+        if (TotalStrokes == 0) return;
+        CurrentStep = CurrentStep % TotalStrokes + 1;
+    }
+
+    /// <summary>Draws the strokes one by one, ending on the full kanji. Runs once and
+    /// must be started on the UI thread so the property changes land there.</summary>
+    public async Task PlayAsync(CancellationToken token)
+    {
+        if (TotalStrokes == 0) return;
+
+        CurrentStep = 0;
+        await Task.Delay(300, token);
+        for (var step = 1; step <= TotalStrokes; step++)
+        {
+            CurrentStep = step;
+            if (step < TotalStrokes) await Task.Delay(450, token);
+        }
+    }
 }
 
 /// <summary>One cell of the conjugation table: the displayed form split into the

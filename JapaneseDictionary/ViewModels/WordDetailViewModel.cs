@@ -104,6 +104,7 @@ public partial class WordDetailViewModel : ObservableObject
     [RelayCommand(AllowConcurrentExecutions = true)]
     private async Task SelectTab(string tabName)
     {
+        CancelAutoplay();
         SelectedTab = Enum.Parse<DetailTab>(tabName);
         OnPropertyChanged(nameof(IsMeaningTab));
         OnPropertyChanged(nameof(IsSentencesTab));
@@ -134,7 +135,29 @@ public partial class WordDetailViewModel : ObservableObject
     private static Task CopyTextAsync(string? text) => ClipboardCopy.CopyAsync(text);
 
     [RelayCommand]
-    private static void StepStroke(KanjiCard card) => card.Step();
+    private void StepStroke(KanjiCard card)
+    {
+        // A manual tap takes over from the autoplay and continues from the current stroke.
+        CancelAutoplay();
+        card.Step();
+    }
+
+    private CancellationTokenSource? autoplayCts;
+
+    private void CancelAutoplay()
+    {
+        autoplayCts?.Cancel();
+        autoplayCts?.Dispose();
+        autoplayCts = null;
+    }
+
+    private async Task AutoplayAsync(KanjiCard card)
+    {
+        CancelAutoplay();
+        var cts = autoplayCts = new CancellationTokenSource();
+        try { await card.PlayAsync(cts.Token); }
+        catch (OperationCanceledException) { }
+    }
 
     // The kana reading, not the headword: TTS engines misread kanji often
     // enough (rare readings, jukujikun) that the reading is the safer input.
@@ -163,7 +186,11 @@ public partial class WordDetailViewModel : ObservableObject
         await Shell.Current.Navigation.PushModalAsync(sheet);
     }
 
-    public void OnDisappearing() => tts.Stop();
+    public void OnDisappearing()
+    {
+        CancelAutoplay();
+        tts.Stop();
+    }
 
     [RelayCommand]
     private static async Task GoBackAsync() => await Shell.Current.GoToAsync("..");
@@ -212,6 +239,9 @@ public partial class WordDetailViewModel : ObservableObject
             case DetailTab.Kanji when !kanjiLoaded:
                 kanjiLoaded = true;
                 Fill(KanjiCards, await Task.Run(() => BuildKanjiCards(entry)));
+                if (KanjiCards.Count > 0 && SelectedTab == DetailTab.Kanji
+                    && KanjiCards[0].TotalStrokes > 0 && MotionSettings.AnimationsEnabled)
+                    _ = AutoplayAsync(KanjiCards[0]);
                 break;
             case DetailTab.Conjugation when !conjugationLoaded:
                 conjugationLoaded = true;
