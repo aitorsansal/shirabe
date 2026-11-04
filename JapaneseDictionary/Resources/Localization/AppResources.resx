@@ -58,8 +58,6 @@
   <data name="Word_SentencesNote" xml:space="preserve"><value>Sentences come from the linked Tatoeba indices — only pairs tagged to this entry are shown.</value></data>
   <data name="Word_Strokes" xml:space="preserve"><value>{0} strokes</value></data>
   <data name="Word_StrokeStep" xml:space="preserve"><value>stroke {0} / {1}</value></data>
-  <data name="Word_Grade" xml:space="preserve"><value>grade {0}</value></data>
-  <data name="Word_Ungraded" xml:space="preserve"><value>ungraded</value></data>
   <data name="Word_Freq" xml:space="preserve"><value>freq #{0}</value></data>
   <data name="Word_FreqNone" xml:space="preserve"><value>freq —</value></data>
   <data name="Word_ConjForm" xml:space="preserve"><value>FORM</value></data>

@@ -261,7 +261,6 @@ public partial class WordDetailViewModel : ObservableObject
         var hue = 0;
         foreach (var wc in wordClasses.Distinct())
             badges.Add(new EntryBadge(UiText.WordClassName(wc), IsCommon: false, HueIndex: hue++));
-        badges.Add(new EntryBadge($"#{entry.Id}", IsCommon: false, HueIndex: hue));
         return badges;
     }
 
@@ -404,7 +403,6 @@ public partial class WordDetailViewModel : ObservableObject
                 Meanings = string.Join(", ", info.Meanings),
                 OnReadings = info.OnReadings.Count > 0 ? string.Join("、", info.OnReadings) : "—",
                 KunReadings = info.KunReadings.Count > 0 ? string.Join("、", info.KunReadings) : "—",
-                GradeLabel = info.Grade is { } g ? UiText.Format(AppResources.Word_Grade, g) : AppResources.Word_Ungraded,
                 FreqLabel = info.FrequencyRank is { } f ? UiText.Format(AppResources.Word_Freq, f) : AppResources.Word_FreqNone,
                 JlptLabel = info.JlptN is { } n ? UiText.Format(AppResources.Common_JlptBadge, n) : "",
                 StrokePaths = strokes,

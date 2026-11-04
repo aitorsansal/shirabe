@@ -341,12 +341,6 @@
                                                                TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=0}" />
                                                     </Border>
                                                     <Border StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0"
-                                                            Stroke="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueBorderConverter}, ConverterParameter=1}"
-                                                            Background="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueFillConverter}, ConverterParameter=1}">
-                                                        <Label Text="{Binding GradeLabel}" FontFamily="ArchivoSemiBold" FontSize="10" TextTransform="Uppercase"
-                                                               TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=1}" />
-                                                    </Border>
-                                                    <Border StrokeThickness="1" Margin="0,0,4,4" Padding="5,3" FlexLayout.Shrink="0"
                                                             Stroke="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueBorderConverter}, ConverterParameter=2}"
                                                             Background="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueFillConverter}, ConverterParameter=2}">
                                                         <Label Text="{Binding FreqLabel}" FontFamily="ArchivoSemiBold" FontSize="10" TextTransform="Uppercase"

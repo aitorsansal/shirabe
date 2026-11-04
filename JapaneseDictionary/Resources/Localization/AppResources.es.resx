@@ -58,8 +58,6 @@
   <data name="Word_SentencesNote" xml:space="preserve"><value>Las frases vienen de los índices enlazados de Tatoeba; solo se muestran las que están etiquetadas con esta entrada.</value></data>
   <data name="Word_Strokes" xml:space="preserve"><value>{0} trazos</value></data>
   <data name="Word_StrokeStep" xml:space="preserve"><value>trazo {0} / {1}</value></data>
-  <data name="Word_Grade" xml:space="preserve"><value>curso {0}</value></data>
-  <data name="Word_Ungraded" xml:space="preserve"><value>sin curso</value></data>
   <data name="Word_Freq" xml:space="preserve"><value>frec. #{0}</value></data>
   <data name="Word_FreqNone" xml:space="preserve"><value>frec. —</value></data>
   <data name="Word_ConjForm" xml:space="preserve"><value>FORMA</value></data>
