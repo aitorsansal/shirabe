@@ -1,5 +1,8 @@
 using JapaneseDictionary.Core.Data;
+using JapaneseDictionary.Core.Data.Schema;
 using JapaneseDictionary.Core.Models;
+
+using SQLite;
 
 using Xunit;
 
@@ -127,6 +130,65 @@ public class DictionaryRepositoryTests : IDisposable
         Assert.All(related, e => Assert.Contains("食", e.PrimaryText));
         // Common words lead; くっ付く only matched through its rare 食っ付く spelling.
         Assert.All(related, e => Assert.True(e.KanjiForms.Any(k => k.IsCommon) || e.Readings.Any(r => r.IsCommon)));
+    }
+
+    private List<WordEntryRow> LoadRows(IEnumerable<int> ids)
+    {
+        using var conn = new SQLiteConnection(DbPath, SQLiteOpenFlags.ReadOnly);
+        return ids.Select(id => conn.Get<WordEntryRow>(id)).ToList();
+    }
+
+    private static int[] EffectiveBands(IEnumerable<WordEntryRow> rows) =>
+        rows.Select(r => FormPriority.EffectiveBand(r.Priority, r.JlptLevel)).ToArray();
+
+    [SkippableFact]
+    public void FindRelatedByKanji_RanksByEffectiveBand()
+    {
+        Skip.If(repo == null, "dictionary.db3 not built");
+        var ids = repo!.FindRelatedByKanji("食", 1358280, 8);
+        var bands = EffectiveBands(LoadRows(ids));
+
+        Assert.Equal(bands.Order(), bands);
+        Assert.Contains(repo.FindByExactText("食事").First(), ids.Take(8));
+    }
+
+    [SkippableFact]
+    public void FindCompoundsByKanji_RanksByEffectiveBand()
+    {
+        Skip.If(repo == null, "dictionary.db3 not built");
+        var ids = repo!.FindCompoundsByKanji("行", 50);
+        var bands = EffectiveBands(LoadRows(ids));
+
+        Assert.Equal(bands.Order(), bands);
+        Assert.Contains(repo.FindByExactText("銀行"), id => ids.Take(10).Contains(id));
+    }
+
+    [SkippableFact]
+    public void FindByPrefix_TaberuLeadsTabe()
+    {
+        Skip.If(repo == null, "dictionary.db3 not built");
+        var ids = repo!.FindByPrefix("たべ", 20).ToList();
+
+        // 食べる has no nf tag but is N5, which counts because たべる is its primary
+        // reading; 食べ物 (1358340) is nf-tagged and used to win on band alone.
+        Assert.Equal(1358280, ids[0]);
+        Assert.True(ids.IndexOf(1358340) > 0);
+    }
+
+    [SkippableTheory]
+    [InlineData("たべ")]
+    [InlineData("食")]
+    [InlineData("ア")]
+    [InlineData("𠮟")] // outside the BMP: the range's upper bound must still cover it
+    public void FindByPrefix_FindsTheSameEntriesAsStartsWith(string prefix)
+    {
+        Skip.If(repo == null, "dictionary.db3 not built");
+        using var conn = new SQLiteConnection(DbPath, SQLiteOpenFlags.ReadOnly);
+        var expected = conn.Table<KanjiFormRow>().ToList().Where(r => r.Text.StartsWith(prefix, StringComparison.Ordinal)).Select(r => r.EntryId)
+            .Concat(conn.Table<ReadingFormRow>().ToList().Where(r => r.Text.StartsWith(prefix, StringComparison.Ordinal)).Select(r => r.EntryId))
+            .ToHashSet();
+
+        Assert.Equal(expected, repo!.FindByPrefix(prefix, int.MaxValue).ToHashSet());
     }
 
     [SkippableFact]

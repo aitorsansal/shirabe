@@ -32,24 +32,61 @@ public sealed class DictionaryRepository : IDisposable
     }
 
     /// <summary>Entry ids whose kanji form or reading starts with <paramref name="prefix"/>,
-    /// most-common-first, capped at <paramref name="limit"/>.</summary>
+    /// capped at <paramref name="limit"/>. Ordered by the band of the entry's best
+    /// matching form, then the shortest matching text, then id. A form that is the
+    /// entry's headword or primary reading gets <see cref="FormPriority.EffectiveBand"/>
+    /// (the JLPT level is per entry, so it only applies to those), any other form
+    /// plain <see cref="FormPriority.Band"/>: たべ puts 食べる (N5, no nf tag) with
+    /// 食べ物 instead of below it.</summary>
     public IReadOnlyList<int> FindByPrefix(string prefix, int limit)
     {
-        var ids = new List<(int EntryId, bool IsCommon)>();
+        if (prefix.Length == 0) return [];
 
-        ids.AddRange(db.Table<KanjiFormRow>()
-            .Where(r => r.Text.StartsWith(prefix))
-            .Select(r => new ValueTuple<int, bool>(r.EntryId, r.IsCommon)));
-        ids.AddRange(db.Table<ReadingFormRow>()
-            .Where(r => r.Text.StartsWith(prefix))
-            .Select(r => new ValueTuple<int, bool>(r.EntryId, r.IsCommon)));
+        // A range on Text instead of LIKE 'x%': SQLite only turns LIKE into an
+        // index lookup under case-insensitive collation, so LIKE scanned the whole
+        // table on every keystroke. U+10FFFF sorts after any character that can
+        // follow the prefix.
+        const string formsSql = """
+            SELECT f.EntryId, f.Priority, LENGTH(f.Text) AS Length,
+                   (f.Text = w.PrimaryText OR f.Text = w.PrimaryReading) AS IsHeadword, w.JlptLevel
+            FROM {0} f JOIN WordEntryRow w ON w.Id = f.EntryId
+            WHERE f.Text >= ? AND f.Text < ?
+            """;
+        var upper = prefix + char.ConvertFromUtf32(0x10FFFF);
+        var forms = db.Query<PrefixFormRow>(string.Format(formsSql, nameof(KanjiFormRow)), prefix, upper)
+            .Concat(db.Query<PrefixFormRow>(string.Format(formsSql, nameof(ReadingFormRow)), prefix, upper));
 
-        return ids
+        return forms
             .GroupBy(x => x.EntryId)
-            .OrderByDescending(g => g.Any(x => x.IsCommon))
-            .Select(g => g.Key)
+            .Select(g => (
+                EntryId: g.Key,
+                Band: g.Min(x => x.IsHeadword ? FormPriority.EffectiveBand(x.Priority, x.JlptLevel) : FormPriority.Band(x.Priority)),
+                Length: g.Min(x => x.Length)))
+            .OrderBy(x => x.Band)
+            .ThenBy(x => x.Length)
+            .ThenBy(x => x.EntryId)
+            .Select(x => x.EntryId)
             .Take(limit)
             .ToList();
+    }
+
+    private sealed class PrefixFormRow
+    {
+        public int EntryId { get; set; }
+        public int Priority { get; set; }
+        public int Length { get; set; }
+        public bool IsHeadword { get; set; }
+        public int? JlptLevel { get; set; }
+    }
+
+    /// <summary>Id, headword and ranking inputs of an entry, for the C#-side ordering
+    /// of the kanji-containing lists.</summary>
+    private sealed class RankedHeadwordRow
+    {
+        public int Id { get; set; }
+        public string PrimaryText { get; set; } = "";
+        public int Priority { get; set; }
+        public int? JlptLevel { get; set; }
     }
 
     /// <summary>Other entries whose headword contains <paramref name="kanji"/>,
@@ -59,30 +96,42 @@ public sealed class DictionaryRepository : IDisposable
     ///
     /// Matches the headword (<see cref="WordEntryRow.PrimaryText"/>), not every
     /// kanji spelling: rare alternate spellings otherwise pull in entries that
-    /// show no sign of the kanji (くっ付く via 食っ付く). Ranked common words
-    /// first, then words starting with the kanji (食事 before 月食), then
-    /// shortest, so the list leads with everyday compounds rather than whatever
-    /// the table scan hits first.</summary>
+    /// show no sign of the kanji (くっ付く via 食っ付く). Ranked
+    /// by <see cref="FormPriority.EffectiveBand"/> (frequency, improved by
+    /// JLPT level, as in the rest of search), then words starting with the kanji
+    /// (食事 before 月食), then shortest, then id, so the list leads with everyday
+    /// compounds rather than whatever the table scan hits first. SQL only filters;
+    /// the ranking runs in C#.</summary>
     public IReadOnlyList<int> FindRelatedByKanji(string kanji, int excludeEntryId, int limit) =>
-        db.QueryScalars<int>("""
-            SELECT Id FROM WordEntryRow
-            WHERE PrimaryText LIKE ? AND Id != ?
-            ORDER BY IsCommon DESC, (PrimaryText LIKE ?) DESC, LENGTH(PrimaryText), Id
-            LIMIT ?
-            """, $"%{kanji}%", excludeEntryId, $"{kanji}%", limit);
+        db.Query<RankedHeadwordRow>("""
+                SELECT Id, PrimaryText, Priority, JlptLevel FROM WordEntryRow
+                WHERE PrimaryText LIKE ? AND Id != ?
+                """, $"%{kanji}%", excludeEntryId)
+            .OrderBy(r => FormPriority.EffectiveBand(r.Priority, r.JlptLevel))
+            .ThenBy(r => r.PrimaryText.StartsWith(kanji, StringComparison.Ordinal) ? 0 : 1)
+            .ThenBy(r => r.PrimaryText.Length)
+            .ThenBy(r => r.Id)
+            .Take(limit)
+            .Select(r => r.Id)
+            .ToList();
 
     /// <summary>Entries whose headword contains <paramref name="kanji"/> somewhere
-    /// after its first character (銀行 for 行), common words first, then shortest.
+    /// after its first character (銀行 for 行), best <see cref="FormPriority.EffectiveBand"/>
+    /// first, then shortest, then id.
     /// Headwords that start with it are left to <see cref="FindByPrefix"/>, which
     /// the search runs first; including them here would let hundreds of them
     /// crowd the actual compounds out of the limit.</summary>
     public IReadOnlyList<int> FindCompoundsByKanji(string kanji, int limit) =>
-        db.QueryScalars<int>("""
-            SELECT Id FROM WordEntryRow
-            WHERE PrimaryText LIKE ? AND PrimaryText NOT LIKE ?
-            ORDER BY IsCommon DESC, LENGTH(PrimaryText), Id
-            LIMIT ?
-            """, $"%{kanji}%", $"{kanji}%", limit);
+        db.Query<RankedHeadwordRow>("""
+                SELECT Id, PrimaryText, Priority, JlptLevel FROM WordEntryRow
+                WHERE PrimaryText LIKE ? AND PrimaryText NOT LIKE ?
+                """, $"%{kanji}%", $"{kanji}%")
+            .OrderBy(r => FormPriority.EffectiveBand(r.Priority, r.JlptLevel))
+            .ThenBy(r => r.PrimaryText.Length)
+            .ThenBy(r => r.Id)
+            .Take(limit)
+            .Select(r => r.Id)
+            .ToList();
 
     /// <summary>Every gloss containing <paramref name="text"/> (case-insensitive),
     /// unranked and uncapped — <see cref="Search.GlossRanker"/> orders them. With
