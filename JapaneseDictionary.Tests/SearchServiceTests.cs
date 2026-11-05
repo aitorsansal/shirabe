@@ -64,6 +64,17 @@ public class SearchServiceTests : IDisposable
         Assert.Equal("past", hit.ConjugationForm);
     }
 
+    [SkippableTheory]
+    [InlineData("食べさせます", 1358280)]
+    [InlineData("たべさせられます", 1358280)]
+    public void Search_PoliteCausative_FindsTaberu(string query, int entryId)
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var hit = search!.Search(query).FirstOrDefault(r => r.EntryId == entryId);
+        Assert.NotNull(hit);
+        Assert.Equal(SearchMatchKind.Conjugated, hit.Kind);
+    }
+
     [SkippableFact]
     public void Search_Romaji_FindsTaberu()
     {

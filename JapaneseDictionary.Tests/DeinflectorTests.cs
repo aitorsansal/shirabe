@@ -110,6 +110,29 @@ public class ConjugationTableTests
         Assert.Equal(potential.Plain, passive.Plain);
     }
 
+    [Theory]
+    [InlineData("とりあつかう", WordClass.GodanVerbU, "とりあつかわれます", "とりあつかわせます", "とりあつかわせられます")]
+    [InlineData("たべる", WordClass.IchidanVerb, "たべられます", "たべさせます", "たべさせられます")]
+    [InlineData("べんきょう", WordClass.SuruVerb, "べんきょうされます", "べんきょうさせます", "べんきょうさせられます")]
+    [InlineData("くる", WordClass.KuruVerb, "こられます", "こさせます", "こさせられます")]
+    public void PolitePassiveAndCausativeCells(string reading, WordClass wordClass, string passive, string causative, string causativePassive)
+    {
+        var rows = Deinflector.GetConjugationTable(reading, wordClass);
+        Assert.Equal(passive, Assert.Single(rows, r => r.Label == "Passive").Polite);
+        Assert.Equal(causative, Assert.Single(rows, r => r.Label == "Causative").Polite);
+        Assert.Equal(causativePassive, Assert.Single(rows, r => r.Label == "Causative passive").Polite);
+    }
+
+    [Theory]
+    [InlineData("取り扱われます", "Godan", "取り扱う")]
+    [InlineData("食べさせます", "Ichidan", "食べる")]
+    [InlineData("勉強させられます", "Suru", "勉強する")]
+    [InlineData("とりあつかわせます", "Godan", "とりあつかう")]
+    public void Deinflect_PoliteCausativeAndPassive_ReachesDictionaryForm(string query, string typeName, string expected)
+    {
+        Assert.Contains(Deinflector.Deinflect(query), d => d.Text == expected && d.Type == Enum.Parse<InflectionType>(typeName));
+    }
+
     [Fact]
     public void Godan_ImperativeIsEStemAlone()
     {

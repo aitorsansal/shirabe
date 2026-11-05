@@ -10,11 +10,10 @@ Order: 1.1a, 1.1b, 1.1c, then 1.2. Cut 1.2 only after closed-test feedback is in
 
 ## Open from the 1.0.2 comparison with Takoboto
 
-Done since the report: ranking by core meaning and JLPT level, matched meaning in result previews, one line per sense, handwriting Append/Replace switch, stroke-order autoplay, "Show more results", Spanish/French/German meaning search, Anki-ready list export, grade chip and JMdict id badge removed. Still open:
+Done since the report: ranking by core meaning and JLPT level, matched meaning in result previews, one line per sense, handwriting Append/Replace switch, stroke-order autoplay, "Show more results", Spanish/French/German meaning search, Anki-ready list export, grade chip and JMdict id badge removed, polite passive/causative/causative-passive forms in the Conj. tab. Still open:
 
 - **Wildcards** (`?` one character, `*` any run) on Japanese forms only. No database change. A leading `*` means a full scan of ~100k forms: measure on the phone before shipping.
 - **Kanji search by components (radicals):** see 1.2; needs KRADFILE and a rebuild. Handwriting already covers most "I can't type this kanji" cases, so it stays last.
-- **Polite forms of passive, causative and causative passive.** The Conj. tab shows "—" for them (`TableSpec` in `Deinflector.ConjugationTable.cs` has no polite rule), but 取り扱われます, 取り扱わせます and 取り扱わせられます are ordinary forms. Core change: add the rules and the deinflection back, with tests.
 - **English ranking gaps.** "station" doesn't put 駅 first and "evening" doesn't put 夕方 first: both need a head-noun tier (the query as the head of a longer gloss). "come" puts 来る third behind honorific verbs; accepted as is.
 
 ## 1.1a: layout fixes, no data changes (done)
@@ -34,7 +33,7 @@ Done since the report: ranking by core meaning and JLPT level, matched meaning i
 
 (No kanji filters or sorting: the JLPT chip on the kanji tab is enough. Grade and frequency chips already exist.)
 
-- **Frequency order for related words and compounds.** Search already ranks by the nfXX bands (`FormPriority`, stored as `WordEntryRow.Priority`), but `FindRelatedByKanji` and `FindCompoundsByKanji` still order by `IsCommon` only. Query change, no rebuild.
+- **Frequency order for prefix matches, compounds and related words.** `FindByPrefix`, `FindCompoundsByKanji` and `FindRelatedByKanji` rank by `FormPriority.EffectiveBand` like the rest of search (prefix: JLPT only counts when the matched form is the headword or primary reading). `FindByPrefix` also became an index range lookup instead of a LIKE scan.
 
 ## 1.1c: NNP link (undecided, blocked on NNP)
 

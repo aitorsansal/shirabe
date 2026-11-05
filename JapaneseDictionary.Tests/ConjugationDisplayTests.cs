@@ -26,6 +26,18 @@ public class ConjugationDisplayTests
         Assert.True(cell.HasReading);
     }
 
+    [Theory]
+    [InlineData("取り扱う", "とりあつかう", WordClass.GodanVerbU, "v5u", "取り扱われます", "取り扱わせます", "取り扱わせられます")]
+    [InlineData("食べる", "たべる", WordClass.IchidanVerb, "v1", "食べられます", "食べさせます", "食べさせられます")]
+    [InlineData("来る", "くる", WordClass.KuruVerb, "vk", "来られます", "来させます", "来させられます")]
+    public void PolitePassiveAndCausative_AreSpelledWithKanji(string headword, string reading, WordClass wc, string tag, string passive, string causative, string causativePassive)
+    {
+        var rows = Table(headword, reading, wc, tag);
+        Assert.Equal(passive, Polite(rows, "Passive"));
+        Assert.Equal(causative, Polite(rows, "Causative"));
+        Assert.Equal(causativePassive, Polite(rows, "Causative passive"));
+    }
+
     [Fact]
     public void KanaHeadword_HasNoSeparateReading()
     {

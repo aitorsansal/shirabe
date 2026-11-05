@@ -109,6 +109,9 @@ public static partial class Deinflector
         forms[root + row.A + "れる"] = "passive";
         forms[root + row.A + "せる"] = "causative";
         forms[root + row.A + "せられる"] = "causative passive";
+        forms[root + row.A + "れます"] = "polite passive";
+        forms[root + row.A + "せます"] = "polite causative";
+        forms[root + row.A + "せられます"] = "polite causative passive";
         forms[root + row.Te] = "te-form";
         forms[root + row.Ta] = "past";
         forms[root + row.Ta + "ら"] = "conditional (tara)";
@@ -167,6 +170,9 @@ public static partial class Deinflector
         forms[root + "られます"] = "polite potential";
         forms[root + "させる"] = "causative";
         forms[root + "させられる"] = "causative passive";
+        // The polite passive (root + られます) is the "polite potential" entry above.
+        forms[root + "させます"] = "polite causative";
+        forms[root + "させられます"] = "polite causative passive";
         forms[root + "て"] = "te-form";
         forms[root + "た"] = "past";
         forms[root + "たら"] = "conditional (tara)";
@@ -222,6 +228,9 @@ public static partial class Deinflector
         forms[root + "される"] = "passive";
         forms[root + "させる"] = "causative";
         forms[root + "させられる"] = "causative passive";
+        forms[root + "されます"] = "polite passive";
+        forms[root + "させます"] = "polite causative";
+        forms[root + "させられます"] = "polite causative passive";
         forms[root + "して"] = "te-form";
         forms[root + "した"] = "past";
         forms[root + "したら"] = "conditional (tara)";
@@ -272,6 +281,8 @@ public static partial class Deinflector
         ("こられます", "polite potential"),
         ("こさせる", "causative"),
         ("こさせられる", "causative passive"),
+        ("こさせます", "polite causative"),
+        ("こさせられます", "polite causative passive"),
         ("きて", "te-form"),
         ("きた", "past"),
         ("きたら", "conditional (tara)"),

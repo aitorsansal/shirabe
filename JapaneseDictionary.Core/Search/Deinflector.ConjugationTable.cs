@@ -79,9 +79,9 @@ public static partial class Deinflector
         ("Te-form", "te-form", "polite te-form"),
         ("Negative te-form", "negative te-form", null),
         ("Potential", "potential", "polite potential"),
-        ("Passive", "passive", null),
-        ("Causative", "causative", null),
-        ("Causative passive", "causative passive", null),
+        ("Passive", "passive", "polite passive"),
+        ("Causative", "causative", "polite causative"),
+        ("Causative passive", "causative passive", "polite causative passive"),
         ("Volitional", "volitional", "polite volitional"),
         ("Want to", "want to", "polite want to"),
         ("Conditional (ba)", "conditional (ba)", null),
@@ -130,6 +130,8 @@ public static partial class Deinflector
         {
             byName.TryAdd("potential", potentialPassive);
             byName.TryAdd("passive", potentialPassive);
+            if (byName.TryGetValue("polite potential", out var politePotential))
+                byName.TryAdd("polite passive", politePotential);
         }
 
         var rows = new List<(string, string?, string?)>();
