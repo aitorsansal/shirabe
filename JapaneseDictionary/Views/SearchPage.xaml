@@ -14,13 +14,14 @@
     <Grid RowDefinitions="Auto,*">
 
         <!--  Header  -->
-        <VerticalStackLayout Grid.Row="0" Padding="16,16,16,0" Spacing="0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
-            <Grid ColumnDefinitions="*,Auto">
-                <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
+        <!--  Portrait: wordmark | icons, rule, search bar stacked. Landscape (see
+              OnSizeAllocated): wordmark | search bar | icons on one row, rule below.  -->
+        <Grid x:Name="Header" Grid.Row="0" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" Padding="16,16,16,0" BackgroundColor="{AppThemeBinding Light={StaticResource ScreenBackgroundLight}, Dark={StaticResource ScreenBackgroundDark}}">
+            <HorizontalStackLayout x:Name="Wordmark" Grid.Row="0" Grid.Column="0" Spacing="8" VerticalOptions="Center">
                     <Label Text="辞書" FontFamily="NotoSerifJPBoldWordmark" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
                     <Label Text="SHIRABE" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" Margin="0,0,-10,0">
+            </HorizontalStackLayout>
+            <HorizontalStackLayout x:Name="HeaderIcons" Grid.Row="0" Grid.Column="1" Spacing="2" VerticalOptions="Center" Margin="0,0,-10,0">
                     <Button Text="{x:Static services:IconGlyphs.Bookmarks}"
                             Command="{Binding OpenListsCommand}"
                             SemanticProperties.Description="{x:Static res:AppResources.Common_Lists}"
@@ -29,13 +30,12 @@
                             Command="{Binding OpenSettingsCommand}"
                             SemanticProperties.Description="{x:Static res:AppResources.Common_Settings}"
                             Style="{StaticResource IconButtonStyle}" />
-                </HorizontalStackLayout>
-            </Grid>
+            </HorizontalStackLayout>
 
-            <BoxView HeightRequest="2" Margin="0,12,0,14" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
+            <BoxView x:Name="HeaderRule" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HeightRequest="2" Margin="0,12,0,14" Color="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" />
 
             <!--  Search bar  -->
-            <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="0">
+            <Border x:Name="SearchBar" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMajorLight}, Dark={StaticResource RuleMajorDark}}" Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="0">
                 <Grid ColumnDefinitions="40,*,Auto,46" HeightRequest="46">
                     <Label Grid.Column="0" Text="🔍" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" FontSize="15" HorizontalOptions="Center" VerticalOptions="Center" />
                     <Entry
@@ -46,6 +46,7 @@
                         FontSize="17"
                         BackgroundColor="Transparent"
                         ReturnType="Search"
+                        controls:KeyboardOptions.NoFullscreen="True"
                         Completed="OnQueryCompleted"
                         VerticalOptions="Center" />
                     <Button
@@ -68,7 +69,7 @@
                         Padding="0" />
                 </Grid>
             </Border>
-        </VerticalStackLayout>
+        </Grid>
 
         <!--  Content  -->
         <ScrollView Grid.Row="1" Margin="0,14,0,0" IsVisible="{Binding ShowHomeContent}">

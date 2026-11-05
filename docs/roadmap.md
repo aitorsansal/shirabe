@@ -14,12 +14,13 @@ Done since the report: ranking by core meaning and JLPT level, matched meaning i
 
 - **Wildcards** (`?` one character, `*` any run) on Japanese forms only. No database change. A leading `*` means a full scan of ~100k forms: measure on the phone before shipping.
 - **Kanji search by components (radicals):** see 1.2; needs KRADFILE and a rebuild. Handwriting already covers most "I can't type this kanji" cases, so it stays last.
+- **Polite forms of passive, causative and causative passive.** The Conj. tab shows "—" for them (`TableSpec` in `Deinflector.ConjugationTable.cs` has no polite rule), but 取り扱われます, 取り扱わせます and 取り扱わせられます are ordinary forms. Core change: add the rules and the deinflection back, with tests.
 - **English ranking gaps.** "station" doesn't put 駅 first and "evening" doesn't put 夕方 first: both need a head-noun tier (the query as the head of a longer gloss). "come" puts 来る third behind honorific verbs; accepted as is.
 
-## 1.1a: layout fixes, no data changes
+## 1.1a: layout fixes, no data changes (done)
 
-- **Landscape audit.** Check every page with the phone rotated (a wider/higher screen than that is assumed to work if the phone does). Fix clipping and cramped layouts.
-- **Kana forms wrapping mid-word in the Conj. tab** on narrow screens (e.g. たべなかっ|た).
+- **Landscape audit** on the Mi 10T (840x344 dp). Search: the header is one row (wordmark, search bar, icons) and the search field opts out of the full-screen landscape keyboard (`Controls/KeyboardOptions`). Handwriting: square canvas with Undo/Clear/Strokes in a column beside it. Conj. tab: plain and polite side by side once a row is at least 560 dp wide (`Controls/ConjugationRowGrid`). Lists, Settings, About, kanji words and the other word tabs needed nothing.
+- **Conj. tab wrapping.** The kana split (たべなかっ|た) didn't reproduce on the current layout, even at font scale 1.5. What did split was the fixed 64 dp label column ("INFORM|AL", "CORTÉ|S" from 1.3 up); it now sizes to its labels.
 
 ## 1.1b: uses data already in the DB (done)
 
@@ -29,7 +30,11 @@ Done since the report: ranking by core meaning and JLPT level, matched meaning i
 - **Part-of-speech chips** are colored by family (verb green, noun blue, adjective yellow, adverb purple, other lime; `PartOfSpeech.GroupOf`) instead of by position, and tapping one explains its code (`TagInfo`, `Pos_*` strings in en/es/ca). Same chips replace the plain-text headers on the Meaning tab. Inside list rows the row's own tap swallows the chip's, so `EntryRowView` routes taps by position.
 - **Share button on the word page: dropped** (little real use without entry links; long-press copy covers the common case).
 
-(No kanji filters or sorting: a JLPT chip on the kanji tab is enough. Grade and frequency chips already exist. The JLPT chip moved to 1.2 because KANJIDIC2's `jlpt` is the old 4-level scale, which does not map cleanly to N5-N1.)
+- **JLPT N5-N1 badges** on words (search rows, lists, word page) and kanji, from Waller's lists via yomitan-jlpt-vocab and JLPT_Vocabulary (`WordEntryRow.JlptLevel`, `KanjiRow.JlptN`), labelled as unofficial estimates. KANJIDIC2's old 4-level `jlpt` field is not shown.
+
+(No kanji filters or sorting: the JLPT chip on the kanji tab is enough. Grade and frequency chips already exist.)
+
+- **Frequency order for related words and compounds.** Search already ranks by the nfXX bands (`FormPriority`, stored as `WordEntryRow.Priority`), but `FindRelatedByKanji` and `FindCompoundsByKanji` still order by `IsCommon` only. Query change, no rebuild.
 
 ## 1.1c: NNP link (undecided, blocked on NNP)
 
@@ -42,11 +47,9 @@ Per-list CSV export for Anki (Word, Back, Reading, Meanings, Tags and a `shirabe
 ## 1.2: one dictionary rebuild, batch everything
 
 - **Language model change (Spanish content).** Settings language only changes the UI. Dictionary content always shows English and Spanish side by side (Takoboto-style); when there is no Spanish translation, show English only, never an empty section. Needs: es glosses from full JMdict, es Tatoeba translations, es kanji meanings (accent-insensitive search of the es/fr/de meanings already exists, see "Faster translated-meaning search" below). Measured coverage: es glosses on 70% of common JMdict words, 19% of kanji, 17% of used Tatoeba sentences.
-- **Frequency bands.** JMdict nf01-nf48 for ranking search and related words.
 - **Faster translated-meaning search.** It scans `TranslatedSenseRow` unindexed with a LIKE + GLOB pre-filter: up to ~410 ms per search on a Mi 10T with es/fr/de all on (German's 166k senses are most of it). An accent-folded, per-word indexed column (or FTS5 table) built by DataBuilder would make it an index lookup.
-- **JLPT N5-N1 chip** on the kanji tab (and later on words). Source: community per-level lists (e.g. Tanos), since the JLPT has published no official lists since 2010; label as unofficial and add to the notices. KANJIDIC2's old 4-level `jlpt` field is not used.
 - **Kanji search by components.** KRADFILE (EDRDG licence, add to notices). Multi-select grid of components grouped by stroke count; results are kanji containing all selected components; components that would yield zero results are disabled.
-- **Word of the day** (needs the common/frequency flag): deterministic by date, same for everyone, no storage, shown on the empty search state. No notification or widget at first.
+- **Word of the day** (the frequency data it needs is already in the DB, so it could move out of 1.2): deterministic by date, same for everyone, no storage, shown on the empty search state. No notification or widget at first.
 
 ## Parked / only if requested
 

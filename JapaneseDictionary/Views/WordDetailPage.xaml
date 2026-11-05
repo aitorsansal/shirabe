@@ -414,9 +414,9 @@
                                             <Label Text="{Binding Label}" FontFamily="ArchivoSemiBold" FontSize="11" CharacterSpacing="0.6" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" TextTransform="Uppercase" />
                                             <Label Text="{Binding Meaning}" IsVisible="{Binding HasMeaning}" FontFamily="ArchivoRegular" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource InkTertiaryLight}, Dark={StaticResource InkTertiaryDark}}" TextTransform="None" />
                                         </VerticalStackLayout>
-                                        <Grid ColumnDefinitions="64,*">
-                                            <Label Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjPlain}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
-                                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                        <controls:ConjugationRowGrid>
+                                            <Label Grid.Row="0" Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjPlain}" LineBreakMode="NoWrap" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="1" VerticalOptions="Center">
                                                 <Label FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}">
                                                     <Label.FormattedText>
                                                         <FormattedString>
@@ -428,10 +428,8 @@
                                                 <Label Text="{Binding Plain.Reading}" IsVisible="{Binding Plain.HasReading}" FontFamily="NotoSerifJPRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
                                                 <Label Text="{Binding Plain.Romaji}" IsVisible="{Binding ShowRomaji, Source={x:Static services:ReadingPreferences.Instance}, x:DataType=services:ReadingPreferences}" FontFamily="ArchivoRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
                                             </VerticalStackLayout>
-                                        </Grid>
-                                        <Grid ColumnDefinitions="64,*">
-                                            <Label Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjPolite}" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
-                                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                            <Label Grid.Row="1" Grid.Column="0" Text="{x:Static res:AppResources.Word_ConjPolite}" LineBreakMode="NoWrap" FontFamily="ArchivoExtraBold" FontSize="10" CharacterSpacing="1" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" VerticalOptions="Center" />
+                                            <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="1" VerticalOptions="Center">
                                                 <Label FontFamily="NotoSerifJPRegular" LineHeight="0.85" FontSize="17" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}">
                                                     <Label.FormattedText>
                                                         <FormattedString>
@@ -443,7 +441,7 @@
                                                 <Label Text="{Binding Polite.Reading}" IsVisible="{Binding Polite.HasReading}" FontFamily="NotoSerifJPRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" />
                                                 <Label Text="{Binding Polite.Romaji}" IsVisible="{Binding ShowRomaji, Source={x:Static services:ReadingPreferences.Instance}, x:DataType=services:ReadingPreferences}" FontFamily="ArchivoRegular" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
                                             </VerticalStackLayout>
-                                        </Grid>
+                                        </controls:ConjugationRowGrid>
                                     </VerticalStackLayout>
                                     <BoxView Style="{StaticResource RowRuleStyle}" />
                                 </Grid>

@@ -62,13 +62,16 @@ public partial class HandwritingSheetPage : ContentPage
         viewModel.ComposedQuery = getQuery();
     }
 
-    // Portrait canvas height; in landscape it shrinks to fit what's left of the
-    // page after the header, the button row, the sheet's bottom padding and the
+    // Portrait canvas height; in landscape the canvas is a square whose side fits
+    // what's left of the page after the header, the sheet's bottom padding and the
     // system bars (the reported page height includes them, ~55dp on the test
-    // phone, but the sheet can't draw under them). The Append-mode query line
-    // adds its own height to the chrome.
+    // phone, but the sheet can't draw under them). The Undo/Clear/Strokes buttons
+    // sit in a column beside the canvas in landscape, so unlike the old 210 this
+    // no longer includes their row (44dp button + 10dp margin = 54): 210 - 54 = 156.
+    // The Append-mode query line adds its own height to the chrome.
     private const double PortraitCanvasHeight = 230;
-    private const double LandscapeChromeHeight = 210;
+    private const double LandscapeChromeHeight = 156;
+    private const double LandscapeButtonColumnWidth = 104;
     private const double QueryLineChromeHeight = 56;
     private const double MinCanvasHeight = 120;
 
@@ -86,8 +89,9 @@ public partial class HandwritingSheetPage : ContentPage
         {
             isLandscape = landscape;
             Body.ColumnDefinitions = landscape
-                ? new ColumnDefinitionCollection { new(GridLength.Star), new(GridLength.Star) }
+                ? new ColumnDefinitionCollection { new(GridLength.Auto), new(GridLength.Star) }
                 : new ColumnDefinitionCollection { new(GridLength.Star) };
+            ArrangeCanvasButtons(landscape);
             MatchesRule.IsVisible = !landscape;
             Grid.SetColumn(MatchesSection, landscape ? 1 : 0);
             Grid.SetRow(MatchesSection, landscape ? 0 : 2);
@@ -104,14 +108,54 @@ public partial class HandwritingSheetPage : ContentPage
         ApplyCanvasHeight();
     }
 
+    // Portrait: Undo | Clear | Strokes in a row under the canvas. Landscape: the
+    // same three stacked in a column to the right of the canvas.
+    private void ArrangeCanvasButtons(bool landscape)
+    {
+        DrawSection.ColumnDefinitions = landscape
+            ? new ColumnDefinitionCollection { new(GridLength.Auto), new(GridLength.Auto) }
+            : new ColumnDefinitionCollection { new(GridLength.Star) };
+        DrawSection.RowDefinitions = landscape
+            ? new RowDefinitionCollection { new(GridLength.Auto) }
+            : new RowDefinitionCollection { new(GridLength.Auto), new(GridLength.Auto) };
+
+        Grid.SetRow(CanvasButtons, landscape ? 0 : 1);
+        Grid.SetColumn(CanvasButtons, landscape ? 1 : 0);
+        CanvasButtons.Margin = landscape ? new Thickness(8, 0, 0, 0) : new Thickness(0, 10, 0, 0);
+        CanvasButtons.WidthRequest = landscape ? LandscapeButtonColumnWidth : -1;
+        CanvasButtons.ColumnSpacing = landscape ? 0 : 8;
+        CanvasButtons.RowSpacing = landscape ? 8 : 0;
+        CanvasButtons.ColumnDefinitions = landscape
+            ? new ColumnDefinitionCollection { new(GridLength.Star) }
+            : new ColumnDefinitionCollection { new(GridLength.Star), new(GridLength.Star), new(GridLength.Star) };
+        CanvasButtons.RowDefinitions = landscape
+            ? new RowDefinitionCollection { new(GridLength.Star), new(GridLength.Star), new(GridLength.Star) }
+            : new RowDefinitionCollection();
+
+        View[] controls = [UndoButton, ClearButton, StrokesBox];
+        for (var i = 0; i < controls.Length; i++)
+        {
+            Grid.SetRow(controls[i], landscape ? i : 0);
+            Grid.SetColumn(controls[i], landscape ? 0 : i);
+        }
+    }
+
     private void ApplyCanvasHeight()
     {
         if (pageHeight <= 0) return;
 
-        var chrome = LandscapeChromeHeight + (viewModel.IsAppendMode ? QueryLineChromeHeight : 0);
-        CanvasHost.HeightRequest = isLandscape == true
-            ? Math.Clamp(pageHeight - chrome, MinCanvasHeight, PortraitCanvasHeight)
-            : PortraitCanvasHeight;
+        if (isLandscape == true)
+        {
+            var chrome = LandscapeChromeHeight + (viewModel.IsAppendMode ? QueryLineChromeHeight : 0);
+            var side = Math.Clamp(pageHeight - chrome, MinCanvasHeight, PortraitCanvasHeight);
+            CanvasHost.WidthRequest = side;
+            CanvasHost.HeightRequest = side;
+        }
+        else
+        {
+            CanvasHost.WidthRequest = -1;
+            CanvasHost.HeightRequest = PortraitCanvasHeight;
+        }
     }
 
     protected override void OnAppearing()
