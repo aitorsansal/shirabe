@@ -322,4 +322,5 @@
   <data name="Search_WildcardEnd" xml:space="preserve"><value> para cualquier cantidad: </value></data>
   <data name="Search_WildcardSeparator" xml:space="preserve"><value>, </value></data>
   <data name="Search_WildcardPeriod" xml:space="preserve"><value>.</value></data>
+  <data name="Companion_UpdateShirabe" xml:space="preserve"><value>Actualiza Shirabe para abrir esto.</value></data>
 </root>

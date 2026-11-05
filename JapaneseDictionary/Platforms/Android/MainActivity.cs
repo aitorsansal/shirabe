@@ -21,7 +21,8 @@ public class MainActivity : MauiAppCompatActivity
         SystemBars.Apply(Microsoft.Maui.Controls.Application.Current?.RequestedTheme == AppTheme.Dark);
 
         // A recreated activity (rotation, process restore) still carries the
-        // original intent; only a fresh launch should open the entry.
+        // original intent, and so does a relaunch from Recents; only a fresh
+        // launch should open the entry.
         if (savedInstanceState == null && TryGetEntryId(Intent) is { } entryId)
             EntryLinks.Open(entryId);
     }
@@ -33,6 +34,10 @@ public class MainActivity : MauiAppCompatActivity
             EntryLinks.Open(entryId);
     }
 
+    // A request for a newer companion contract than this build knows is dropped
+    // rather than half-understood (docs/COMPANION_CONTRACT.md, Versioning); the
+    // launcher has no popup to explain it in, so the app just opens normally.
     private static int? TryGetEntryId(Intent? intent) =>
-        intent?.GetIntExtra(EntryIdExtra, -1) is > 0 and var id ? id : null;
+        CompanionIntents.IsReplayFromRecents(intent) || CompanionIntents.NeedsNewerApp(intent) ? null
+        : intent?.GetIntExtra(EntryIdExtra, -1) is > 0 and var id ? id : null;
 }

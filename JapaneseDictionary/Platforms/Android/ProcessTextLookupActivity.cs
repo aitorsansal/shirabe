@@ -44,10 +44,16 @@ public class ProcessTextLookupActivity : Android.App.Activity
         progress = FindViewById<Android.Widget.ProgressBar>(Resource.Id.lookupProgress)!;
         openButton.Text = AppResources.Lookup_Open;
 
+        if (CompanionIntents.NeedsNewerApp(Intent))
+        {
+            ShowMessage(AppResources.Companion_UpdateShirabe);
+            return;
+        }
+
         ShowLoading();
 
         var selectedText = Intent?.GetStringExtra(Android.Content.Intent.ExtraProcessText);
-        _ = LookUpAsync(selectedText);
+        _ = LookUpAsync(selectedText, CompanionIntents.ReadReading(Intent));
     }
 
     private void ShowLoading()
@@ -58,7 +64,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
         glossText.Visibility = ViewStates.Gone;
     }
 
-    private async Task LookUpAsync(string? selectedText)
+    private async Task LookUpAsync(string? selectedText, string? reading)
     {
         var query = selectedText?.Trim();
 
@@ -79,7 +85,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
             var appDataContext = services.GetRequiredService<AppDataContext>();
             await appDataContext.EnsureInitializedAsync();
 
-            var entry = FindBestEntry(appDataContext.DictionaryRepository, appDataContext.SearchService, query);
+            var entry = FindBestEntry(appDataContext.DictionaryRepository, appDataContext.SearchService, query, reading);
             if (entry is null)
             {
                 ShowMessage(UiText.Format(AppResources.Lookup_NotFound, query));
@@ -96,10 +102,8 @@ public class ProcessTextLookupActivity : Android.App.Activity
         }
     }
 
-    // SearchService itself tells Japanese from English (and romaji), so the
-    // best match is simply its first result.
-    private static DictionaryEntry? FindBestEntry(DictionaryRepository repo, SearchService search, string query) =>
-        search.Search(query, limit: 1).FirstOrDefault() is { } best ? repo.GetEntry(best.EntryId) : null;
+    private static DictionaryEntry? FindBestEntry(DictionaryRepository repo, SearchService search, string query, string? reading) =>
+        LookupSelector.PickEntry(search, query, reading) is { } id ? repo.GetEntry(id) : null;
 
     private void ShowEntry(DictionaryEntry entry)
     {

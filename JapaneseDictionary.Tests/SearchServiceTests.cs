@@ -23,6 +23,43 @@ public class SearchServiceTests : IDisposable
     public void Dispose() => repo?.Dispose();
 
     [SkippableTheory]
+    [InlineData("箸", "はし", "箸")]
+    [InlineData("切ります", "きります", "切る")]
+    [InlineData("着ます", "きます", "着る")]
+    [InlineData("診ます", "みます", "診る")]
+    public void LookupSelector_ReadingOfConjugatedForm_FindsExpectedWord(string query, string reading, string expected)
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var id = LookupSelector.PickEntry(search!, query, reading);
+        Assert.NotNull(id);
+        Assert.Contains(repo!.GetEntry(id.Value)!.KanjiForms, form => form.Text == expected);
+    }
+
+    [SkippableTheory]
+    [InlineData("箸")]
+    [InlineData("診ます")]
+    [InlineData("行")]
+    [InlineData("食堂")]
+    [InlineData("はし")]
+    [InlineData("eat")]
+    [InlineData("taberu")]
+    public void LookupSelector_WithoutReading_PreservesFirstResult(string query)
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        Assert.Equal(search!.Search(query, limit: 1).FirstOrDefault()?.EntryId,
+            LookupSelector.PickEntry(search, query));
+    }
+
+    [SkippableTheory]
+    [InlineData("はし", "ばし")]
+    [InlineData("きます", "きる")]
+    public void LookupSelector_KanaOnly_IgnoresReading(string query, string reading)
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        Assert.Equal(LookupSelector.PickEntry(search!, query), LookupSelector.PickEntry(search!, query, reading));
+    }
+
+    [SkippableTheory]
     [InlineData("た?る")]
     [InlineData("食*")]
     [InlineData("𠮟*")]
