@@ -214,15 +214,28 @@ public sealed partial class SearchService
     /// and 髪 before 加味, and those before 上 read as かみ; なる: 成る before 生る).</summary>
     private List<(SearchResult Result, int PriorityBand, int Rarity)> FindExactMatches(IReadOnlyList<string> forms)
     {
+        // JMdict lists 勉強 as a noun that takes する, not a 勉強する entry, so the
+        // dictionary form 勉強する is looked up as its noun too (only matches tagged
+        // as する verbs count). Conjugated forms (勉強した) get the same treatment
+        // in FindConjugatedMatches; this covers the form itself.
+        var lookupToForm = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var form in forms)
+        {
+            lookupToForm.TryAdd(form, form);
+            if (form.Length > 2 && form.EndsWith("する", StringComparison.Ordinal))
+                lookupToForm.TryAdd(form[..^2], form);
+        }
+
         var formOrder = forms.Select((form, i) => (form, i)).ToDictionary(x => x.form, x => x.i);
-        var matches = repo.FindByExactTexts(forms.ToList())
+        var matches = repo.FindByExactTexts(lookupToForm.Keys.ToList())
+            .Where(m => forms.Contains(m.Text) || m.WordClasses.Contains(WordClass.SuruVerb))
             .GroupBy(m => m.EntryId)
-            .Select(g => (Match: g.OrderBy(m => formOrder[m.Text]).First(), PriorityBand: g.Min(m => m.EffectiveBand)))
+            .Select(g => (Match: g.OrderBy(m => formOrder[lookupToForm[m.Text]]).First(), PriorityBand: g.Min(m => m.EffectiveBand)))
             .ToList();
         var exampleCounts = repo.GetExampleCounts(matches.Select(x => x.Match.EntryId).ToList());
         return matches
             .Select(x => (
-                Result: new SearchResult(x.Match.EntryId, SearchMatchKind.ExactMatch, null, x.Match.Text),
+                Result: new SearchResult(x.Match.EntryId, SearchMatchKind.ExactMatch, null, lookupToForm[x.Match.Text]),
                 x.PriorityBand,
                 Examples: ExampleEvidence.Band(exampleCounts.GetValueOrDefault(x.Match.EntryId)),
                 Rarity: KanjiRarity.Of(x.Match.PrimaryText, kanjiFrequencyRanks!)))

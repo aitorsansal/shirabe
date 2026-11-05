@@ -23,6 +23,31 @@ public class SearchServiceTests : IDisposable
     public void Dispose() => repo?.Dispose();
 
     [SkippableTheory]
+    [InlineData("勉強する", "勉強")]
+    [InlineData("注文する", "注文")]
+    [InlineData("散歩する", "散歩")]
+    [InlineData("べんきょうする", "勉強")]
+    [InlineData("benkyousuru", "勉強")]
+    [InlineData("愛する", "愛する")]
+    public void Search_SuruVerbDictionaryForm_FindsTheNoun(string query, string expected)
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var first = search!.Search(query).FirstOrDefault();
+        Assert.NotNull(first);
+        Assert.Equal(SearchMatchKind.ExactMatch, first!.Kind);
+        Assert.Equal(expected, repo!.GetEntry(first.EntryId)!.PrimaryText);
+    }
+
+    [SkippableFact]
+    public void Search_NounWithoutSuru_DoesNotMatchNounPlusSuru()
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        // 本 isn't tagged as taking する, so 本する must not find it as an exact match.
+        Assert.DoesNotContain(search!.Search("本する"),
+            r => r.Kind == SearchMatchKind.ExactMatch && repo!.GetEntry(r.EntryId)!.PrimaryText == "本");
+    }
+
+    [SkippableTheory]
     [InlineData("箸", "はし", "箸")]
     [InlineData("切ります", "きります", "切る")]
     [InlineData("着ます", "きます", "着る")]
