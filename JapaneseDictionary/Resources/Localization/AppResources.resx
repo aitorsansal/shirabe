@@ -316,4 +316,10 @@
   <data name="Pos_v1_s" xml:space="preserve"><value>ichidan verb, くれる special class</value></data>
   <data name="Pos_v_unspec" xml:space="preserve"><value>verb, unspecified</value></data>
   <data name="Pos__archaicVerb" xml:space="preserve"><value>archaic verb class (nidan/yodan)</value></data>
+  <data name="Search_WordOfTheDay" xml:space="preserve"><value>Word of the day</value></data>
+  <data name="Search_WildcardStart" xml:space="preserve"><value>Use </value></data>
+  <data name="Search_WildcardMiddle" xml:space="preserve"><value> for one character and </value></data>
+  <data name="Search_WildcardEnd" xml:space="preserve"><value> for any number of them: </value></data>
+  <data name="Search_WildcardSeparator" xml:space="preserve"><value>, </value></data>
+  <data name="Search_WildcardPeriod" xml:space="preserve"><value>.</value></data>
 </root>

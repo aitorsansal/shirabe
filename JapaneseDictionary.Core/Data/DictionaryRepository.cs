@@ -14,6 +14,7 @@ namespace JapaneseDictionary.Core.Data;
 public sealed class DictionaryRepository : IDisposable
 {
     private readonly SQLiteConnection db;
+    private IReadOnlyList<int>? jlptEntryIds;
 
     public DictionaryRepository(string databasePath)
     {
@@ -38,23 +39,28 @@ public sealed class DictionaryRepository : IDisposable
     /// (the JLPT level is per entry, so it only applies to those), any other form
     /// plain <see cref="FormPriority.Band"/>: たべ puts 食べる (N5, no nf tag) with
     /// 食べ物 instead of below it.</summary>
-    public IReadOnlyList<int> FindByPrefix(string prefix, int limit)
-    {
-        if (prefix.Length == 0) return [];
+    public IReadOnlyList<int> FindByPrefix(string prefix, int limit) =>
+        prefix.Length == 0 ? [] : FindByPattern([EscapeGlob(prefix) + "*"], limit);
 
-        // A range on Text instead of LIKE 'x%': SQLite only turns LIKE into an
-        // index lookup under case-insensitive collation, so LIKE scanned the whole
-        // table on every keystroke. U+10FFFF sorts after any character that can
-        // follow the prefix.
+    private static string EscapeGlob(string text) =>
+        text.Replace("[", "[[]").Replace("*", "[*]").Replace("?", "[?]");
+
+    /// <summary>Entries with a kanji form or reading matching any of the SQLite GLOB
+    /// <paramref name="globPatterns"/> (romaji wildcards come as a hiragana and a
+    /// katakana pattern), ranked together as in <see cref="FindByPrefix"/>. A pattern
+    /// that starts with literal text is an index range lookup; a leading wildcard
+    /// scans every form.</summary>
+    public IReadOnlyList<int> FindByPattern(IReadOnlyList<string> globPatterns, int limit)
+    {
         const string formsSql = """
             SELECT f.EntryId, f.Priority, LENGTH(f.Text) AS Length,
                    (f.Text = w.PrimaryText OR f.Text = w.PrimaryReading) AS IsHeadword, w.JlptLevel
             FROM {0} f JOIN WordEntryRow w ON w.Id = f.EntryId
-            WHERE f.Text >= ? AND f.Text < ?
+            WHERE f.Text GLOB ?
             """;
-        var upper = prefix + char.ConvertFromUtf32(0x10FFFF);
-        var forms = db.Query<PrefixFormRow>(string.Format(formsSql, nameof(KanjiFormRow)), prefix, upper)
-            .Concat(db.Query<PrefixFormRow>(string.Format(formsSql, nameof(ReadingFormRow)), prefix, upper));
+        var forms = globPatterns.SelectMany(pattern =>
+            db.Query<PrefixFormRow>(string.Format(formsSql, nameof(KanjiFormRow)), pattern)
+                .Concat(db.Query<PrefixFormRow>(string.Format(formsSql, nameof(ReadingFormRow)), pattern)));
 
         return forms
             .GroupBy(x => x.EntryId)
@@ -291,6 +297,11 @@ public sealed class DictionaryRepository : IDisposable
             row.Character, row.StrokeCount, row.Grade, row.JlptLevel, row.FrequencyRank,
             row.RadicalNumber, row.SkipCode, Split(row.OnReadingsJoined), Split(row.KunReadingsJoined), Split(row.MeaningsJoined), row.JlptN);
     }
+
+    /// <summary>The stable, cached pool of entries with an unofficial JLPT level.</summary>
+    public IReadOnlyList<int> GetJlptEntryIds() =>
+        jlptEntryIds ??= db.Query<WordEntryRow>("SELECT Id FROM WordEntryRow WHERE JlptLevel IS NOT NULL ORDER BY Id")
+            .Select(row => row.Id).ToArray();
 
     /// <summary>The entry's unofficial JLPT level (5 = N5 … 1 = N1), or null.</summary>
     public int? GetJlptLevel(int entryId) =>

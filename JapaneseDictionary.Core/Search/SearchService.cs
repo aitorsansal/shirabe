@@ -16,6 +16,9 @@ public enum SearchMatchKind
     TranslatedGloss,
     /// <summary>A short kanji query found inside a longer headword (行 in 銀行).</summary>
     Contains,
+    /// <summary>A kanji form or reading matching a <c>?</c>/<c>*</c> pattern; the
+    /// query skips every other tier.</summary>
+    Wildcard,
 }
 
 /// <param name="ConjugationForm">For conjugated matches, the forms undone, innermost
@@ -72,8 +75,33 @@ public sealed partial class SearchService
     /// searched too (<see cref="TranslationLanguages"/>); null or empty searches English only.</param>
     public IReadOnlyList<SearchResult> Search(string rawQuery, int limit = 50, IReadOnlyCollection<string>? translationLanguages = null)
     {
-        var query = rawQuery.Trim();
+        var query = rawQuery.Trim().Replace('＊', '*').Replace('？', '?');
         if (query.Length == 0) return [];
+
+        if (query.IndexOfAny(['*', '?']) >= 0)
+        {
+            var literal = query.Replace("*", "").Replace("?", "");
+            if (literal.Length == 0) return [];
+
+            var patterns = new List<string>();
+            if (ContainsJapanese(query))
+                patterns.Add(query);
+            else if (LooksLikeRomaji(literal) && !RomajiConverter.ToHiragana(literal).Any(char.IsAsciiLetter))
+            {
+                var hiragana = RomajiConverter.ToHiragana(query);
+                if (!hiragana.Any(char.IsAsciiLetter))
+                {
+                    patterns.Add(hiragana);
+                    patterns.Add(RomajiConverter.ToKatakana(query));
+                }
+            }
+
+            // A literal [ would open a GLOB bracket expression; * and ? stay wildcards.
+            if (patterns.Count > 0)
+                return repo.FindByPattern(patterns.Select(p => p.Replace("[", "[[]")).ToList(), limit)
+                    .Select(id => new SearchResult(id, SearchMatchKind.Wildcard, null, query))
+                    .ToList();
+        }
 
         kanjiFrequencyRanks ??= repo.GetKanjiFrequencyRanks();
 
@@ -340,7 +368,10 @@ public sealed partial class SearchService
         text.Length <= MaxCompoundQueryLength && text.All(c => c is >= '一' and <= '鿿');
 
     private static bool ContainsJapanese(string text) =>
-        text.Any(c => c is >= '぀' and <= 'ヿ' or >= '一' and <= '鿿');
+        text.EnumerateRunes().Any(r => r.Value is >= 0x3040 and <= 0x30FF
+            or >= 0x3400 and <= 0x4DBF or >= 0x4E00 and <= 0x9FFF
+            or >= 0xF900 and <= 0xFAFF or >= 0xFF66 and <= 0xFF9F
+            or >= 0x20000 and <= 0x323AF);
 
     [GeneratedRegex(@"^[a-zA-Z']+$")]
     private static partial Regex RomajiOnly();

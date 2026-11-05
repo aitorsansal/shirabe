@@ -120,6 +120,43 @@
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
+                    <Label Margin="0,8,0,0" FontFamily="ArchivoRegular" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" LineBreakMode="WordWrap">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{x:Static res:AppResources.Search_WildcardStart}" />
+                                <Span Text="?" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                <Span Text="{x:Static res:AppResources.Search_WildcardMiddle}" />
+                                <Span Text="*" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                <Span Text="{x:Static res:AppResources.Search_WildcardEnd}" />
+                                <Span Text="た?る" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                <Span Text="{x:Static res:AppResources.Search_WildcardSeparator}" />
+                                <Span Text="*べる" FontFamily="ArchivoSemiBold" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                <Span Text="{x:Static res:AppResources.Search_WildcardPeriod}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <VerticalStackLayout IsVisible="{Binding HasDailyWord}" Spacing="0">
+                        <BoxView HeightRequest="1" Margin="0,18,0,14" Color="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" />
+                        <Label Text="{x:Static res:AppResources.Search_WordOfTheDay}" TextTransform="Uppercase" FontFamily="ArchivoExtraBold" FontSize="11" CharacterSpacing="1.5" TextColor="{AppThemeBinding Light={StaticResource InkSecondaryLight}, Dark={StaticResource InkSecondaryDark}}" Margin="0,0,0,10" />
+                        <Border StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource RuleMinorLight}, Dark={StaticResource RuleMinorDark}}" Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="16,14">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenRecentCommand}" CommandParameter="{Binding DailyWord.EntryId}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="6">
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="{Binding DailyWord.Word}" FontFamily="NotoSerifJPSemiBold" FontSize="27" TextColor="{AppThemeBinding Light={StaticResource InkPrimaryLight}, Dark={StaticResource InkPrimaryDark}}" />
+                                    <Border IsVisible="{Binding DailyWord.HasJlpt}" StrokeThickness="1" Padding="5,3" VerticalOptions="Center"
+                                            Stroke="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueBorderConverter}, ConverterParameter=4}"
+                                            Background="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueFillConverter}, ConverterParameter=4}">
+                                        <Label Text="{Binding DailyWord.JlptLabel}" FontFamily="ArchivoExtraBold" FontSize="9" CharacterSpacing="1"
+                                               TextColor="{Binding Source={StaticResource ThemeService}, Path=IsDark, Converter={StaticResource HueTextConverter}, ConverterParameter=4}" />
+                                    </Border>
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding DailyWord.Reading}" IsVisible="{Binding ShowDailyReading}" FontFamily="NotoSerifJPSemiBold" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource ReadingAccentLight}, Dark={StaticResource ReadingAccentDark}}" />
+                                <Label Text="{Binding DailyWord.Gloss}" FontFamily="ArchivoRegular" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkGlossBodyLight}, Dark={StaticResource InkGlossBodyDark}}" LineBreakMode="WordWrap" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>

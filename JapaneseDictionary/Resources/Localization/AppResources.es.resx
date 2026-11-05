@@ -316,4 +316,10 @@
   <data name="Pos_v1_s" xml:space="preserve"><value>verbo ichidan, clase especial くれる</value></data>
   <data name="Pos_v_unspec" xml:space="preserve"><value>verbo, sin especificar</value></data>
   <data name="Pos__archaicVerb" xml:space="preserve"><value>clase verbal arcaica (nidan/yodan)</value></data>
+  <data name="Search_WordOfTheDay" xml:space="preserve"><value>Palabra del día</value></data>
+  <data name="Search_WildcardStart" xml:space="preserve"><value>Usa </value></data>
+  <data name="Search_WildcardMiddle" xml:space="preserve"><value> para un carácter y </value></data>
+  <data name="Search_WildcardEnd" xml:space="preserve"><value> para cualquier cantidad: </value></data>
+  <data name="Search_WildcardSeparator" xml:space="preserve"><value>, </value></data>
+  <data name="Search_WildcardPeriod" xml:space="preserve"><value>.</value></data>
 </root>

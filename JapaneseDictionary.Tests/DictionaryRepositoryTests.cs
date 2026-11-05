@@ -23,6 +23,72 @@ public class DictionaryRepositoryTests : IDisposable
 
     public void Dispose() => repo?.Dispose();
 
+    [Fact]
+    public void Wildcards_EscapeBracketsAndKeepPrefixMetacharactersLiteral()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"wildcards-{Guid.NewGuid():N}.db3");
+        try
+        {
+            using (var db = new SQLiteConnection(path))
+            {
+                db.CreateTable<WordEntryRow>();
+                db.CreateTable<KanjiFormRow>();
+                db.CreateTable<ReadingFormRow>();
+                var forms = new[] { "た[べる", "たべる", "たべ*る", "たべ?る", "たべ]る" };
+                for (var i = 0; i < forms.Length; i++)
+                {
+                    db.Insert(new WordEntryRow { Id = i + 1, PrimaryText = forms[i] });
+                    db.Insert(new ReadingFormRow { EntryId = i + 1, Text = forms[i] });
+                }
+            }
+
+            using var repository = new DictionaryRepository(path);
+            var service = new JapaneseDictionary.Core.Search.SearchService(repository);
+            var bracketMatch = Assert.Single(service.Search("た[?る"));
+            Assert.Equal(1, bracketMatch.EntryId);
+            Assert.Equal("た[?る", bracketMatch.MatchedText);
+            Assert.Equal(5, Assert.Single(service.Search("たべ]*")).EntryId);
+            Assert.Equal(new[] { 1 }, repository.FindByPrefix("た[", 50));
+            Assert.Equal(new[] { 3 }, repository.FindByPrefix("たべ*", 50));
+            Assert.Equal(new[] { 4 }, repository.FindByPrefix("たべ?", 50));
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [SkippableFact]
+    public void GetJlptEntryIds_IsOrderedCachedAndOnlyIncludesJlptEntries()
+    {
+        Skip.If(repo == null, "dictionary.db3 not built");
+        var ids = repo!.GetJlptEntryIds();
+        Assert.InRange(ids.Count, 7000, 8500);
+        Assert.Same(ids, repo.GetJlptEntryIds());
+        Assert.Equal(ids.OrderBy(id => id), ids);
+        Assert.All(ids, id => Assert.NotNull(repo.GetJlptLevel(id)));
+    }
+
+    [SkippableTheory]
+    [InlineData("KanjiFormRow", "KanjiFormRow_Text")]
+    [InlineData("ReadingFormRow", "ReadingFormRow_Text")]
+    public void FindByPattern_LiteralPrefixUsesTextIndex(string table, string index)
+    {
+        Skip.If(repo == null, "dictionary.db3 not built");
+        using var db = new SQLiteConnection(DbPath, SQLiteOpenFlags.ReadOnly);
+        var plan = db.Query<QueryPlanRow>($"""
+            EXPLAIN QUERY PLAN SELECT f.EntryId, f.Priority, LENGTH(f.Text) AS Length,
+                (f.Text = w.PrimaryText OR f.Text = w.PrimaryReading) AS IsHeadword, w.JlptLevel
+            FROM {table} f JOIN WordEntryRow w ON w.Id = f.EntryId WHERE f.Text GLOB ?
+            """, "食*");
+        Assert.Contains(plan, row => row.Detail.Contains(index) && row.Detail.Contains("SEARCH"));
+    }
+
+    public sealed class QueryPlanRow
+    {
+        public string Detail { get; set; } = "";
+    }
+
     [SkippableFact]
     public void FindByExactText_FindsTaberu()
     {

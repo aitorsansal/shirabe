@@ -41,6 +41,18 @@ public partial class SearchViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsEmpty))]
     private bool isPreparingDictionary;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasDailyWord))]
+    private SearchResultRow? dailyWord;
+
+    public bool HasDailyWord => DailyWord != null;
+
+    private DateOnly? dailyWordDate;
+
+    public bool ShowDailyReading => DailyWord is { } word && word.Reading != word.Word;
+
+    partial void OnDailyWordChanged(SearchResultRow? value) => OnPropertyChanged(nameof(ShowDailyReading));
+
     public ObservableCollection<SearchResultRow> Results { get; } = [];
     public ObservableCollection<RecentWordChip> Recents { get; } = [];
 
@@ -64,8 +76,27 @@ public partial class SearchViewModel : ObservableObject
         await data.EnsureInitializedAsync();
         IsPreparingDictionary = false;
         RefreshRecents();
-
         await EntryLinks.OpenPendingAsync();
+
+        // The word is a pure function of the date (WordOfTheDay.PickIndex), so it only
+        // needs loading again when the date has changed, e.g. the app was left open
+        // past midnight.
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        if (date == dailyWordDate && DailyWord != null) return;
+        dailyWordDate = date;
+        DailyWord = await Task.Run(() =>
+        {
+            var repo = data.DictionaryRepository;
+            var pool = repo.GetJlptEntryIds();
+            if (pool.Count == 0) return null;
+            var id = WordOfTheDay.PickIndex(date, pool.Count);
+            var entry = repo.GetEntry(pool[id]);
+            if (entry == null) return null;
+            return SearchResultRow.FromEntry(entry, repo.GetJlptLevel(entry.Id)) with
+            {
+                Gloss = entry.MeaningGlosses.FirstOrDefault() ?? "",
+            };
+        });
     }
 
     partial void OnQueryChanged(string value)
@@ -140,10 +171,12 @@ public partial class SearchViewModel : ObservableObject
 
             // Debounce: a keystroke that's immediately followed by another one
             // cancels this delay and never reaches the actual search — so typing
-            // "たべ" fires one search, not three.
+            // "たべ" fires one search, not three. A pattern starting with a wildcard
+            // (*べる) can't use the index and scans every form, ~200-850 ms on a
+            // Mi 10T, so it waits longer before running.
             try
             {
-                await Task.Delay(200, token);
+                await Task.Delay(StartsWithWildcard(Query) ? 500 : 200, token);
             }
             catch (TaskCanceledException)
             {
@@ -261,6 +294,9 @@ public partial class SearchViewModel : ObservableObject
         _ when isMixed && match.MatchedText is { } kana && kana != query => UiText.Format(AppResources.Search_NoteRomaji, kana),
         _ => null,
     };
+
+    private static bool StartsWithWildcard(string query) =>
+        query.TrimStart() is { Length: > 0 } q && q[0] is '*' or '?' or '＊' or '？';
 
     private void RefreshRecents()
     {

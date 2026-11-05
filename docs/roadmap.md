@@ -10,9 +10,9 @@ Order: 1.1a, 1.1b, 1.1c, then 1.2. Cut 1.2 only after closed-test feedback is in
 
 ## Open from the 1.0.2 comparison with Takoboto
 
-Done since the report: ranking by core meaning and JLPT level, matched meaning in result previews, one line per sense, handwriting Append/Replace switch, stroke-order autoplay, "Show more results", Spanish/French/German meaning search, Anki-ready list export, grade chip and JMdict id badge removed, polite passive/causative/causative-passive forms in the Conj. tab. Still open:
+Done since the report: ranking by core meaning and JLPT level, matched meaning in result previews, one line per sense, handwriting Append/Replace switch, stroke-order autoplay, "Show more results", Spanish/French/German meaning search, Anki-ready list export, grade chip and JMdict id badge removed, polite passive/causative/causative-passive forms in the Conj. tab, wildcards (`?`/`*` on kanji forms and readings, romaji too; a leading `*` scans every form, 200-850 ms on the Mi 10T, so it gets a 500 ms debounce instead of 200 ms; a reversed-text column in the 1.2 rebuild would make suffix patterns an index lookup), word of the day (any JLPT-listed word, picked from the date, on the empty search page). Still open:
 
-- **Wildcards** (`?` one character, `*` any run) on Japanese forms only. No database change. A leading `*` means a full scan of ~100k forms: measure on the phone before shipping.
+- **Recent-word chips clip in landscape.** With タイムリー first in the row, the 取り扱う chip rendered as 取り扱 (the う cut off). Seen 2026-11-05 on the Mi 10T; not investigated yet, likely FlexLayout child measuring.
 - **Kanji search by components (radicals):** see 1.2; needs KRADFILE and a rebuild. Handwriting already covers most "I can't type this kanji" cases, so it stays last.
 - **English ranking gaps.** "station" doesn't put 駅 first and "evening" doesn't put 夕方 first: both need a head-noun tier (the query as the head of a longer gloss). "come" puts 来る third behind honorific verbs; accepted as is.
 
@@ -48,7 +48,6 @@ Per-list CSV export for Anki (Word, Back, Reading, Meanings, Tags and a `shirabe
 - **Language model change (Spanish content).** Settings language only changes the UI. Dictionary content always shows English and Spanish side by side (Takoboto-style); when there is no Spanish translation, show English only, never an empty section. Needs: es glosses from full JMdict, es Tatoeba translations, es kanji meanings (accent-insensitive search of the es/fr/de meanings already exists, see "Faster translated-meaning search" below). Measured coverage: es glosses on 70% of common JMdict words, 19% of kanji, 17% of used Tatoeba sentences.
 - **Faster translated-meaning search.** It scans `TranslatedSenseRow` unindexed with a LIKE + GLOB pre-filter: up to ~410 ms per search on a Mi 10T with es/fr/de all on (German's 166k senses are most of it). An accent-folded, per-word indexed column (or FTS5 table) built by DataBuilder would make it an index lookup.
 - **Kanji search by components.** KRADFILE (EDRDG licence, add to notices). Multi-select grid of components grouped by stroke count; results are kanji containing all selected components; components that would yield zero results are disabled.
-- **Word of the day** (the frequency data it needs is already in the DB, so it could move out of 1.2): deterministic by date, same for everyone, no storage, shown on the empty search state. No notification or widget at first.
 
 ## Parked / only if requested
 

@@ -22,6 +22,67 @@ public class SearchServiceTests : IDisposable
 
     public void Dispose() => repo?.Dispose();
 
+    [SkippableTheory]
+    [InlineData("た?る")]
+    [InlineData("食*")]
+    [InlineData("𠮟*")]
+    [InlineData("*べる")]
+    [InlineData("tabe*")]
+    [InlineData("kon*")]
+    [InlineData("ta?eru")]
+    public void Search_Wildcards_OnlyReturnMatchingJapaneseForms(string query)
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var results = search!.Search(query);
+        Assert.NotEmpty(results);
+
+        // Romaji runs as a hiragana and a katakana pattern; a result may match either.
+        var patterns = (query.Any(char.IsAsciiLetter)
+                ? new[] { RomajiConverter.ToHiragana(query), RomajiConverter.ToKatakana(query) }
+                : [query])
+            .Select(p => "^" + System.Text.RegularExpressions.Regex.Escape(p).Replace(@"\*", ".*").Replace(@"\?", ".") + "$")
+            .ToList();
+        Assert.All(results, result =>
+        {
+            Assert.Equal(SearchMatchKind.Wildcard, result.Kind);
+            var entry = repo!.GetEntry(result.EntryId)!;
+            Assert.Contains(entry.KanjiForms.Select(f => f.Text).Concat(entry.Readings.Select(f => f.Text)),
+                text => patterns.Any(p => System.Text.RegularExpressions.Regex.IsMatch(text, p)));
+        });
+    }
+
+    [SkippableFact]
+    public void Search_RomajiWildcard_RanksHiraganaAndKatakanaTogether()
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        // び* alone has well over 20 matches; a common katakana word must still make
+        // the first 20 instead of queueing behind every hiragana one.
+        var top = search!.Search("bi*", 20).Select(r => repo!.GetEntry(r.EntryId)!.PrimaryText).ToList();
+        Assert.Contains(top, text => text is "ビル" or "ビール" or "ビデオ");
+    }
+
+    [SkippableFact]
+    public void Search_Wildcards_FindExpectedWordsAndRankCommonFormsFirst()
+    {
+        Skip.If(search == null, "dictionary.db3 not built");
+        var food = search!.Search("食*").Select(r => repo!.GetEntry(r.EntryId)!.PrimaryText).ToList();
+        Assert.Contains("食べる", food);
+        Assert.Contains("食事", food);
+        var suffix = search.Search("*べる");
+        Assert.Contains(suffix, r => repo!.GetEntry(r.EntryId)!.PrimaryText == "食べる");
+        Assert.Contains(suffix, r => repo!.GetEntry(r.EntryId)!.PrimaryText == "調べる");
+        Assert.Equal(suffix, search.Search("＊べる"));
+        var romaji = search.Search("tabe*");
+        Assert.Contains(romaji, r => r.EntryId == 1358280);
+        Assert.Contains(romaji, r => repo!.GetEntry(r.EntryId)!.PrimaryText == "食べ物");
+        Assert.Equal(1358280, search.Search("食べ*")[0].EntryId);
+        Assert.Empty(search.Search("*"));
+        Assert.Empty(search.Search("？"));
+        Assert.Empty(search.Search("*?＊？"));
+        Assert.DoesNotContain(search.Search("eat*"), r => r.Kind == SearchMatchKind.Wildcard);
+        Assert.Empty(search.Search("た[?る"));
+    }
+
     [SkippableFact]
     public void Search_ExactKanji_FindsTaberu()
     {
