@@ -92,7 +92,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
                 return;
             }
 
-            ShowEntry(entry);
+            ShowEntry(entry, PopupGlosses(appDataContext.DictionaryRepository, entry));
         }
         catch (Exception)
         {
@@ -105,9 +105,28 @@ public class ProcessTextLookupActivity : Android.App.Activity
     private static DictionaryEntry? FindBestEntry(DictionaryRepository repo, SearchService search, string query, string? reading) =>
         LookupSelector.PickEntry(search, query, reading) is { } id ? repo.GetEntry(id) : null;
 
-    private void ShowEntry(DictionaryEntry entry)
+    // The popup has room for one language. It uses the UI language's meanings when
+    // that language is also on in Settings > translations (Catalan UI counts as
+    // Spanish, as for the translation defaults) and the word has some; otherwise
+    // English, which every entry has.
+    private static IEnumerable<string> PopupGlosses(DictionaryRepository repo, DictionaryEntry entry)
     {
-        var glosses = string.Join(" / ", entry.MeaningGlosses.Take(3));
+        var iso = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        if (iso == "ca") iso = "es";
+        var language = TranslationLanguages.All.FirstOrDefault(l => l.Iso1 == iso);
+        if (language == null || !TranslationPreferences.IsSelected(language.Code)) return entry.MeaningGlosses;
+
+        var translated = repo.GetTranslatedSenses(entry.Id, [language.Code])
+            .SelectMany(s => s.Glosses)
+            .Where(g => g.Length > 0)
+            .Distinct()
+            .ToList();
+        return translated.Count > 0 ? translated : entry.MeaningGlosses;
+    }
+
+    private void ShowEntry(DictionaryEntry entry, IEnumerable<string> meanings)
+    {
+        var glosses = string.Join(" / ", meanings.Take(3));
 
         progress.Visibility = ViewStates.Gone;
         wordText.Visibility = ViewStates.Visible;
