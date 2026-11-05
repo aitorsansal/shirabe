@@ -290,7 +290,7 @@ public partial class SearchViewModel : ObservableObject
         SearchMatchKind.Conjugated => UiText.Format(AppResources.Search_NoteConjugated, match.MatchedText ?? query, UiText.FormName(match.ConjugationForm)),
         SearchMatchKind.Gloss when isMixed => UiText.Format(AppResources.Search_NoteEnglish, match.MatchedText ?? ""),
         // Always shown: a Spanish gloss next to an unlabelled English one would be ambiguous.
-        SearchMatchKind.TranslatedGloss => UiText.Format(AppResources.Search_NoteTranslated, TranslationLanguages.Find(match.MatchedLanguage ?? "")?.Endonym ?? match.MatchedLanguage ?? "", match.MatchedText ?? ""),
+        SearchMatchKind.TranslatedGloss => UiText.Format(AppResources.Search_NoteTranslated, TranslationLanguages.Find(match.MatchedLanguage ?? "")?.Endonym ?? match.MatchedLanguage ?? "", GlossNotes.WithoutOrigin(match.MatchedText ?? "")),
         _ when isMixed && match.MatchedText is { } kana && kana != query => UiText.Format(AppResources.Search_NoteRomaji, kana),
         _ => null,
     };

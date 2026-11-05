@@ -118,6 +118,7 @@ public class ProcessTextLookupActivity : Android.App.Activity
 
         var translated = repo.GetTranslatedSenses(entry.Id, [language.Code])
             .SelectMany(s => s.Glosses)
+            .Select(GlossNotes.WithoutOrigin)
             .Where(g => g.Length > 0)
             .Distinct()
             .ToList();
