@@ -35,6 +35,11 @@
                             IsVisible="{Binding CanExport}"
                             SemanticProperties.Description="{x:Static res:AppResources.Lists_ExportDescription}"
                             Style="{StaticResource IconButtonStyle}" />
+                    <Button Text="{x:Static services:IconGlyphs.PlaylistAdd}"
+                            Command="{Binding SendToPracticeCommand}"
+                            IsVisible="{Binding CanSendToPractice}"
+                            SemanticProperties.Description="{x:Static res:AppResources.Lists_SendToPractice}"
+                            Style="{StaticResource IconButtonStyle}" />
                     <Button Text="{x:Static services:IconGlyphs.MoreVert}"
                             Command="{Binding ShowListMenuCommand}"
                             IsVisible="{Binding IsUserList}"

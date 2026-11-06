@@ -44,7 +44,11 @@ public sealed class TranslationLanguageRow : ObservableObject
 
 public sealed partial class SettingsViewModel : ObservableObject
 {
-    private const string PracticeAppPackage = "com.aitorsansal.nihongonopractise";
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PracticeAppButtonText))]
+    private bool isPracticeAppInstalled;
+
+    public string PracticeAppButtonText => IsPracticeAppInstalled ? AppResources.Settings_PracticeOpen : AppResources.Settings_PracticeLinkDescription;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PracticePromotionChevron))]
@@ -114,6 +118,7 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public async Task OnAppearingAsync()
     {
+        IsPracticeAppInstalled = PracticeApp.GetStatus() != PracticeAppStatus.Absent;
         // Re-check every time: the user may be coming back from installing a voice.
         tts.Invalidate();
         IsVoiceAvailable = await tts.IsAvailableAsync();
@@ -218,17 +223,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private static async Task OpenPracticeAppAsync()
     {
-        try
-        {
-            // Opens the Play Store app directly; the https URL is the fallback
-            // when no store app handles market:// links.
-            if (!await Launcher.TryOpenAsync($"market://details?id={PracticeAppPackage}"))
-                await Launcher.OpenAsync($"https://play.google.com/store/apps/details?id={PracticeAppPackage}");
-        }
-        catch (Exception)
-        {
-            // No store and no browser; nothing useful to show.
-        }
+        if (!PracticeApp.TryOpen()) await PracticeApp.OpenStoreAsync();
     }
 
     [RelayCommand]

@@ -323,4 +323,15 @@
   <data name="Search_WildcardSeparator" xml:space="preserve"><value>, </value></data>
   <data name="Search_WildcardPeriod" xml:space="preserve"><value>.</value></data>
   <data name="Companion_UpdateShirabe" xml:space="preserve"><value>Actualiza Shirabe para abrir esto.</value></data>
+  <data name="Lists_SendToPractice" xml:space="preserve"><value>Enviar a Nihongo no Practise</value></data>
+  <data name="Lists_SendAbsentTitle" xml:space="preserve"><value>Practica estas palabras</value></data>
+  <data name="Lists_SendAbsentBody" xml:space="preserve"><value>Nihongo no Practise convierte tus listas en cuestionarios. Es una app complementaria gratuita del mismo desarrollador.</value></data>
+  <data name="Lists_SendGetIt" xml:space="preserve"><value>Consíguela en Google Play</value></data>
+  <data name="Lists_SendUpdateTitle" xml:space="preserve"><value>Actualiza Nihongo no Practise</value></data>
+  <data name="Lists_SendUpdateBody" xml:space="preserve"><value>Tu versión aún no puede recibir listas. Actualízala para enviar esta.</value></data>
+  <data name="Lists_SendUpdateAction" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="Lists_SendNothing" xml:space="preserve"><value>Ninguna de estas palabras se puede enviar.</value></data>
+  <data name="Lists_SendTooLarge" xml:space="preserve"><value>Esta lista es demasiado grande para enviarla.</value></data>
+  <data name="Lists_SendTruncated" xml:space="preserve"><value>Solo se enviarán las primeras {0} palabras.</value></data>
+  <data name="Settings_PracticeOpen" xml:space="preserve"><value>Abrir Nihongo no Practise</value></data>
 </root>

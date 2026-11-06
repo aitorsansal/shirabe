@@ -56,6 +56,7 @@ public sealed partial class ListDetailViewModel : ObservableObject
     public bool IsHistory => ListId == HistoryListId;
     public bool CanRemove => !IsHistory;
     public bool CanExport => !IsEmpty;
+    public bool CanSendToPractice => !IsEmpty && !IsHistory;
     public string Kicker => IsHistory ? AppResources.Lists_KickerHistory : IsUserList ? AppResources.Lists_KickerList : AppResources.Lists_KickerSaved;
 
     public string EmptyText => IsHistory ? AppResources.Lists_EmptyHistory : AppResources.Lists_EmptyList;
@@ -65,12 +66,17 @@ public sealed partial class ListDetailViewModel : ObservableObject
     partial void OnListIdChanged(int value)
     {
         OnPropertyChanged(nameof(IsHistory));
+        OnPropertyChanged(nameof(CanSendToPractice));
         OnPropertyChanged(nameof(CanRemove));
         OnPropertyChanged(nameof(EmptyText));
         OnPropertyChanged(nameof(Kicker));
     }
 
-    partial void OnIsEmptyChanged(bool value) => OnPropertyChanged(nameof(CanExport));
+    partial void OnIsEmptyChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanExport));
+        OnPropertyChanged(nameof(CanSendToPractice));
+    }
 
     /// <summary>Reloaded on every appearance: coming back from a word page may
     /// have changed membership (un-favourited, removed from this list).</summary>
@@ -153,6 +159,59 @@ public sealed partial class ListDetailViewModel : ObservableObject
             data.UserDataRepository.DeleteList(ListId);
             await Shell.Current.GoToAsync("..");
         }
+    }
+
+    [RelayCommand]
+    private async Task SendToPracticeAsync()
+    {
+        if (!CanSendToPractice) return;
+        var status = PracticeApp.GetStatus();
+        if (status != PracticeAppStatus.Ok)
+        {
+            await ShowPracticePromptAsync(status);
+            return;
+        }
+
+        var snapshot = entries.ToList();
+        var levels = jlptLevels;
+        var listName = Title;
+        var languages = TranslationPreferences.Selected;
+        var repository = data.DictionaryRepository;
+        var requestId = Guid.NewGuid();
+        var result = await Task.Run(() => CompanionExport.Build(
+            snapshot.Select(e => new CompanionExport.Row(
+                e,
+                levels.TryGetValue(e.Id, out var level) ? level : null,
+                repository.GetTranslatedSenses(e.Id, languages))),
+            listName, requestId));
+
+        if (result.Exported == 0)
+        {
+            await Shell.Current.DisplayAlertAsync(AppResources.Lists_SendToPractice, AppResources.Lists_SendNothing, AppResources.Common_Done);
+            return;
+        }
+        if (result.Json.Length > 2 * 1024 * 1024)
+        {
+            await Shell.Current.DisplayAlertAsync(AppResources.Lists_SendToPractice, AppResources.Lists_SendTooLarge, AppResources.Common_Done);
+            return;
+        }
+        if (result.Truncated)
+            await Shell.Current.DisplayAlertAsync(AppResources.Lists_SendToPractice,
+                UiText.Format(AppResources.Lists_SendTruncated, CompanionExport.MaxEntries), AppResources.Common_Done);
+
+        status = await PracticeApp.SendAsync(result.Json, requestId);
+        if (status != PracticeAppStatus.Ok) await ShowPracticePromptAsync(status);
+    }
+
+    private static async Task ShowPracticePromptAsync(PracticeAppStatus status)
+    {
+        var absent = status == PracticeAppStatus.Absent;
+        var accepted = await Shell.Current.DisplayAlertAsync(
+            absent ? AppResources.Lists_SendAbsentTitle : AppResources.Lists_SendUpdateTitle,
+            absent ? AppResources.Lists_SendAbsentBody : AppResources.Lists_SendUpdateBody,
+            absent ? AppResources.Lists_SendGetIt : AppResources.Lists_SendUpdateAction,
+            AppResources.Common_Cancel);
+        if (accepted) await PracticeApp.OpenStoreAsync();
     }
 
     [RelayCommand]
