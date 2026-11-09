@@ -13,8 +13,7 @@ public enum PracticeAppStatus
 public static class PracticeApp
 {
     private const string Package = "com.aitorsansal.nihongonopractise";
-    // Replace with the released action 3 version code when the contract's TBD is finalized.
-    private const long NnpMinVersionCode = 23;
+    private const long NnpMinVersionCode = 24;
 
     public static PracticeAppStatus GetStatus()
     {

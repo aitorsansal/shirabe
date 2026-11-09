@@ -333,5 +333,6 @@
   <data name="Lists_SendNothing" xml:space="preserve"><value>Ninguna de estas palabras se puede enviar.</value></data>
   <data name="Lists_SendTooLarge" xml:space="preserve"><value>Esta lista es demasiado grande para enviarla.</value></data>
   <data name="Lists_SendTruncated" xml:space="preserve"><value>Solo se enviarán las primeras {0} palabras.</value></data>
+  <data name="Lists_SendSkipped" xml:space="preserve"><value>Palabras no enviadas: {0}</value></data>
   <data name="Settings_PracticeOpen" xml:space="preserve"><value>Abrir Nihongo no Practise</value></data>
 </root>

@@ -34,7 +34,7 @@ Existing Shirabe receiver `ProcessTextLookupActivity`. Shirabe's only change is 
 | `android.intent.extra.PROCESS_TEXT_READONLY` | `true` |
 | `com.aitorsansal.companion.READING` | optional, kana reading of the query (from `<rt>`). Shirabe prefers a top-N search result whose reading matches; without one it keeps today's first-result behaviour. |
 | Flags | none (the popup stays in the caller's task; Back returns to NNP) |
-| Shirabe min version | `TBD` (the reading extra). Older versions ignore the extra, so NNP may still send to them. |
+| Shirabe min version | `4` (1.1.0, the reading extra). Older versions ignore the extra, so NNP may still send to them. |
 
 ### 2. Open a dictionary entry (NNP → Shirabe)
 
@@ -56,7 +56,7 @@ One path for a single word and for a whole list.
 | Package | `com.aitorsansal.nihongonopractise` |
 | Data | `content://` URI of a UTF-8 JSON file (Shirabe's `FileProvider`, `FLAG_GRANT_READ_URI_PERMISSION`), set with `SetDataAndType(uri, "application/json")`. NNP's filter declares `DataMimeType = "application/json"`; without the type the intent does not resolve. |
 | Flags | `NewTask \| ClearTop \| SingleTop` (with `NewTask` alone, a running app is only brought to the front and never receives the intent) |
-| NNP min version | `TBD` |
+| NNP min version | `24` (1.5.0) |
 
 NNP reads the stream once on receipt (the grant can expire). Rejected without reading further:
 - files over 2 MB
@@ -94,7 +94,7 @@ Payload:
 | `attribution` | required. Must credit every data source in the payload: the JMdict/EDRDG acknowledgement always, plus the JLPT credit (Jonathan Waller's JLPT lists, tanos.co.uk, CC BY; JMdict ids via stephenmk/yomitan-jlpt-vocab, CC BY-SA 4.0) whenever any entry has `jlpt`. Shirabe builds the text from its `DATA-LICENSE.md`; NNP stores it with each card and shows it unchanged. |
 | `entries[].source` | `"jmdict"` only in v1; other values are skipped and reported. |
 | `entries[].entryId` | positive int |
-| `entries[].form` | the written form the user saw (kanji or kana), ≤ 32 chars |
+| `entries[].form` | the written form to practise (kanji or kana), ≤ 32 chars. Normally the entry's headline; when no kanji spelling is common and a reading is, the reading. |
 | `entries[].reading` | kana, ≤ 32 chars. Must be a reading valid for `form`; Shirabe sends the matching pair. |
 | `entries[].jlpt` | optional int 1–5 (Shirabe's JLPT level data). Sending it makes the JLPT credit in `attribution` mandatory. |
 | `entries[].glosses` | object keyed by language code (`en`, `es`, `fr`, `de`, `ca`, …). Shirabe sends English plus whatever translation languages the user enabled. Each value ≤ 5 strings of ≤ 80 chars, applied in this order: (1) **drop** every meaning over 80 chars, never truncate one (a cut meaning can say something wrong); (2) keep the first 5 of what is left; (3) leave out a language with no meanings left. `en` is required: if no English meaning survives, Shirabe skips the entry and counts it as skipped. NNP applies the same rules on receipt (dropping, not rejecting the file), so an older or buggy sender can't block an import; an entry left without `en` is shown as skipped in the preview. |
@@ -132,4 +132,5 @@ NNP shows its own matching exercises for that entry and offers to add the word t
 
 ## Changelog
 
-- v1 (2026-11-05): actions 1–4. Later the same day, still before any sender exists: attribution must credit JLPT data when `jlpt` is sent; meanings over 80 chars are dropped, not truncated; optional `JLPT` extra on action 4. Earlier the same day, before any implementation: launch flags `NewTask | ClearTop | SingleTop`, explicit JSON MIME type, Recents-replay and `CATEGORY_DEFAULT` rules.
+- v1 (2026-11-05): actions 1–4. Later the same day, still before any sender exists: attribution must credit JLPT data when `jlpt` is sent; meanings over 80 chars are dropped, not truncated; optional `JLPT` extra on action 4. Earlier the same day, before any implementation: launch flags `NewTask | ClearTop | SingleTop`, explicit JSON MIME type, Recents-replay and `CATEGORY_DEFAULT` rules. 2026-11-06: `form` rule for uncommon kanji spellings.
+- Min versions set for the 1.5 release: Shirabe 4 (1.1.0) for action 1's reading extra, NNP 24 (1.5.0) for action 3. Action 4 stays `TBD` until M6.

@@ -27,6 +27,38 @@ public class CompanionExportTests
         entry.GetProperty("glosses").GetProperty(language).EnumerateArray().Select(g => g.GetString()!).ToArray();
 
     [Fact]
+    public void PrefersCommonReadingOverUncommonKanjiSpelling()
+    {
+        var rare = new DictionaryEntry(1, [new KanjiForm("其れでは", false)], [new ReadingForm("それでは", true, true, [])],
+            [new WordSense([], [], ["well then"], [], [])]);
+        var common = new DictionaryEntry(2, [new KanjiForm("先生", true)], [new ReadingForm("せんせい", true, true, [])],
+            [new WordSense([], [], ["teacher"], [], [])]);
+        var neither = new DictionaryEntry(3, [new KanjiForm("珍語", false)], [new ReadingForm("ちんご", false, true, [])],
+            [new WordSense([], [], ["rare word"], [], [])]);
+
+        using var json = JsonDocument.Parse(Build(R(rare), R(common), R(neither)).Json);
+
+        var forms = json.RootElement.GetProperty("entries").EnumerateArray().Select(e => e.GetProperty("form").GetString());
+        Assert.Equal(["それでは", "先生", "珍語"], forms);
+    }
+
+    [Fact]
+    public void DropsGlossesThatAreOnlyABracket()
+    {
+        using var json = JsonDocument.Parse(Build(R(translations: [new("spa", 1, ["camisa", "(shirt)"])])).Json);
+
+        Assert.Equal(["camisa"], Meanings(json.RootElement.GetProperty("entries")[0], "es"));
+    }
+
+    [Fact]
+    public void RejoinsMeaningsSplitInsideBracketsAndDropsLanguageTags()
+    {
+        using var json = JsonDocument.Parse(Build(R(translations: [new("spa", 1, ["tomarse (tiempo", "dinero)", "(pt) pan"])])).Json);
+
+        Assert.Equal(["tomarse (tiempo, dinero)", "pan"], Meanings(json.RootElement.GetProperty("entries")[0], "es"));
+    }
+
+    [Fact]
     public void DropsLoanwordOriginNotesFromMeanings()
     {
         using var json = JsonDocument.Parse(Build(R(Entry("ラジオ", "ラジオ", 7, "radio"), translations: [new("spa", 1, ["radio (eng:)"])])).Json);

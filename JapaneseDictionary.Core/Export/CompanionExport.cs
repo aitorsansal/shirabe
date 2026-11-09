@@ -1,12 +1,13 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 using JapaneseDictionary.Core.Models;
 using JapaneseDictionary.Core.Search;
 
 namespace JapaneseDictionary.Core.Export;
 
-public static class CompanionExport
+public static partial class CompanionExport
 {
     public sealed record Row(DictionaryEntry Entry, int? JlptLevel, IReadOnlyList<TranslatedSense> Translations);
     public sealed record Result(byte[] Json, int Exported, int Skipped, bool Truncated);
@@ -33,9 +34,10 @@ public static class CompanionExport
 
             // MeaningGlosses hides romanizations of the reading, which is the only gloss of
             // loanwords like ラジオ "radio".
+            var form = PracticeForm(row.Entry);
             var english = Meanings(row.Entry.MeaningGlosses);
             if (english.Length == 0) english = Meanings(row.Entry.Senses.SelectMany(s => s.Glosses));
-            if (english.Length == 0 || !IsValidForm(row.Entry.PrimaryText) || !IsValidForm(row.Entry.PrimaryReading))
+            if (english.Length == 0 || !IsValidForm(form) || !IsValidForm(row.Entry.PrimaryReading))
             {
                 skipped++;
                 continue;
@@ -74,7 +76,7 @@ public static class CompanionExport
                 writer.WriteStartObject();
                 writer.WriteString("source", "jmdict");
                 writer.WriteNumber("entryId", row.Entry.Id);
-                writer.WriteString("form", row.Entry.PrimaryText);
+                writer.WriteString("form", PracticeForm(row.Entry));
                 writer.WriteString("reading", row.Entry.PrimaryReading);
                 if (row.JlptLevel is { } level) writer.WriteNumber("jlpt", level);
                 writer.WriteStartObject("glosses");
@@ -94,7 +96,40 @@ public static class CompanionExport
     }
 
     private static string[] Meanings(IEnumerable<string> glosses) =>
-        glosses.Select(g => GlossNotes.WithoutOrigin(g.Trim())).Where(g => g.Length is > 0 and <= 80).Take(5).ToArray();
+        RejoinBrackets(glosses).Select(g => GlossNotes.WithoutOrigin(LanguageTag().Replace(g.Trim(), "")))
+            .Where(g => g.Length is > 0 and <= 80 && !OnlyBrackets().IsMatch(g)).Take(5).ToArray();
+
+    // 其れでは is the entry's only kanji spelling, but people write それでは. Quizzing an
+    // uncommon spelling teaches nothing, so a common reading wins over it here. The
+    // word page keeps its headline.
+    private static string PracticeForm(DictionaryEntry entry) =>
+        !entry.KanjiForms.Any(k => k.IsCommon) && entry.Readings.Any(r => r.IsCommon)
+            ? entry.PrimaryReading
+            : entry.PrimaryText;
+
+    // The database splits the translated glosses on commas, even inside brackets:
+    // "tomarse (tiempo, dinero)" is stored as "tomarse (tiempo" and "dinero)".
+    private static IEnumerable<string> RejoinBrackets(IEnumerable<string> glosses)
+    {
+        string? open = null;
+        foreach (var gloss in glosses)
+        {
+            var text = open == null ? gloss : $"{open}, {gloss.Trim()}";
+            if (text.Count(c => c == '(') > text.Count(c => c == ')'))
+            {
+                open = text;
+                continue;
+            }
+            open = null;
+            yield return text;
+        }
+    }
+
+    [GeneratedRegex(@"^\([a-z]{2,3}\)\s+")]
+    private static partial Regex LanguageTag();
+
+    [GeneratedRegex(@"^\([^()]*\)$")]
+    private static partial Regex OnlyBrackets();
 
     private static bool IsValidForm(string text) =>
         text.Length <= 32 && !text.Any(c => c is '<' or '>' || char.IsControl(c));

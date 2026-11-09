@@ -199,6 +199,10 @@ public sealed partial class ListDetailViewModel : ObservableObject
             await Shell.Current.DisplayAlertAsync(AppResources.Lists_SendToPractice,
                 UiText.Format(AppResources.Lists_SendTruncated, CompanionExport.MaxEntries), AppResources.Common_Done);
 
+        if (result.Skipped > 0)
+            await Shell.Current.DisplayAlertAsync(AppResources.Lists_SendToPractice,
+                UiText.Format(AppResources.Lists_SendSkipped, result.Skipped), AppResources.Common_Done);
+
         status = await PracticeApp.SendAsync(result.Json, requestId);
         if (status != PracticeAppStatus.Ok) await ShowPracticePromptAsync(status);
     }
